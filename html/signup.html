@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function submit_chk(myForm){
+
+         }
+        function reset_chk(myForm){
+            window.close()
+         }
+    </script>
+</head>
+<body onload = "document.f1.user_id.focus();">
+    <form action ="/signup" method="POST" name = "f1" onsubmit = "return submit_chk(this);" onreset = "return reset_chk(this);">
+        <fieldset>
+            <legend>회원가입</legend>
+            <p>
+                <label for ="user_name">ID</label>
+                <input type="text" name = "user_id" id = "user_id"/>
+            </p>
+            <p>
+                <label for ="user_name">PW</label>
+                <input type="text" name = "user_pw" id = "user_pw"/>
+            </p>
+            <p>
+                <input type = "submit" value = "회원가입"/>
+                <input type="reset" value = "가입취소"/>
+            </p>
+        </fieldset>
+    </form>  
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function submit(myForm){
+
+         }
+    </script>
+</head>
+<body>
+    <body onload = "document.f2.user_id.focus();">
+        <form action ="/login" method="POST" name = "f2" onsubmit = "return submit(this);">
+            <fieldset>
+                <legend>로그인</legend>
+                <p>
+                    <label for ="user_id">ID</label>
+                    <input type="text" name = "user_id" id = "user_id"/>
+                </p>
+                <p>
+                    <label for ="user_pw">PW</label>
+                    <input type="text" name = "user_pw" id = "user_pw"/>
+                </p>
+                <p>
+                    <input type = "submit" value = "로그인"/>
+                </p>
+            </fieldset>
+        </form>
+        
+    </body>
+</body>
+</html>
