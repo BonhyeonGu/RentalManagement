@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function submit_chk(myForm){
+
+         }
+        function reset_chk(myForm){
+            window.close()
+         }
+    </script>
+</head>
+<body onload = "document.f1.user_id.focus();">
+    <form action ="/admin_signup" method="POST" name = "f1" onsubmit = "return submit_chk(this);" onreset = "return reset_chk(this);">
+        <fieldset>
+            <legend>회원가입</legend>
+            <p>
+                <label for ="user_school">학교명</label>
+                <input type="text" name = "user_school" id = "user_school"/>
+            </p>
+            <p>
+                <label for ="user_num">학번</label>
+                <input type="text" name = "user_num" id = "user_num"/>
+            </p>
+            <p>
+                <label for ="user_name">이름</label>
+                <input type="text" name = "user_name" id = "user_name"/>
+            </p>
+            <p>
+                <label for ="user_department">소속학과</label>
+                <input type="text" name = "user_department" id = "user_department"/>
+            </p>
+            <p>
+                <label for ="user_grade">학년</label>
+                <input type="text" name = "user_grade" id = "user_grade"/>
+            </p>
+            <p>
+                <label for ="user_id">ID(ID는 5~20자로 입력해주세요. * 한글 입력금지, 영문자 1개 이상 입력, 특수문자 '-', '_' 가능)</label>
+                <input type="text" name = "user_id" id = "user_id"/>
+            </p>
+            <p>
+                <label for ="user_pw">PW(비밀번호는 8~16자로 입력해주세요. * 한글 입력 금지, 특수문자 및 영문자 1회 이상 입력 *)</label>
+                <input type="text" name = "user_pw" id = "user_pw"/>
+            </p>
+            <p>
+                <label for ="user_attend_status">재학여부(0: 졸업, 1: 휴학, 2: 재학)</label>
+                <input type="text" name = "user_attend_status" id = "user_attend_status"/>
+            </p>
+            <p>
+                <label for ="user_phone">휴대폰 번호</label>
+                <input type="text" name = "user_phone" id = "user_phone"/>
+            </p>
+            <p>
+                <input type = "submit" value = "회원가입"/>
+                <input type="reset" value = "가입취소"/>
+            </p>
+        </fieldset>
+    </form>  
+</body>
+</html>
