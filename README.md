@@ -1,0 +1,1 @@
+# Snipteit-rental-management
