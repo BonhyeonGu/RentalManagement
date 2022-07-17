@@ -5,8 +5,9 @@ const { json } = require('express/lib/response')
 const app = express()
 const db=require("C:/Users/18284/Desktop/Snipe_IT_Rental/js/database.js")
 const conn=db.init()
+app.set('view engine','ejs')
 db.connect(conn)
-
+app.set('views',__dirname+'/views')
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true}));
 
