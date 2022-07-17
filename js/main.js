@@ -12,7 +12,8 @@ db.connect(conn)
 app.set('views',__dirname+'/views')
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true}));
-let user_uid;
+
+// -- 기본 라우터
 app.get("/", (request, response)=>{
     fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/main.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
@@ -21,6 +22,7 @@ app.get("/", (request, response)=>{
     })
 })
 
+// -- 로그인 관련 라우터
 app.get("/login", (request, response)=>{
     fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/login.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
@@ -72,6 +74,7 @@ app.post("/login",(request,response)=>{
     })
 })
 
+// -- 메인 관련 라우터
 app.get("/admin_main", (request, response)=>{
     fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/admin_main.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
@@ -80,6 +83,7 @@ app.get("/admin_main", (request, response)=>{
     })
 })
 
+// -- 회원가입 관련 라우터
 app.get("/admin_signup", (request, response)=>{
     fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/admin_signup.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
@@ -124,24 +128,106 @@ app.post("/admin_signup", (request, response)=>{
 })
 
 
+// -- 신청 관리 관련 라우터
+app.get("/admin_rentalmanage", (request, response)=>{ // 전체 검색
+    let qry1 = "SELECT m.ma_id, u.uid, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
+        FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON u.pid = a.pid \
+        WHERE m.ma_state = '1'"
 
-app.get("/admin_rentalmanage", (request, response)=>{
-    conn.query(`select * from rental_manage`, function(err, rows, fields){
+    conn.query(qry1, function(err, reserv, fields){
         if (err) throw err;
-        let tmp='<h1>대기 현황</h1>'
-        tmp+='<table border="1"><tr><th>ID</th><th>교과목 이름</th><th>학점</th></tr>'
-        for(let a of rows){
-            tmp+=`<tr><td>${a.user_id}</td><td>${a.enrol_id}</td><td>${a.enrol_score} </td></tr>`
-        }
-        tmp+='</table>'
-        fs.readFile("C:/Users/18284/Desktop/jscript/js/admin_rentalmanage.html", (error,data)=>{
-            response.writeHead(200,{'Content-Type' : "text/html"})
-            response.write(data+tmp)
-            response.end()
+        
+        let qry2 = "SELECT m.ma_id, u.uid, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
+        FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON u.pid = a.pid \
+        WHERE m.ma_state = '2'"
+        conn.query(qry2, function(err, using, fields){
+            if (err) throw err;
+
+            let qry3 = "SELECT m.ma_id, u.uid, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
+            FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON u.pid = a.pid \
+            WHERE m.ma_state = '3'"
+            conn.query(qry3, function(err, ret, fields){
+                if (err) throw err;
+
+                response.render('admin_rentalmanage.ejs', {reserv_list : reserv, using_list : using, return_list : ret})
+            })
         })
     })
 })
 
+app.post("/admin_rentalmanage_search", (req, res)=>{ // 일부 검색
+    let userID = req.body.user_id;
+    let qry1 = `SELECT m.ma_id, u.user_id, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
+        FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON m.pid = a.id \
+        WHERE m.ma_state = '1' AND u.user_id = ${userID}`
+
+    conn.query(qry1, function(err, reserv, fields){
+        if (err) throw err;
+        
+        let qry2 = `SELECT m.ma_id, u.user_id, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
+        FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON m.pid = a.id \
+        WHERE m.ma_state = '2' AND u.user_id = ${userID}`
+        conn.query(qry2, function(err, using, fields){
+            if (err) throw err;
+
+            let qry3 = `SELECT m.ma_id, u.user_id, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
+            FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON m.pid = a.id \
+            WHERE m.ma_state = '3' AND u.user_id = ${userID}`
+            conn.query(qry3, function(err, ret, fields){
+                if (err) throw err;
+
+                response.render('admin_rentalmanage.ejs', {reserv_list : reserv, using_list : using, return_list : ret})
+            })
+        })
+    })
+})
+
+app.post("/admin_rentalmanage_resrv_recept", (req, res)=>{ // 예약 신청 수락
+    let maID = req.body.resrv_recept_ma_id;
+    let qry = `UPDATE rental_manage SET ma_state='1' WHERE ma_id='${maID}'`
+    conn.query(qry, function(err, rows, fields){
+        if (err) throw err;
+
+        res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+        res.write(`<script>alert("${maID} : 예약 신청을 수락했습니다.")</script>`)
+        res.end('<script>history.back()</script>')
+    })
+})
+app.post("/admin_rentalmanage_resrv_reject", (req, res)=>{ // 예약 신청 거절
+    let maID = req.body.resrv_recept_ma_id;
+    let qry = `DELETE FROM rental_manage WHERE ma_id='${maID}'`
+    conn.query(qry, function(err, rows, fields){
+        if (err) throw err;
+
+        res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+        res.write(`<script>alert("${maID} : 예약 신청을 거절했습니다.")</script>`)
+        res.end('<script>history.back()</script>')
+    })
+})
+app.post("/admin_rentalmanage_return", (req, res)=>{ // 비품 반납
+    let maID = req.body.return_ma_id;
+    let qry = `UPDATE rental_manage SET ma_state='3' WHERE ma_id='${maID}'`
+    conn.query(qry, function(err, rows, fields){
+        if (err) throw err;
+
+        res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+        res.write(`<script>alert("${maID} : 반납으로 변경했습니다.")</script>`)
+        res.end('<script>history.back()</script>')
+    })
+})
+app.post("/admin_rentalmanage_return_cancel", (req, res)=>{ // 비품 반납 취소(반납 -> 사용 중)
+    let maID = req.body.return_cancel_ma_id;
+    let qry = `UPDATE rental_manage SET ma_state='2' WHERE ma_id='${maID}'`
+    conn.query(qry, function(err, rows, fields){
+        if (err) throw err;
+
+        res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+        res.write(`<script>alert("${maID} : 반납에서 사용 중으로 변경했습니다.")</script>`)
+        res.end('<script>history.back()</script>')
+    })
+})
+
+// -- 관리자 main 관련 라우터
 app.get("/admin_manage", (request, response)=>{
     fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/admin_main.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
@@ -150,13 +236,14 @@ app.get("/admin_manage", (request, response)=>{
     })
 })
 
+// -- 유저 관리 관련 라우터
 app.get("/admin_userstatus", (request, response)=>{
-    conn.query(`select * from rental_user`, function(err, rows, fields){
+    conn.query(`select * from enrol where enrol_flag=1`, function(err, rows, fields){
         if (err) throw err;
         let tmp='<h1>유저 현황</h1>'
-        tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>이름</th><th>ID</th><th>재학여부</th><th>비밀번호 틀린 횟수</th></tr>'
+        tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>이름</th><th>ID</th><th>PW</th><th>재학여부</th><th>권한등급</th><th>비밀번호 틀린 횟수</th></tr>'
         for(let a of rows){
-            tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
+            tmp+=`<tr><td>${a.uid}</td><td>${a.user_school}</td><td>${a.user_num}</td><td>${a.user_name}</td><td>${a.user_auth}</td><td>${a.user_status}</td></tr>`
         }
         tmp+='</table>'
         fs.readFile("C:/Users/18284/Desktop/jscript/js/admin_userstatus.html", (error,data)=>{
@@ -167,38 +254,17 @@ app.get("/admin_userstatus", (request, response)=>{
     })
 })
 
-app.post("/admin_userstatus", (request, response)=>{
-    conn.query(`select * from rental_user where user_school="${request.body.user_school}" and user_num="${request.body.user_school}" and user_name="${request.body.user_name}"`, function(err, rows, fields){
-        if (err) throw err;
-        user_uid=request.body.uid;
-        let tmp='<h1>유저 현황</h1>'
-        tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>이름</th><th>ID</th><th>재학여부</th><th>비밀번호 틀린 횟수</th></tr>'
-        for(let a of rows){
-            tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
-        }
-        tmp+='</table>'
-        fs.readFile("C:/Users/18284/Desktop/jscript/js/admin_backuser.html", (error,data)=>{
-            response.writeHead(200,{'Content-Type' : "text/html"})
-            response.write(data+tmp)
-            response.end()
-        })
-    })
+// -- 오류 관련 라우터
+app.use(function (err, req, res, next) {
+    console.error(err.stack)
+    res.status(500).send('Something broke!')
 })
-app.post("/admin_changeauth", (request, response)=>{
-    conn.query(`update rental_user set user_auth="${request.body.user_change_auth}" where uid="${user_uid}"`, function(err){
-        if(err) throw err;
-        response.send(`<script>alert('권한이 변경되었습니다.'); location.href = 'http://localhost:9999//admin_userstatus'</script>`)
-    })
-})
-app.post("/admin_changepw", (request, response)=>{
-    if(request.body.user_change_pw==request.body.user_change_repw){
-        conn.query(`update rental_user set user_pw="${request.body.user_change_pw}" where uid="${user_uid}}"`, function(err){
-            if(err) throw err;
-            response.send(`<script>alert('비밀번호가 변경되었습니다.'); location.href = 'http://localhost:9999//admin_userstatus'</script>`)
-        })
-    }
-    
-})
+
+app.use(function(req, res, next) {
+    res.status(404).send('Sorry cant find that!');
+});
+
+// -- listen
 app.listen(9999, ()=>{
     console.log('server start')
 })

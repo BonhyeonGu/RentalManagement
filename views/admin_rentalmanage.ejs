@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>신청관리</title>
+</head>
+<body>
+    <h1>신청 관리</h1>
+    <form action="/admin_rentalmanage_search" method="post">
+        사용자 ID:&nbsp;<input type="text" name="user_id">
+        <input type="submit" value="일부 검색">
+        <input type="reset" value="취소">
+    </form>
+    <button onclick="location.href='/admin_rentalmanage'">전체 검색</button>
+
+    <!--
+        🐇rental_user
+        uid int NOT NULL AUTO_INCREMENT,
+        user_id varchar(21),
+        user_school varchar(15),
+        user_num varchar(12),
+        user_name varchar(20),
+        user_status char(1),
+        user_auth char(1),
+
+        🐇rental_manage
+        uid(fk),
+        pid(fk),
+        ma_recept_date date,
+        ma_start_date datetime,
+        ma_using_period int,
+        ma_return_date datetime,
+        ma_qty int,
+
+        🐇assets
+        pid int(10) unsigned,
+        name
+    -->
+    <fieldset>
+        <legend>예약 목록</legend>
+        <% if (reserv_list.length != 0) { %>
+        <table border="1">
+            <tr>
+            <th>구분<th>아이디<th>계정상태<th>권한<th>학교<th>학번<th>이름<th>물품코드<th>물품명<th>접수일<th>시작일<th>사용기간(시간)<th>반납일<th>수량
+            <% for (let reserv of reserv_list) { %>
+                <tr>
+                <% for (let info of reserv) { %>
+                    <td><%= info %>
+                <% } %>
+                <td><form action='/admin_rentalmanage_resrv_recept' method="post">
+                        <input type="hidden" name="resrv_recept_ma_id" value="<%= info.ma_id %>">
+                        <input type="submit" value='수락'>
+                    </form>
+                <td><form action='/admin_rentalmanage_resrv_reject' method="post">
+                    <input type="hidden" name="resrv_reject_ma_id" value="<%= info.ma_id %>">
+                        <input type="submit" value='거절'>
+                    </form>
+            <% } %>
+        </table>
+        <% } else { %>
+            Oh! There's nothing here🤔
+        <% } %>
+    </fieldset>
+
+    <fieldset>
+        <legend>사용중 목록</legend>
+        <% if (using_list.length != 0) { %>
+        <table border="1">
+            <tr>
+            <th>구분<th>아이디<th>계정상태<th>권한<th>학교<th>학번<th>이름<th>물품코드<th>물품명<th>접수일<th>시작일<th>사용기간(시간)<th>반납일<th>수량
+            <% for (let using of using_list) { %>
+                <tr>
+                <% for (let info of using) { %>
+                    <td><%= info %>
+                <% } %>
+                <td><form action='/admin_rentalmanage_return' method="post">
+                        <input type="hidden" name="return_ma_id" value="<%= info.ma_id %>">
+                        <input type="submit" value='반납'>
+                    </form>
+            <% } %>
+        </table>
+        <% } else { %>
+            Oh! There's nothing here🤔
+        <% } %>
+    </fieldset>
+
+    <fieldset>
+        <legend>반납 목록</legend>
+        <% if (using_list.length != 0) { %>
+        <table border="1">
+            <tr>
+            <th>구분<th>아이디<th>계정상태<th>권한<th>학교<th>학번<th>이름<th>물품코드<th>물품명<th>접수일<th>시작일<th>사용기간(시간)<th>반납일<th>수량
+            <% for (let ret of return_list) { %>
+                <tr>
+                <% for (let info of ret) { %>
+                    <td><%= info %>
+                <% } %>
+                <td><form action='/admin_rentalmanage_return_cancel' method="post">
+                        <input type="hidden" name="return_cancel_ma_id" value="<%= info.ma_id %>">
+                        <input type="submit" value='반납 취소'>
+                    </form>
+            <% } %>
+        </table>
+        <% } else { %>
+            Oh! There's nothing here🤔
+        <% } %>
+    </fieldset>
+</body>
+</html>
