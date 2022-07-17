@@ -7,8 +7,9 @@ app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
 const db=require("C:/Users/18284/Desktop/Snipe_IT_Rental/js/database.js")
 const conn=db.init()
+app.set('view engine','ejs')
 db.connect(conn)
-
+app.set('views',__dirname+'/views')
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true}));
 
@@ -60,7 +61,8 @@ app.post("/login",(request,response)=>{
                 if(rows[0]['user_status']<5){
                     conn.query(`update rental_user set user_status=0, user_login_date=now() where user_id="${request.body.user_id}"`, function(err){
                         if(err) throw err;
-                        response.send(`<script> location.href = 'http://localhost:9999'</script>`)
+                        if(rows[0]['user_auth']==2||rows[0]['user_auth']==1) response.send(`<script> location.href = 'http://localhost:9999/admin_main'</script>`)
+                        else response.send(`<script> location.href = 'http://localhost:9999/'</script>`)
                     })
                 }
                 else response.send(`<script>alert('${rows[0]['user_name']}님 PW가 횟수초과로 로그인 불가능합니다'); location.href = 'http://localhost:9999/login'</script>`)
