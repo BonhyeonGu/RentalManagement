@@ -151,10 +151,19 @@ app.get("/admin_manage", (request, response)=>{
 })
 
 app.get("/admin_userstatus", (request, response)=>{
-    fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/admin_main.html", (error,data)=>{
-        response.writeHead(200,{'Content-Type' : "text/html"})
-        response.write(data)
-        response.end()
+    conn.query(`select * from enrol where enrol_flag=1`, function(err, rows, fields){
+        if (err) throw err;
+        let tmp='<h1>유저 현황</h1>'
+        tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>이름</th><th>ID</th><th>PW</th><th>재학여부</th><th>권한등급</th><th>비밀번호 틀린 횟수</th></tr>'
+        for(let a of rows){
+            tmp+=`<tr><td>${a.uid}</td><td>${a.user_school}</td><td>${a.user_num}</td><td>${a.user_name}</td><td>${a.user_auth}</td><td>${a.user_status}</td></tr>`
+        }
+        tmp+='</table>'
+        fs.readFile("C:/Users/18284/Desktop/jscript/js/admin_userstatus.html", (error,data)=>{
+            response.writeHead(200,{'Content-Type' : "text/html"})
+            response.write(data+tmp)
+            response.end()
+        })
     })
 })
 
