@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>신청관리</title>
+</head>
+<body>
+    <h1>신청 관리</h1>
+    <form action="/" method="post">
+        사용자 ID:&nbsp;<input type="text" name="user_id">
+        <input type="submit" value="검색">
+        <input type="reset" value="취소">
+    </form>
+    
+    <fieldset> 
+        <!--
+            🐇rental_user
+            uid int NOT NULL AUTO_INCREMENT,
+            user_school varchar(15), 
+            user_num varchar(12),
+            user_name varchar(20),
+            user_department varchar(15),
+            user_grade char(1),  
+            user_id varchar(21),
+            user_attend_status char(1),
+        -->
+        <legend>사용자 정보</legend>
+        구&nbsp;분&nbsp;코&nbsp;드:&nbsp;<%= user_info[0] %><br>
+        학&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;교:&nbsp;<%= user_info[1] %><br>
+        학&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;번:&nbsp;<%= user_info[2] %><br>
+        이&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;름:&nbsp;<%= user_info[3] %><br>
+        학&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;과:&nbsp;<%= user_info[4] %><br>
+        학&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;년:&nbsp;<%= user_info[5] %><br>
+        아&nbsp;&nbsp;이&nbsp;&nbsp;&nbsp;디:&nbsp;<%= user_info[6] %><br>
+        재&nbsp;학&nbsp;여&nbsp;부:&nbsp;<%= user_info[7] %><br>
+    </fieldset>
+
+    <fieldset>
+        <!--
+            🐇rental_user
+            user_id varchar(21),
+            user_school varchar(15),
+            user_num varchar(12),
+            user_name varchar(20),
+
+            🐇rental_manage
+            pid int(10) unsigned,
+            ma_recept_date date,
+            ma_start_date datetime,
+            ma_using_period int,
+            ma_return_date datetime,
+            ma_qty int,
+
+            🐇assets
+            
+        -->
+        <legend>예약 목록</legend>
+    </fieldset>
+
+    <fieldset>
+        <legend>사용중 목록</legend>
+    </fieldset>
+
+    <fieldset>
+        <legend>반납 목록</legend>
+    </fieldset>
+</body>
+</html>
