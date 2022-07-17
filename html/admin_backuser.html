@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function actionA(){
+            document.f2.action="/admin_userstatus";
+            document.f2.submit();
+        }
+        function submit_chk(myForm){
+    
+        }
+    </script>
+</head>
+<body onload = "document.f2.user_name.focus();">
+    <form method="get" name = "f2">
+        <p>
+            <input type = "button" value = "모두보기" onclick="actionA()"/>
+        </p>
+    </form>
+    <form action ="/admin_changeauth" method="POST" name = "f1" onsubmit = "return submit_chk(this);">
+        <fieldset>
+            <legend>권한변경</legend>
+                <p>
+                    <label for ="user_change_auth">바꿀 권한 레벨</label>
+                    <input type="text" name = "user_change_auth" id = "user_change_auth"/>
+                </p>
+                <p>
+                    <input type = "submit" value = "확인"/>
+                </p>
+            </fieldset>
+        </form>
+        <form action ="/admin_changepw" method="POST" name = "f1" onsubmit = "return submit_chk(this);">
+            <fieldset>
+                <legend>비밀번호변경</legend>
+                    <p>
+                        <label for ="user_change_pw">바꿀 비밀번호</label>
+                        <input type="text" name = "user_change_pw" id = "user_change_pw"/>
+                    </p>
+                    <p>
+                        <label for ="user_change_repw">바꿀 비밀번호 재입력</label>
+                        <input type="text" name = "user_change_repw" id = "user_change_repw"/>
+                    </p>
+                    <p>
+                        <input type = "submit" value = "확인"/>
+                    </p>
+                </fieldset>
+        </form>  
+    </body>
+</body>
+</html>
