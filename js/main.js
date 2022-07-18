@@ -76,7 +76,7 @@ app.post("/login",(request,response)=>{
 
 // -- 메인 관련 라우터
 app.get("/admin_main", (request, response)=>{
-    fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/admin_main.html", (error,data)=>{
+    fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/admin/admin_main.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
         response.write(data)
         response.end()
@@ -85,7 +85,7 @@ app.get("/admin_main", (request, response)=>{
 
 // -- 회원가입 관련 라우터
 app.get("/admin_signup", (request, response)=>{
-    fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/admin_signup.html", (error,data)=>{
+    fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/admin/admin_signup.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
         response.write(data)
         response.end()
@@ -238,20 +238,52 @@ app.get("/admin_manage", (request, response)=>{
 
 // -- 유저 관리 관련 라우터
 app.get("/admin_userstatus", (request, response)=>{
-    conn.query(`select * from enrol where enrol_flag=1`, function(err, rows, fields){
+    conn.query(`select * from rental_user`, function(err, rows, fields){
         if (err) throw err;
         let tmp='<h1>유저 현황</h1>'
-        tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>이름</th><th>ID</th><th>PW</th><th>재학여부</th><th>권한등급</th><th>비밀번호 틀린 횟수</th></tr>'
+        tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>이름</th><th>ID</th><th>재학여부</th><th>비밀번호 틀린 횟수</th></tr>'
         for(let a of rows){
-            tmp+=`<tr><td>${a.uid}</td><td>${a.user_school}</td><td>${a.user_num}</td><td>${a.user_name}</td><td>${a.user_auth}</td><td>${a.user_status}</td></tr>`
+            tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
         }
         tmp+='</table>'
-        fs.readFile("C:/Users/18284/Desktop/jscript/js/admin_userstatus.html", (error,data)=>{
+        fs.readFile("C:/Users/18284/Desktop/jscript/js/admin/admin_userstatus.html", (error,data)=>{
             response.writeHead(200,{'Content-Type' : "text/html"})
             response.write(data+tmp)
             response.end()
         })
     })
+})
+
+app.post("/admin_userstatus", (request, response)=>{
+    conn.query(`select * from rental_user where user_school="${request.body.user_school}" and user_num="${request.body.user_school}" and user_name="${request.body.user_name}"`, function(err, rows, fields){
+        if (err) throw err;
+        user_uid=request.body.uid;
+        let tmp='<h1>유저 현황</h1>'
+        tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>이름</th><th>ID</th><th>재학여부</th><th>비밀번호 틀린 횟수</th></tr>'
+        for(let a of rows){
+            tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
+        }
+        tmp+='</table>'
+        fs.readFile("C:/Users/18284/Desktop/jscript/js/admin/admin_backuser.html", (error,data)=>{
+            response.writeHead(200,{'Content-Type': 'text/html'})
+            response.write(data+tmp)
+            response.end()
+        })
+    })
+})
+app.post("/admin_changeauth", (request, response)=>{
+    conn.query(`update rental_user set user_auth="${request.body.user_change_auth}" where uid="${user_uid}"`, function(err){
+        if(err) throw err;
+        response.send(`<script>alert('권한이 변경되었습니다.'); location.href = 'http://localhost:9999//admin_userstatus'</script>`)
+    })
+})
+app.post("/admin_changepw", (request, response)=>{
+    if(request.body.user_change_pw==request.body.user_change_repw){
+        conn.query(`update rental_user set user_pw="${request.body.user_change_pw}" where uid="${user_uid}}"`, function(err){
+            if(err) throw err;
+            response.send(`<script>alert('비밀번호가 변경되었습니다.'); location.href = 'http://localhost:9999//admin_userstatus'</script>`)
+        })
+    }
 })
 
 // -- 오류 관련 라우터
