@@ -5,34 +5,20 @@ const bodyParser=require('body-parser')
 const { render } = require('express/lib/response')
 
 app.set('view engine', 'ejs')
-<<<<<<< HEAD
-app.set('views', '/views')
-=======
-app.set('views', __dirname + '/views')
->>>>>>> 2e2d96b105e5a2fe0eb27e5537f78f0d930ca340
+app.set('views', __dirname+'/../views')
 
 const db=require(__dirname+"/database.js")
 const conn=db.init()
-<<<<<<< HEAD
-db.connect(conn);
-
-app.use(express.static('/public'));
-=======
 db.connect(conn)
 let user_uid;
 app.use(express.static('public'));
->>>>>>> 2e2d96b105e5a2fe0eb27e5537f78f0d930ca340
 app.use(bodyParser.urlencoded({ extended: true}));
 
 // -- 기본 라우터
 app.get("/", (request, response)=>{
-<<<<<<< HEAD
-    fs.readFile("public/main.html", (error,data)=>{
-=======
     console.log(__dirname)
     fs.readFile('public/main.html', (error,data)=>{
         console.log(__dirname)
->>>>>>> 2e2d96b105e5a2fe0eb27e5537f78f0d930ca340
         response.writeHead(200,{'Content-Type' : "text/html"})
         response.write(data)
         response.end()
@@ -166,7 +152,7 @@ app.get("/admin_rentalmanage", (request, response)=>{ // 전체 검색
             conn.query(qry3, function(err, ret, fields){
                 if (err) throw err;
 
-                response.render('views/admin_rentalmanage.ejs', {reserv_list : reserv, using_list : using, return_list : ret})
+                response.render('../views/admin_rentalmanage.ejs', {reserv_list : reserv, using_list : using, return_list : ret})
             })
         })
     })
@@ -174,29 +160,32 @@ app.get("/admin_rentalmanage", (request, response)=>{ // 전체 검색
 
 app.post("/admin_rentalmanage_search", (req, res)=>{ // 일부 검색
     let userID = req.body.user_id;
-    let qry1 = `SELECT m.ma_id, u.user_id, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
-        FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON m.pid = a.id \
-        WHERE m.ma_state = '1' AND u.user_id = ${userID}`
-
-    conn.query(qry1, function(err, reserv, fields){
-        if (err) throw err;
-        
-        let qry2 = `SELECT m.ma_id, u.user_id, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
-        FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON m.pid = a.id \
-        WHERE m.ma_state = '2' AND u.user_id = ${userID}`
-        conn.query(qry2, function(err, using, fields){
-            if (err) throw err;
-
-            let qry3 = `SELECT m.ma_id, u.user_id, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
+    if (userID == "") res.redirect('/admin_rentalmanage')
+    else {
+        let qry1 = `SELECT m.ma_id, u.user_id, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
             FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON m.pid = a.id \
-            WHERE m.ma_state = '3' AND u.user_id = ${userID}`
-            conn.query(qry3, function(err, ret, fields){
+            WHERE m.ma_state = '1' AND u.user_id = ${userID}`
+
+        conn.query(qry1, function(err, reserv, fields){
+            if (err) throw err;
+            
+            let qry2 = `SELECT m.ma_id, u.user_id, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
+            FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON m.pid = a.id \
+            WHERE m.ma_state = '2' AND u.user_id = ${userID}`
+            conn.query(qry2, function(err, using, fields){
                 if (err) throw err;
 
-                res.render('views/admin_rentalmanage.ejs', {reserv_list : reserv, using_list : using, return_list : ret})
+                let qry3 = `SELECT m.ma_id, u.user_id, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
+                FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON m.pid = a.id \
+                WHERE m.ma_state = '3' AND u.user_id = ${userID}`
+                conn.query(qry3, function(err, ret, fields){
+                    if (err) throw err;
+
+                    res.render('../views/admin_rentalmanage.ejs', {reserv_list : reserv, using_list : using, return_list : ret})
+                })
             })
         })
-    })
+    }
 })
 
 app.post("/admin_rentalmanage_resrv_recept", (req, res)=>{ // 예약 신청 수락
@@ -254,11 +243,7 @@ app.get("/admin_userstatus", (request, response)=>{
             tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_num}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
         }
         tmp+='</table>'
-<<<<<<< HEAD
         fs.readFile("public/admin/admin_userstatus.html", (error,data)=>{
-=======
-        fs.readFile("C:/Users/18284/Desktop/SnipteitRentalManagement/public/admin/admin_userstatus.html", (error,data)=>{
->>>>>>> 2e2d96b105e5a2fe0eb27e5537f78f0d930ca340
             response.writeHead(200,{'Content-Type' : "text/html"})
             response.write(data+tmp)
             response.end()
@@ -276,11 +261,7 @@ app.post("/admin_userstatus", (request, response)=>{
             tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_num}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
         }
         tmp+='</table>'
-<<<<<<< HEAD
         fs.readFile("public/admin/admin_backuser.html", (error,data)=>{
-=======
-        fs.readFile("C:/Users/18284/Desktop/SnipteitRentalManagement/public/admin/admin_backuser.html", (error,data)=>{
->>>>>>> 2e2d96b105e5a2fe0eb27e5537f78f0d930ca340
             response.writeHead(200,{'Content-Type': 'text/html'})
             response.write(data+tmp)
             response.end()
