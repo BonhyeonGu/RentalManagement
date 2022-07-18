@@ -3,19 +3,21 @@ const fs = require('fs')
 const bodyParser=require('body-parser')
 const { json } = require('express/lib/response')
 const app = express()
+
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
-const db=require("C:/Users/18284/Desktop/Snipe_IT_Rental/js/database.js")
-const conn=db.init()
 app.set('view engine','ejs')
+
+const db=require("./database.js")
+const conn=db.init()
 db.connect(conn)
-app.set('views',__dirname+'/views')
+
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true}));
 
 // -- 기본 라우터
 app.get("/", (request, response)=>{
-    fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/main.html", (error,data)=>{
+    fs.readFile("/main.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
         response.write(data)
         response.end()
@@ -24,7 +26,7 @@ app.get("/", (request, response)=>{
 
 // -- 로그인 관련 라우터
 app.get("/login", (request, response)=>{
-    fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/login.html", (error,data)=>{
+    fs.readFile("/login.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
         response.write(data)
         response.end()
@@ -45,15 +47,15 @@ app.post("/login",(request,response)=>{
 	    	}
         }
         if(flag==0){
-            response.send(`<script>alert('ID가 없습니다'); location.href = 'http://localhost:9999/login'</script>`)
+            response.send(`<script>alert('ID가 없습니다'); location.href = '/login'</script>`)
         }
         else if(flag==1){
             conn.query(`update rental_user set user_status=user_status+1 where user_id="${request.body.user_id}"`, function(err){
                 if(err) throw err;
                 conn.query(`select * from rental_user where user_id="${request.body.user_id}"`, function(err, rows, fields){
                     if (err) throw err;
-                    if(rows[0]['user_status']<5) response.send(`<script>alert('${rows[0]['user_name']}님 PW가 ${rows[0]['user_status']}회 틀렷습니다'); location.href = 'http://localhost:9999/login'</script>`)
-                    else response.send(`<script>alert('${rows[0]['user_name']}님 PW가 횟수초과로 로그인 불가능합니다'); location.href = 'http://localhost:9999/login'</script>`)
+                    if(rows[0]['user_status']<5) response.send(`<script>alert('${rows[0]['user_name']}님 PW가 ${rows[0]['user_status']}회 틀렷습니다'); location.href = '/login'</script>`)
+                    else response.send(`<script>alert('${rows[0]['user_name']}님 PW가 횟수초과로 로그인 불가능합니다'); location.href = '/login'</script>`)
                 })
             })
         }
@@ -63,11 +65,11 @@ app.post("/login",(request,response)=>{
                 if(rows[0]['user_status']<5){
                     conn.query(`update rental_user set user_status=0, user_login_date=now() where user_id="${request.body.user_id}"`, function(err){
                         if(err) throw err;
-                        if(rows[0]['user_auth']==2||rows[0]['user_auth']==1) response.send(`<script> location.href = 'http://localhost:9999/admin_main'</script>`)
-                        else response.send(`<script> location.href = 'http://localhost:9999/'</script>`)
+                        if(rows[0]['user_auth']==2||rows[0]['user_auth']==1) response.send(`<script> location.href = '/admin_main'</script>`)
+                        else response.send(`<script> location.href = '/'</script>`)
                     })
                 }
-                else response.send(`<script>alert('${rows[0]['user_name']}님 PW가 횟수초과로 로그인 불가능합니다'); location.href = 'http://localhost:9999/login'</script>`)
+                else response.send(`<script>alert('${rows[0]['user_name']}님 PW가 횟수초과로 로그인 불가능합니다'); location.href = '/login'</script>`)
             })
         }
 
@@ -76,7 +78,7 @@ app.post("/login",(request,response)=>{
 
 // -- 메인 관련 라우터
 app.get("/admin_main", (request, response)=>{
-    fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/admin/admin_main.html", (error,data)=>{
+    fs.readFile("/admin/admin_main.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
         response.write(data)
         response.end()
@@ -85,7 +87,7 @@ app.get("/admin_main", (request, response)=>{
 
 // -- 회원가입 관련 라우터
 app.get("/admin_signup", (request, response)=>{
-    fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/admin/admin_signup.html", (error,data)=>{
+    fs.readFile("/admin/admin_signup.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
         response.write(data)
         response.end()
@@ -102,18 +104,18 @@ app.post("/admin_signup", (request, response)=>{
         if(tmp1.test(request.body.user_id)==true){
             if(tmp2.test(request.body.user_pw)==true){login_flag=1}
             else{
-                response.send(`<script>alert('비밀번호는 8~16자로 입력해주세요. * 한글 입력 금지, 특수문자 및 영문자 1회 이상 입력 *'); location.href = 'http://localhost:9999/admin_signup'</script>`)
+                response.send(`<script>alert('비밀번호는 8~16자로 입력해주세요. * 한글 입력 금지, 특수문자 및 영문자 1회 이상 입력 *'); location.href = '/admin_signup'</script>`)
                 login_flag=0
             }
         }
         else {
-            response.send(`<script>alert('ID는 5~20자로 입력해주세요. * 한글 입력금지, 영문자 1개 이상 입력, 특수문자 '-', '_' 가능'); location.href = 'http://localhost:9999/admin_signup'</script>`)
+            response.send(`<script>alert('ID는 5~20자로 입력해주세요. * 한글 입력금지, 영문자 1개 이상 입력, 특수문자 '-', '_' 가능'); location.href = '/admin_signup'</script>`)
             login_flag=0
         }
         for(let a of rows){
             if(a.user_id==request.body.user_id){
                 flag=1
-                response.send(`<script>alert('ID가 존재합니다'); location.href = 'http://localhost:9999/admin_signup'</script>`)
+                response.send(`<script>alert('ID가 존재합니다'); location.href = '/admin_signup'</script>`)
                 break;
             }
         }
@@ -237,7 +239,7 @@ app.get("/admin_userstatus", (request, response)=>{
             tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
         }
         tmp+='</table>'
-        fs.readFile("C:/Users/18284/Desktop/jscript/js/admin/admin_userstatus.html", (error,data)=>{
+        fs.readFile("/admin/admin_userstatus.html", (error,data)=>{
             response.writeHead(200,{'Content-Type' : "text/html"})
             response.write(data+tmp)
             response.end()
@@ -255,7 +257,7 @@ app.post("/admin_userstatus", (request, response)=>{
             tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
         }
         tmp+='</table>'
-        fs.readFile("C:/Users/18284/Desktop/jscript/js/admin/admin_backuser.html", (error,data)=>{
+        fs.readFile("/admin/admin_backuser.html", (error,data)=>{
             response.writeHead(200,{'Content-Type': 'text/html'})
             response.write(data+tmp)
             response.end()
@@ -265,14 +267,14 @@ app.post("/admin_userstatus", (request, response)=>{
 app.post("/admin_changeauth", (request, response)=>{
     conn.query(`update rental_user set user_auth="${request.body.user_change_auth}" where uid="${user_uid}"`, function(err){
         if(err) throw err;
-        response.send(`<script>alert('권한이 변경되었습니다.'); location.href = 'http://localhost:9999//admin_userstatus'</script>`)
+        response.send(`<script>alert('권한이 변경되었습니다.'); location.href = '/admin_userstatus'</script>`)
     })
 })
 app.post("/admin_changepw", (request, response)=>{
     if(request.body.user_change_pw==request.body.user_change_repw){
         conn.query(`update rental_user set user_pw="${request.body.user_change_pw}" where uid="${user_uid}}"`, function(err){
             if(err) throw err;
-            response.send(`<script>alert('비밀번호가 변경되었습니다.'); location.href = 'http://localhost:9999//admin_userstatus'</script>`)
+            response.send(`<script>alert('비밀번호가 변경되었습니다.'); location.href = '/admin_userstatus'</script>`)
         })
     }
 })
