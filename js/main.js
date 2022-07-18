@@ -6,19 +6,18 @@ const app = express()
 
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
-app.set('view engine','ejs')
 
 const db=require("./database.js")
 const conn=db.init()
 db.connect(conn)
-
+let user_uid;
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true}));
 
 // -- 기본 라우터
 app.get("/", (request, response)=>{
     console.log(__dirname)
-    fs.readFile("public/main.html", (error,data)=>{
+    fs.readFile('public/main.html', (error,data)=>{
         console.log(__dirname)
         response.writeHead(200,{'Content-Type' : "text/html"})
         response.write(data)
@@ -236,12 +235,12 @@ app.get("/admin_userstatus", (request, response)=>{
     conn.query(`select * from rental_user`, function(err, rows, fields){
         if (err) throw err;
         let tmp='<h1>유저 현황</h1>'
-        tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>이름</th><th>ID</th><th>재학여부</th><th>비밀번호 틀린 횟수</th></tr>'
+        tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>학번</th><th>이름</th><th>ID</th><th>재학여부</th><th>비밀번호 틀린 횟수</th></tr>'
         for(let a of rows){
-            tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
+            tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_num}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
         }
         tmp+='</table>'
-        fs.readFile("/admin/admin_userstatus.html", (error,data)=>{
+        fs.readFile("C:/Users/18284/Desktop/SnipteitRentalManagement/public/admin/admin_userstatus.html", (error,data)=>{
             response.writeHead(200,{'Content-Type' : "text/html"})
             response.write(data+tmp)
             response.end()
@@ -250,16 +249,16 @@ app.get("/admin_userstatus", (request, response)=>{
 })
 
 app.post("/admin_userstatus", (request, response)=>{
-    conn.query(`select * from rental_user where user_school="${request.body.user_school}" and user_num="${request.body.user_school}" and user_name="${request.body.user_name}"`, function(err, rows, fields){
+    conn.query(`select * from rental_user where user_school="${request.body.user_school}" and user_num="${request.body.user_num}" and user_name="${request.body.user_name}"`, function(err, rows, fields){
         if (err) throw err;
-        user_uid=request.body.uid;
+        user_uid=rows[0]['uid'];
         let tmp='<h1>유저 현황</h1>'
-        tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>이름</th><th>ID</th><th>재학여부</th><th>비밀번호 틀린 횟수</th></tr>'
+        tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>학번</th><th>이름</th><th>ID</th><th>재학여부</th><th>비밀번호 틀린 횟수</th></tr>'
         for(let a of rows){
-            tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
+            tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_num}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
         }
         tmp+='</table>'
-        fs.readFile("/admin/admin_backuser.html", (error,data)=>{
+        fs.readFile("C:/Users/18284/Desktop/SnipteitRentalManagement/public/admin/admin_backuser.html", (error,data)=>{
             response.writeHead(200,{'Content-Type': 'text/html'})
             response.write(data+tmp)
             response.end()
@@ -269,12 +268,13 @@ app.post("/admin_userstatus", (request, response)=>{
 app.post("/admin_changeauth", (request, response)=>{
     conn.query(`update rental_user set user_auth="${request.body.user_change_auth}" where uid="${user_uid}"`, function(err){
         if(err) throw err;
+        console.log(user_uid)
         response.send(`<script>alert('권한이 변경되었습니다.'); location.href = '/admin_userstatus'</script>`)
     })
 })
 app.post("/admin_changepw", (request, response)=>{
     if(request.body.user_change_pw==request.body.user_change_repw){
-        conn.query(`update rental_user set user_pw="${request.body.user_change_pw}" where uid="${user_uid}}"`, function(err){
+        conn.query(`update rental_user set user_pw="${request.body.user_change_pw}" where uid="${user_uid}"`, function(err){
             if(err) throw err;
             response.send(`<script>alert('비밀번호가 변경되었습니다.'); location.href = '/admin_userstatus'</script>`)
         })
