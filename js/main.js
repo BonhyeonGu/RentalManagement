@@ -5,7 +5,7 @@ const { json } = require('express/lib/response')
 const app = express()
 
 app.set('view engine', 'ejs')
-app.set('views', __dirname + '/views')
+app.set('views', __dirname + '/../views')
 
 const db=require("./database.js")
 const conn=db.init()
@@ -134,20 +134,20 @@ app.post("/admin_signup", (request, response)=>{
 // -- 신청 관리 관련 라우터
 app.get("/admin_rentalmanage", (request, response)=>{ // 전체 검색
     let qry1 = "SELECT m.ma_id, u.uid, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
-        FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON u.pid = a.pid \
+        FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON m.pid = a.id \
         WHERE m.ma_state = '1'"
 
     conn.query(qry1, function(err, reserv, fields){
         if (err) throw err;
         
         let qry2 = "SELECT m.ma_id, u.uid, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
-        FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON u.pid = a.pid \
+        FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON m.pid = a.id \
         WHERE m.ma_state = '2'"
         conn.query(qry2, function(err, using, fields){
             if (err) throw err;
 
             let qry3 = "SELECT m.ma_id, u.uid, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
-            FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON u.pid = a.pid \
+            FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON m.pid = a.id \
             WHERE m.ma_state = '3'"
             conn.query(qry3, function(err, ret, fields){
                 if (err) throw err;
