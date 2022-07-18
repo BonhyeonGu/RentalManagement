@@ -17,7 +17,9 @@ app.use(bodyParser.urlencoded({ extended: true}));
 
 // -- 기본 라우터
 app.get("/", (request, response)=>{
-    fs.readFile("/main.html", (error,data)=>{
+    console.log(__dirname)
+    fs.readFile("public/main.html", (error,data)=>{
+        console.log(__dirname)
         response.writeHead(200,{'Content-Type' : "text/html"})
         response.write(data)
         response.end()
@@ -26,7 +28,7 @@ app.get("/", (request, response)=>{
 
 // -- 로그인 관련 라우터
 app.get("/login", (request, response)=>{
-    fs.readFile("/login.html", (error,data)=>{
+    fs.readFile("public/login.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
         response.write(data)
         response.end()
@@ -78,7 +80,7 @@ app.post("/login",(request,response)=>{
 
 // -- 메인 관련 라우터
 app.get("/admin_main", (request, response)=>{
-    fs.readFile("/admin/admin_main.html", (error,data)=>{
+    fs.readFile("public/admin/admin_main.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
         response.write(data)
         response.end()
@@ -87,7 +89,7 @@ app.get("/admin_main", (request, response)=>{
 
 // -- 회원가입 관련 라우터
 app.get("/admin_signup", (request, response)=>{
-    fs.readFile("/admin/admin_signup.html", (error,data)=>{
+    fs.readFile("public/admin/admin_signup.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
         response.write(data)
         response.end()
@@ -287,7 +289,7 @@ app.use(function (err, req, res, next) {
 
 app.use(function(req, res, next) {
     res.status(404).send('Sorry cant find that!');
-});
+})
 
 // -- listen
 app.listen(9999, ()=>{
