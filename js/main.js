@@ -227,15 +227,6 @@ app.post("/admin_rentalmanage_return_cancel", (req, res)=>{ // 비품 반납 취
     })
 })
 
-// -- 관리자 main 관련 라우터
-app.get("/admin_manage", (request, response)=>{
-    fs.readFile("C:/Users/18284/Desktop/Snipe_IT_Rental/html/admin_main.html", (error,data)=>{
-        response.writeHead(200,{'Content-Type' : "text/html"})
-        response.write(data)
-        response.end()
-    })
-})
-
 // -- 유저 관리 관련 라우터
 app.get("/admin_userstatus", (request, response)=>{
     conn.query(`select * from enrol where enrol_flag=1`, function(err, rows, fields){
