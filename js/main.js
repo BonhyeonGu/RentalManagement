@@ -329,10 +329,16 @@ app.post("/admin_changeauth", (request, response)=>{
 })
 app.post("/admin_changepw", (request, response)=>{
     if(request.body.user_change_pw==request.body.user_change_repw){
-        conn.query(`update rental_user set user_pw="${request.body.user_change_pw}" where uid="${user_uid}"`, function(err){
-            if(err) throw err;
-            response.send(`<script>alert('비밀번호가 변경되었습니다.'); location.href = '/admin_userstatus'</script>`)
-        })
+        let tmp1 = /^(?=.*[a-zA-Z])[a-zA-Z\d-_]{5,20}/g
+        let tmp2 = /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z\d~!@#$%^&*]{8,16}$/g
+        if(tmp1.test(request.body.user_id)==true){
+            if(tmp2.test(request.body.user_pw)==true){
+                conn.query(`update rental_user set user_pw="${request.body.user_change_pw}" where uid="${user_uid}"`, function(err){
+                    if(err) throw err;
+                    response.send(`<script>alert('비밀번호가 변경되었습니다.'); location.href = '/admin_userstatus'</script>`)
+                })
+            }
+        }
     }
 })
 
