@@ -16,12 +16,23 @@ app.use(bodyParser.urlencoded({ extended: true}));
 
 // -- 기본 라우터
 app.get("/", (request, response)=>{
-    console.log(__dirname)
-    fs.readFile('public/main.html', (error,data)=>{
-        console.log(__dirname)
-        response.writeHead(200,{'Content-Type' : "text/html"})
-        response.write(data)
-        response.end()
+    conn.query("select * from assets", function(err, rows, fields){
+        if (err) throw err;
+        let tmp='<h1>물품 현황</h1>'
+        //tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>학번</th><th>이름</th><th>ID</th><th>재학여부</th><th>비밀번호 틀린 횟수</th></tr>'
+        for(let a of rows){
+            conn.query(`select * from assets_qty where ${a.id}=qid`, function(err, rows2, fields){
+            //tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_num}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
+            })
+        }
+        tmp+='</table>'
+        
+        fs.readFile('public/main.html', (error,data)=>{
+            response.writeHead(200,{'Content-Type' : "text/html"})
+            response.write(data+tmp)
+            response.end()
+        })
+        
     })
 })
 
