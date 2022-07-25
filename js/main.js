@@ -1,11 +1,11 @@
 const express = require('express')
 const app = express()
 const fs = require('fs')
-const session = require("express-session");
+const expressSession = require("express-session");
 const bodyParser=require('body-parser')
 const { render } = require('express/lib/response');
 const res = require('express/lib/response');
-
+const cookieParser= require('cookie-parser');
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/../views')
 
@@ -33,7 +33,7 @@ let user_uid;
 // -- 기본 라우터
 app.get("/", (request, response)=>{
     console.log(__dirname)
-    if (req.session.user_id == 'admin') {
+    if (request.session.user_id == 'admin') {
         fs.readFile('public/admin_main.html', (error,data)=>{
             console.log(__dirname)
             response.writeHead(200,{'Content-Type' : "text/html"})
@@ -41,17 +41,17 @@ app.get("/", (request, response)=>{
             response.end()
         })    
     }
-    else if (req.session.user_id) {
-        res.render('main.ejs', {login_user_id : req.session.user_id});
+    else if (request.session.user_id) {
+        res.render('../views/main.ejs', {login_user_id : request.session.user_id});
     }
     else {
-        res.render('main.ejs', {login_user_id : ''})
+        res.render('../views/main.ejs', {login_user_id : ''})
     }
 })
 
 // -- 로그인 관련 라우터
 app.get("/login", (request, response)=>{
-    if (req.session.user_id) {
+    if (request.session.user_id) {
         response.status(404.1).send('잘못된 접근입니다😥<script><button onclick="location.href=`/`">메인으로 돌아가기</button></script>');
     }
     else {
