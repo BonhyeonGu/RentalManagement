@@ -5,7 +5,7 @@ const expressSession = require("express-session");
 const bodyParser=require('body-parser')
 const { render } = require('express/lib/response');
 const res = require('express/lib/response');
-const cookieParser= require('cookie-parser');
+const FileStore=require('session-file-store')(expressSession);
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/../views')
 
@@ -13,7 +13,6 @@ const db=require(__dirname+"/database.js")
 const conn=db.init()
 db.connect(conn)
 
-app.use(cookieParser());
 app.use(expressSession({
     httpOnly: true, // 자바스크립트로 쿠키 조회 t/f
     secure: true, // https 환경에서만 session 정보를 주고 받기 t/f
@@ -32,8 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true}));
 let user_uid;
 // -- 기본 라우터
 app.get("/", (request, response)=>{
-    console.log(__dirname)
-    if (request.session.user_id == 'admin') {
+    if (request.session.user_auth == 1 ||request.session.user_auth == 2 ) {
         fs.readFile('public/admin_main.html', (error,data)=>{
             console.log(__dirname)
             response.writeHead(200,{'Content-Type' : "text/html"})
@@ -41,7 +39,7 @@ app.get("/", (request, response)=>{
             response.end()
         })    
     }
-    else if (request.session.user_id) {
+    else if (request.session.user_auth==0) {
         res.render('../views/main.ejs', {login_user_id : request.session.user_id});
     }
     else {
@@ -51,7 +49,7 @@ app.get("/", (request, response)=>{
 
 // -- 로그인 관련 라우터
 app.get("/login", (request, response)=>{
-    if (request.session.user_id) {
+    if (request.session.user_auth) {
         response.status(404.1).send('잘못된 접근입니다😥<script><button onclick="location.href=`/`">메인으로 돌아가기</button></script>');
     }
     else {
@@ -95,8 +93,18 @@ app.post("/login",(request,response)=>{
                 if(rows[0]['user_status']<5){
                     conn.query(`update rental_user set user_status=0, user_login_date=now() where user_id="${request.body.user_id}"`, function(err){
                         if(err) throw err;
-                        if(rows[0]['user_auth']==2||rows[0]['user_auth']==1) response.send(`<script> location.href = '/admin_main'</script>`)
-                        else response.send(`<script> location.href = '/'</script>`)
+                        if(rows[0]['user_auth']==2||rows[0]['user_auth']==1){
+                            request.session.user_auth=rows[0]['user_auth']
+                            request.session.save(function(){
+                                response.send(`<script> location.href = '/admin_main'</script>`)
+                            })
+                        } 
+                        else if(rows[0]['user_auth']==0){
+                            request.session.user_auth=rows[0]['user_auth']
+                            request.session.save(function(){
+                                response.send(`<script> location.href = '/'</script>`)
+                            })
+                        }
                     })
                 }
                 else response.send(`<script>alert('${rows[0]['user_name']}님 PW가 횟수초과로 로그인 불가능합니다'); location.href = '/login'</script>`)
@@ -108,7 +116,7 @@ app.post("/login",(request,response)=>{
 
 // -- 메인 관련 라우터
 app.get("/admin_main", (request, response)=>{
-    if (request.session.user_id == 'admin') {
+    if (request.session.user_auth == 1||request.session.user_auth==2) {
         fs.readFile("public/admin/admin_main.html", (error,data)=>{
             response.writeHead(200,{'Content-Type' : "text/html"})
             response.write(data)
@@ -171,7 +179,7 @@ app.post("/signup", (request, response)=>{
 // -- 회원가입(관리자측) 관련 라우터
 app.get("/admin_signup", (request, response)=>{
     if (request.session.user_id=='admin') {
-        // 오빠가 나를 안고 자고있똬 ㅎㅎ
+        
     }
     else response.status(404.1).send('잘못된 접근입니다😥<script><button onclick="location.href=`/`">메인으로 돌아가기</button></script>');
 })

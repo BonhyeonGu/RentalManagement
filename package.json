@@ -5,6 +5,7 @@
     "ejs": "^3.1.8",
     "express": "^4.18.1",
     "express-session": "^1.17.3",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "session-file-store": "^1.5.0"
   }
 }
