@@ -183,10 +183,44 @@ app.post("/signup", (request, response)=>{
 // -- 회원가입(관리자측) 관련 라우터
 app.get("/admin_signup", (request, response)=>{
     if (request.session.user_auth==2) {
-        
+        conn.query(`select * from rental_user where user_auth=4`, function(err, rows, fields){
+            response.render('../views/admin_signup.ejs', {rows_list : rows})
+        })
     }
     else response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
 })
+app.post("/admin_signup_search", (req, res)=>{ // 일부 검색
+    let userID = req.body.user_id;
+    if (userID == "") res.redirect('/admin_signup')
+    else{
+        conn.query(`select * from rental_user where user_auth=4 and user_id = "${userID}"`, function(err, rows, fields){
+            response.render('../views/admin_signup.ejs', {rows_list : rows})
+        })
+    }
+})
+
+app.post("/admin_signup_recept", (req, res)=>{ // 회원가입 신청 수락
+    conn.query(`update rental_user set user_auth=1 and user_join date= now() where uid=${req.body.signup_user_id}`, function(err, rows, fields){
+        if (err) throw err;
+        res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+        res.write(`<script>alert("${req.body.signup_user_id} : 회원가입 신청을 수락했습니다.")</script>`)
+        res.end('<script></script>')
+    })
+})
+
+app.post("/admin_rentalmanage_resrv_reject", (req, res)=>{ // 회원가입 신청 거절
+    conn.query(`delete from rental_user where uid=${req.body.signup_user_id}`, function(err, rows, fields){
+        if (err) throw err;
+        res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+        res.write(`<script>alert("${req.body.signup_user_id} : 회원가입 신청을 거절했습니다.")</script>`)
+        res.end('<script></script>')
+    })
+})
+
+
+
+
+
 
 // -- 신청 관리 관련 라우터
 app.get("/admin_rentalmanage", (request, response)=>{ // 전체 검색
