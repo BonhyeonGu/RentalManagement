@@ -8,21 +8,20 @@ const res = require('express/lib/response');
 const FileStore=require('session-file-store')(expressSession);
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/../views')
-
 const db=require(__dirname+"/database.js")
 const conn=db.init()
 db.connect(conn)
 
 app.use(expressSession({
-    httpOnly: true, // 자바스크립트로 쿠키 조회 t/f
-    secure: true, // https 환경에서만 session 정보를 주고 받기 t/f
+    //httpOnly: true, // 자바스크립트로 쿠키 조회 t/f
+    //secure: true, // https 환경에서만 session 정보를 주고 받기 t/f
     secret: "W#@598c&r*952#3988W", // 쿠기 임의 변조 방지. 이 값을 토대로 세션 암호화
     resave: false, // 세션에 변경 사항이 없을 시 항상 저장 t/f
     saveUninitialized: true, // 세션이 최초 만들어지고 수정이 안된다면, 저장되기 전에 uninitialized 상태로 미리 만들어서 저장 t/f
-    cookie: { // 세션 ID 쿠키 객체를 설정
-        httpOnly: true,
-        secure: true
-    }
+    // cookie: { // 세션 ID 쿠키 객체를 설정
+    //     httpOnly: true,
+    //     secure: true
+    // }
 }));
 
 app.use(express.static('public'));
@@ -32,7 +31,7 @@ let user_uid;
 // -- 기본 라우터
 app.get("/", (request, response)=>{
     if (request.session.user_auth == 1 ||request.session.user_auth == 2 ) {
-        fs.readFile('public/admin_main.html', (error,data)=>{
+        fs.readFile('public/admin/admin_main.html', (error,data)=>{
             console.log(__dirname)
             response.writeHead(200,{'Content-Type' : "text/html"})
             response.write(data)
@@ -40,17 +39,17 @@ app.get("/", (request, response)=>{
         })    
     }
     else if (request.session.user_auth==0) {
-        res.render('../views/main.ejs', {login_user_id : request.session.user_id});
+        response.render('../views/main.ejs', {login_user_id : request.session.user_id});
     }
-    else {
-        res.render('../views/main.ejs', {login_user_id : ''})
+    else{
+        response.render('../views/main.ejs', {login_user_id : ""})
     }
 })
 
 // -- 로그인 관련 라우터
 app.get("/login", (request, response)=>{
-    if (request.session.user_auth) {
-        response.status(404.1).send('잘못된 접근입니다😥<script><button onclick="location.href=`/`">메인으로 돌아가기</button></script>');
+    if (request.session.user_id) {
+        response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
     }
     else {
         fs.readFile("public/login.html", (error,data)=>{
@@ -94,12 +93,16 @@ app.post("/login",(request,response)=>{
                     conn.query(`update rental_user set user_status=0, user_login_date=now() where user_id="${request.body.user_id}"`, function(err){
                         if(err) throw err;
                         if(rows[0]['user_auth']==2||rows[0]['user_auth']==1){
+                            request.session.user_id=rows[0]['user_id']
                             request.session.user_auth=rows[0]['user_auth']
+                            console.log(request.session)
                             request.session.save(function(){
-                                response.send(`<script> location.href = '/admin_main'</script>`)
+                                // response.send(`<script> location.href = '/admin_main'</script>`)
+                                response.redirect('/admin_main')
                             })
                         } 
                         else if(rows[0]['user_auth']==0){
+                            request.session.user_id=rows[0]['user_id']
                             request.session.user_auth=rows[0]['user_auth']
                             request.session.save(function(){
                                 response.send(`<script> location.href = '/'</script>`)
@@ -116,6 +119,7 @@ app.post("/login",(request,response)=>{
 
 // -- 메인 관련 라우터
 app.get("/admin_main", (request, response)=>{
+    console.log(request.session)
     if (request.session.user_auth == 1||request.session.user_auth==2) {
         fs.readFile("public/admin/admin_main.html", (error,data)=>{
             response.writeHead(200,{'Content-Type' : "text/html"})
@@ -123,13 +127,13 @@ app.get("/admin_main", (request, response)=>{
             response.end()
         })
     }
-    else response.status(404.1).send('잘못된 접근입니다😥<script><button onclick="location.href=`/`">메인으로 돌아가기</button></script>');
+    else response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
 })
 
 // -- 회원가입(사용자측) 관련 라우터
 app.get("/signup", (request, response)=>{
     if (request.session.user_id) {
-        response.status(404.1).send('잘못된 접근입니다😥<script><button onclick="location.href=`/`">메인으로 돌아가기</button></script>');
+        response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
     }
     else {
         fs.readFile("public/signup.html", (error,data)=>{
@@ -168,7 +172,7 @@ app.post("/signup", (request, response)=>{
         if(flag==0){
             conn.query(`insert into rental_user values(NULL,"${request.body.user_school}","${request.body.user_num}","${request.body.user_name}","${request.body.user_department}","${request.body.user_grade}","${request.body.user_id}","${request.body.user_pw}","${request.body.user_attend_status}","${request.body.user_phone}",now(),NULL,"0","4")`, function(err){
                 if (err) throw err;
-                response.send(`<script> alert('회원가입 되었습니다'); window.close()</script>`)
+                response.send(`<script> alert('회원가입이 신청되었습니다 방문일은 추후에 알려드리겟습니다.'); window.close()</script>`)
             })
             
         }
@@ -178,7 +182,7 @@ app.post("/signup", (request, response)=>{
 
 // -- 회원가입(관리자측) 관련 라우터
 app.get("/admin_signup", (request, response)=>{
-    if (request.session.user_id=='admin') {
+    if (request.session.user_auth==2) {
         
     }
     else response.status(404.1).send('잘못된 접근입니다😥<script><button onclick="location.href=`/`">메인으로 돌아가기</button></script>');
@@ -186,7 +190,7 @@ app.get("/admin_signup", (request, response)=>{
 
 // -- 신청 관리 관련 라우터
 app.get("/admin_rentalmanage", (request, response)=>{ // 전체 검색
-    if (request.session.user_id == 'admin'){
+    if (request.session.user_auth == 2){
         let qry1 = "SELECT m.ma_id, u.user_id, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
             FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON m.pid = a.id \
             WHERE m.ma_state = '1'"
@@ -351,10 +355,10 @@ app.post("/admin_changepw", (request, response)=>{
 })
 
 // -- 오류 관련 라우터
-app.use(function (err, req, res, next) {
-    console.error(err.stack)
-    res.status(500).send('Something broke!')
-})
+// app.use(function (err, req, res, next) {
+//     console.error(err.stack)
+//     res.status(500).send('Something broke!')
+// })
 
 app.use(function(req, res, next) {
     res.status(404).send('Sorry cant find that!');
