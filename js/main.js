@@ -185,7 +185,7 @@ app.get("/admin_signup", (request, response)=>{
     if (request.session.user_auth==2) {
         
     }
-    else response.status(404.1).send('잘못된 접근입니다😥<script><button onclick="location.href=`/`">메인으로 돌아가기</button></script>');
+    else response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
 })
 
 // -- 신청 관리 관련 라우터
@@ -215,7 +215,7 @@ app.get("/admin_rentalmanage", (request, response)=>{ // 전체 검색
             })
         })
     }
-    else response.status(404.1).send('잘못된 접근입니다😥<script><button onclick="location.href=`/`">메인으로 돌아가기</button></script>');
+    else response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
 })
 
 app.post("/admin_rentalmanage_search", (req, res)=>{ // 일부 검색
@@ -296,7 +296,7 @@ app.post("/admin_rentalmanage_return_cancel", (req, res)=>{ // 비품 반납 취
 
 // -- 유저 관리 관련 라우터
 app.get("/admin_userstatus", (request, response)=>{
-    if (request.session.user_id == 'admin') {
+    if (request.session.user_auth == 2) {
         conn.query(`select * from rental_user`, function(err, rows, fields){
             if (err) throw err;
             let tmp='<h1>유저 현황</h1>'
@@ -312,7 +312,7 @@ app.get("/admin_userstatus", (request, response)=>{
             })
         })
     }
-    else response.status(404.1).send('잘못된 접근입니다😥<script><button onclick="location.href=`/`">메인으로 돌아가기</button></script>');
+    else response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
 })
 
 app.post("/admin_userstatus", (request, response)=>{
@@ -335,7 +335,6 @@ app.post("/admin_userstatus", (request, response)=>{
 app.post("/admin_changeauth", (request, response)=>{
     conn.query(`update rental_user set user_auth="${request.body.user_change_auth}" where uid="${user_uid}"`, function(err){
         if(err) throw err;
-        console.log(user_uid)
         response.send(`<script>alert('권한이 변경되었습니다.'); location.href = '/admin_userstatus'</script>`)
     })
 })
