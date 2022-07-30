@@ -31,7 +31,7 @@
                     <td><%=rows.user_pw%><td><%=rows.user_attend_status%><td><%=rows.user_phone%><td><%=rows.user_auth%>
                 
                 <td>
-                    <form action='/admin_signup_rewrite' method="post">
+                    <form action='/admin_signup_rewrite' method="get">
                         <input type="hidden" name="signup_user_id" value="<%= rows.uid %>">
                         <input type="submit" value='수정'>
                     </form>

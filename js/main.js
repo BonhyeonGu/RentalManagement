@@ -217,6 +217,20 @@ app.post("/admin_rentalmanage_resrv_reject", (req, res)=>{ // 회원가입 신�
     })
 })
 
+app.get("/admin_signup_rewrite", (request, response)=>{
+    if (request.session.user_auth==2) {
+        conn.query(`select * from rental_user where uid=${req.body.signup_user_id}`, function(err, rows, fields){
+            response.render('../views/admin_signup_rewrite.ejs', {rows_list : rows})
+        })
+    }
+    else response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
+})
+app.post("/admin_signup_rewrite", (request, response)=>{
+    conn.query(`update rental_user set user_school="${request.body.user_school}" , user_num="${request.body.user_num}",user_name="${request.body.user_name}",user_department="${request.body.user_department}",user_grade=${request.body.user_grade},user_id="${request.body.user_id}",user_attend_status=${request.body.user_attend_status},user_phone="${request.body.user_phone}", where user_id="${request.body.user_id}"`, function(err, rows, fields){
+        response.send(`<script>alert('수정되었습니다'); location.href = '/admin_signup'</script>`)
+    })
+})
+
 
 
 
@@ -388,10 +402,10 @@ app.post("/admin_changepw", (request, response)=>{
 })
 
 // -- 오류 관련 라우터
-// app.use(function (err, req, res, next) {
-//     console.error(err.stack)
-//     res.status(500).send('Something broke!')
-// })
+app.use(function (err, req, res, next) {
+    console.error(err.stack)
+    res.status(500).send('Something broke!')
+})
 
 app.use(function(req, res, next) {
     res.status(404).send('Sorry cant find that!');
