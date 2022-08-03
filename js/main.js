@@ -1,9 +1,10 @@
 const express = require('express')
 const app = express()
 const fs = require('fs')
-const session = require("express-session");
+const expressSession = require('express-session')
 const bodyParser=require('body-parser')
 const { render } = require('express/lib/response');
+const cookieParser = require('cookie-parser')
 const res = require('express/lib/response');
 
 app.set('view engine', 'ejs')
@@ -33,7 +34,7 @@ let user_uid;
 // -- 기본 라우터
 app.get("/", (request, response)=>{
     console.log(__dirname)
-    if (req.session.user_id == 'admin') {
+    if (request.session.user_auth == '2' || request.session.user_auth == '1') {
         fs.readFile('public/admin_main.html', (error,data)=>{
             console.log(__dirname)
             response.writeHead(200,{'Content-Type' : "text/html"})
@@ -41,17 +42,17 @@ app.get("/", (request, response)=>{
             response.end()
         })    
     }
-    else if (req.session.user_id) {
-        res.render('main.ejs', {login_user_id : req.session.user_id});
+    else if (request.session.user_id) {
+        response.render('main.ejs', {login_user_id : request.session.user_id});
     }
     else {
-        res.render('main.ejs', {login_user_id : ''})
+        response.render('main.ejs', {login_user_id : ''})
     }
 })
 
 // -- 로그인 관련 라우터
 app.get("/login", (request, response)=>{
-    if (req.session.user_id) {
+    if (request.session.user_id) {
         response.status(404.1).send('잘못된 접근입니다😥<script><button onclick="location.href=`/`">메인으로 돌아가기</button></script>');
     }
     else {
@@ -92,6 +93,9 @@ app.post("/login",(request,response)=>{
         else if(flag==2){
             conn.query(`select * from rental_user where user_id="${request.body.user_id}"`, function(err, rows, fields){
                 if (err) throw err;
+                request.session.user_auth = rows[0]['user_auth'];
+                console.log(request.session.user_auth)
+                request.session.user_id = rows[0]['user_id'];
                 if(rows[0]['user_status']<5){
                     conn.query(`update rental_user set user_status=0, user_login_date=now() where user_id="${request.body.user_id}"`, function(err){
                         if(err) throw err;
@@ -108,7 +112,8 @@ app.post("/login",(request,response)=>{
 
 // -- 메인 관련 라우터
 app.get("/admin_main", (request, response)=>{
-    if (request.session.user_id == 'admin') {
+    console.log(request.session.user_auth)
+    if (request.session.user_auth == '2' || request.session.user_auth == '1') {
         fs.readFile("public/admin/admin_main.html", (error,data)=>{
             response.writeHead(200,{'Content-Type' : "text/html"})
             response.write(data)
@@ -170,15 +175,15 @@ app.post("/signup", (request, response)=>{
 
 // -- 회원가입(관리자측) 관련 라우터
 app.get("/admin_signup", (request, response)=>{
-    if (request.session.user_id=='admin') {
-        // 오빠가 나를 안고 자고있똬 ㅎㅎ
+    if (request.session.user_auth == '2' || request.session.user_auth == '1') {
+        // 내용
     }
     else response.status(404.1).send('잘못된 접근입니다😥<script><button onclick="location.href=`/`">메인으로 돌아가기</button></script>');
 })
 
 // -- 신청 관리 관련 라우터
 app.get("/admin_rentalmanage", (request, response)=>{ // 전체 검색
-    if (request.session.user_id == 'admin'){
+    if (request.session.user_auth == '2' || request.session.user_auth == '1'){
         let qry1 = "SELECT m.ma_id, u.user_id, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
             FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON m.pid = a.id \
             WHERE m.ma_state = '1'"
@@ -217,7 +222,7 @@ app.post("/admin_rentalmanage_search", (req, res)=>{ // 일부 검색
         conn.query(qry1, function(err, reserv, fields){
             if (err) throw err;
             
-            let qry2 = `SELECT m.ma_id, u.user_id, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
+            let qry2 = `SELECT m.ma_id, u.user_id, u.user_status, u.ucdser_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
             FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN assets a ON m.pid = a.id \
             WHERE m.ma_state = '2' AND u.user_id = ${userID}`
             conn.query(qry2, function(err, using, fields){
@@ -284,7 +289,7 @@ app.post("/admin_rentalmanage_return_cancel", (req, res)=>{ // 비품 반납 취
 
 // -- 유저 관리 관련 라우터
 app.get("/admin_userstatus", (request, response)=>{
-    if (request.session.user_id == 'admin') {
+    if (request.session.user_auth == '2' || request.session.user_auth == '1') {
         conn.query(`select * from rental_user`, function(err, rows, fields){
             if (err) throw err;
             let tmp='<h1>유저 현황</h1>'
