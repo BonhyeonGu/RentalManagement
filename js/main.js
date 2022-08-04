@@ -1,17 +1,17 @@
 const express = require('express')
-const app = express()
-const fs = require('fs')
 const expressSession = require("express-session");
+const MemoryStore=require('memorystore')(expressSession); // FileStore -> MemoryStore로 바꿈.
+const fs = require('fs')
+const app = express()
 const bodyParser=require('body-parser')
 const { render } = require('express/lib/response');
-const cookieParser = require('cookie-parser')
-const res = require('express/lib/response');
-const FileStore=require('session-file-store')(expressSession);
+//const cookieParser = require('cookie-parser')
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/../views')
 const db=require(__dirname+"/database.js")
 const conn=db.init()
 db.connect(conn)
+
 
 app.use(expressSession({
     //httpOnly: true, // 자바스크립트로 쿠키 조회 t/f
@@ -19,10 +19,10 @@ app.use(expressSession({
     secret: "W#@598c&r*952#3988W", // 쿠기 임의 변조 방지. 이 값을 토대로 세션 암호화
     resave: false, // 세션에 변경 사항이 없을 시 항상 저장 t/f
     saveUninitialized: true, // 세션이 최초 만들어지고 수정이 안된다면, 저장되기 전에 uninitialized 상태로 미리 만들어서 저장 t/f
-    // cookie: { // 세션 ID 쿠키 객체를 설정
-    //     httpOnly: true,
-    //     secure: true
-    // }
+    store: new MemoryStore({
+        checkPeriod: 86400000, // 24 hours (= 24 * 60 * 60 * 1000 ms)
+    }),
+    cookie: {maxAge: 86400000}
 }));
 
 app.use(express.static('public'));
