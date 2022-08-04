@@ -1,0 +1,56 @@
+<!D window.location.reload();OCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+    integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+    crossorigin="anonymous"></script>
+    <title>승인관리</title>
+</head>
+<body>
+    <h1>승인 관리</h1>
+    <form action="/admin_signup_search" method="post">
+        사용자 ID:&nbsp;<input type="text" name="user_id">
+        <input type="submit" value="일부 검색">
+        <input type="reset" value="취소">
+    </form>
+    <button onclick="location.href='/admin_signup'">전체 검색</button>
+
+    
+    <fieldset>
+        <legend>대기 목록</legend>
+        <% if (rows_list.length != 0) { %>
+        <table border="1">
+            <tr>
+            <th>구분<th>학교<th>학번<th>이름<th>학과<th>학년<th>ID<th>PW<th>재학여부<th>휴대폰번호<th>권한
+            <% for (let rows of rows_list) { %>
+                <tr>
+                    <td><%=rows.uid%><td><%=rows.user_school%><td><%=rows.user_num%><td><%=rows.user_name%><td><%=rows.user_department%><td><%=rows.user_grade%><td><%=rows.user_id%>
+                    <td><%=rows.user_pw%><td><%=rows.user_attend_status%><td><%=rows.user_phone%><td><%=rows.user_auth%>
+                
+                <td>
+                    <form action='/admin_signup_rewrite' method="get">
+                        <input type="hidden" name="signup_user_id" value="<%= rows.uid %>">
+                        <input type="submit" value='수정'>
+                    </form>
+                <td>
+                    <form action='/admin_signup_recept' method="post">
+                        <input type="hidden" name="signup_user_id" value="<%= rows.uid %>">
+                        <input type="submit" value='수락'>
+                    </form>
+                <td>
+                    <form action='/admin_signup_reject' method="post">
+                    <input type="hidden" name="signup_user_id" value="<%= rows.uid %>">
+                        <input type="submit" value='거절'>
+                    </form>
+            <% } %>
+        </table>
+        <% } else { %>
+            Oh! There's nothing here🤔
+        <% } %>
+    </fieldset>
+    
+</body>
+</html>
