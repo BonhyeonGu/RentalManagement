@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function submit_chk(myForm){
+    
+        }
+        function reset_chk(myForm){
+            location.href='/'
+         }
+    </script>
+</head>
+<body>
+        <form action ="/privacy_pw" method="POST" name = "f1" onsubmit = "return submit_chk(this);"onreset = "return reset_chk(this);">
+            <fieldset>
+                <legend>비밀번호변경</legend>
+                <p>
+                    <label for ="user_change_pw">현재 비밀번호</label>
+                    <input type="text" name = "user_pw" id = "user_pw"/>
+                </p>    
+                <p>
+                        <label for ="user_change_pw">바꿀 비밀번호</label>
+                        <input type="text" name = "user_change_pw" id = "user_change_pw"/>
+                    </p>
+                    <p>
+                        <label for ="user_change_repw">바꿀 비밀번호 재입력</label>
+                        <input type="text" name = "user_change_repw" id = "user_change_repw"/>
+                    </p>
+                    <p>
+                        <input type = "submit" value = "확인"/>
+                        <input type = "reset" value = "취소"/>
+                    </p>
+                </fieldset>
+        </form>  
+</body>
+</html>

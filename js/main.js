@@ -46,8 +46,12 @@ app.get("/login", (request, response)=>{
         response.write(data)
         response.end()
     })
+}) 
+app.get("/logout", (request, response)=>{
+    request.session.destroy(function(err){
+        response.redirect('/');
+    })
 })
-
 app.post("/login",(request,response)=>{
     let id = request.body.user_id
     let pw = request.body.user_pw
@@ -150,6 +154,75 @@ app.post("/signup", (request, response)=>{
         }
     })
 })
+app.get("/privacy_pw", (request, response)=>{
+    fs.readFile("public/privacy_pw.html", (error,data)=>{
+        response.writeHead(200,{'Content-Type' : "text/html"})
+        response.write(data)
+        response.end()
+    })
+})
+app.post("/privacy_pw", (request, response)=>{ // 사용자(관리자) 비밀번호 변경
+    let tmp2 = /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z\d~!@#$%^&*]{8,16}$/g
+    if (request.session.user_auth=='2'||request.session.user_auth=='1'||request.session.user_auth=='0') {
+        conn.query(`select * from rental_user where user_id='${request.session.user_id}'`, function(err, rows, fields){
+            if(request.body.user_pw==rows[0]['user_pw']){
+                if(request.body.user_change_pw==request.body.user_change_repw){
+                    if(tmp2.test(request.body.user_change_pw)==true){
+                        conn.query(`update rental_user set user_pw='${request.body.user_change_pw}' where user_id='${request.session.user_id}'`, function(err, rows, fields){
+                            if (err) throw err;
+                            response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+                            response.write(`<script>alert("${request.session.user_id} : 비밀번호 변경 완료"); location.href = '/'</script>`)
+                            response.end()
+                        })
+                    }
+                    else{
+                        response.send(`<script>alert('바꿀 비밀번호가 조건에 부합하지 않습니다.'); location.href='/privacy_pw'</script>`)
+                    }
+                }
+                else{
+                    response.send(`<script>alert('바꿀 비밀번호가 서로 다릅니다.'); location.href='/privacy_pw'</script>`)
+                }
+            }
+            else{
+                response.send(`<script>alert('현재 비밀번호가 틀렸습니다.'); location.href='/privacy_pw'</script>`)
+            }
+        })
+    }
+    else {
+        response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
+    }
+})
+// app.get("privacy_modify", (request, response)=>{
+//     if (request.session.user_auth=='2'||request.session.user_auth=='1'||request.session.user_auth=='0') { // default, read, read&write(관리자)
+//         conn.query(`select * from rental_user where user_id='${request.session.user_id}'`, function(err, rows, fields){
+//             if (err) throw err;
+//             response.render('../views/privacy_modify.ejs', {rows_list : rows})
+//         })
+//     }
+//     else response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
+
+// })
+
+//     f.action = '/privacy_pw'
+// app.post("/privacy_rewrite", (request, response)=>{ // 개인정보 변경 신청
+//     if (request.session.user_auth=='2'||request.session.user_auth=='1'||request.session.user_auth=='0') { // read&write(관리자)
+//         conn.query(`update rental_user set user_auth='' where user_id='${request.body.user_id}'`, function(err, rows, fields){
+//             if (err) throw err;
+//             response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+//             response.write(`<script>alert("${request.body.user_id} : 개인정보 변경여부 신청완료."); location.href = '/admin_signup'</script>`)
+//             response.end()
+//         })
+//     }
+//     else {
+//         response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
+//     }
+// })
+
+
+
+
+
+
 
 // -- 회원가입(관리자측) 관리 관련 라우터
 app.get("/admin_signup", (request, response)=>{ // 전체 검색(회원가입 대기 목록 검색)

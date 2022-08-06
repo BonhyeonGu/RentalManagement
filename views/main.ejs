@@ -15,9 +15,9 @@
     <button onclick="location.href='/signup'">회원가입</button>
 <% } else { %>
     <%= login_user_id %>님, 환영합니다!<br>
-    <button onclick="location.href='/'">로그아웃</button>
-    <button onclick="location.href='/'">기능2</button>
-    <button onclick="location.href='/'">기능3</button>
+    <button onclick="location.href='/logout'">로그아웃</button>
+    <button onclick="location.href='/privacy_modify'">개인정보변경</button>
+    <button onclick="location.href='/privacy_pw'">비밀번호 변경</button>
     <% if (login_user_auth == '1' || login_user_auth == '2') { %>
         <button onclick="location.href='/admin_signup'">회원가입 관리</button>
         <button onclick="location.href='/admin_rentalmanage'">신청 관리</button>
