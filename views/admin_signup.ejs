@@ -33,7 +33,7 @@
                     <td><%=rows.user_pw%><td><%=rows.user_attend_status%><td><%=rows.user_phone%><td><%=rows.user_auth%>
                     <td>
                         <form action='/admin_signup_manage' method="post">
-                            <input type="hidden" name="signup_user_id" value="<%= rows.uid %>">
+                            <input type="hidden" name="signup_user_id" value="<%= rows.user_id %>">
                             <input type="submit" value='관리'>
                         </form>
             <% } %>

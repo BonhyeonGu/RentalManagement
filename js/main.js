@@ -70,7 +70,7 @@ app.post("/login",(request,response)=>{
                     response.send(`<script>alert('${id}님 PW가 ${user_status}회 틀렸습니다'); history.back();</script>`)
                 })
             }
-            else {
+            else { 
                 conn.query(`update rental_user set user_status='${user_status}', user_auth='3' where user_id='${id}'`, function(err){
                     if(err) throw err;
                     response.send(`<script>alert('${id}님 비밀번호 오류 횟수 ${user_status}회 초과로 로그인 불가능합니다'); history.back();</script>`)
@@ -80,12 +80,16 @@ app.post("/login",(request,response)=>{
         else if(flag==2){ // 로그인 성공
             if(rows[0]['user_auth'] == '0'||rows[0]['user_auth'] == '1'||rows[0]['user_auth'] == '2') { // 일반 사용자, read, read&write(관리자)
                 // 세션 정보 저장
-                request.session.user_auth = rows[0]['user_auth'];
-                request.session.user_id = rows[0]['user_id'];
-
-                request.session.save(function(){
-                    response.redirect('/')
+                conn.query(`update rental_user set user_login_date = now() where user_id='${id}'`, function(err){
+                    if(err) throw err;
+                    request.session.user_auth = rows[0]['user_auth'];
+                    request.session.user_id = rows[0]['user_id'];
+    
+                    request.session.save(function(){
+                        response.redirect('/')
+                    })
                 })
+               
             }
             else if(rows[0]['user_auth'] == '3') { // 잠금 계정
                 response.send(`<script>alert('${id}님의 계정은 로그인 불가합니다. 관리자에게 문의해주세요'); history.back();</script>`)
@@ -111,7 +115,7 @@ app.post("/signup", (request, response)=>{
     let newPW = request.body.user_pw
     let chkPW = request.body.user_pw_chk
 
-    let sql = `SELECT * FROM rental_user WHERE userid='${newID}'`
+    let sql = `SELECT * FROM rental_user WHERE user_id='${newID}'`
     conn.query(sql, function(err, rows, fields){
         if (err) throw err;
 
@@ -168,16 +172,16 @@ app.post("/admin_signup_search", (request, response)=>{ // 일부 검색(회원�
 
 app.post("/admin_signup_recept", (request, response)=>{ // 회원가입 신청 수락(-> 회원으로 등록)
     if (request.session.user_auth=='2') { // read&write(관리자)
-        conn.query(`update rental_user set user_auth='1' and user_join_date=now() where uid='${request.body.signup_user_id}'`, function(err, rows, fields){
+        conn.query(`update rental_user set user_auth='1' and user_join_date=now() where user_id='${request.body.user_id}'`, function(err, rows, fields){
             if (err) throw err;
             response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-            response.write(`<script>alert("${request.body.signup_user_id} : 회원가입 신청을 수락했습니다.")</script>`)
+            response.write(`<script>alert("${request.body.user_id} : 회원가입 신청을 수락했습니다."); location.href = '/admin_signup'</script>`)
             response.end()
         })
     }
     else if (request.session.user_auth=='1') { // read
         response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-        response.write(`<script>alert("권한이 없습니다"); history.back()</script>`)
+        response.write(`<script>alert("권한이 없습니다"); location.href = '/admin_signup'</script>`)
         response.end()
     }
     else {
@@ -187,16 +191,16 @@ app.post("/admin_signup_recept", (request, response)=>{ // 회원가입 신청 �
 
 app.post("/admin_rentalmanage_resrv_reject", (request, response)=>{ // 회원가입 신청 거절(-> DB에서 삭제)
     if (request.session.user_auth=='2') { // read&write(관리자)
-        conn.query(`delete from rental_user where uid='${request.body.signup_user_id}'`, function(err, rows, fields){
+        conn.query(`delete from rental_user where user_id='${request.body.user_id}'`, function(err, rows, fields){
             if (err) throw err;
             response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-            response.write(`<script>alert("${request.body.signup_user_id} : 회원가입 신청을 거절했습니다.")</script>`)
+            response.write(`<script>alert("${request.body.user_id} : 회원가입 신청을 거절했습니다."); location.href = '/admin_signup' </script>`)
             response.end()
         })
     }
     else if (request.session.user_auth=='1') { // read
         response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-        response.write(`<script>alert("권한이 없습니다"); history.back()</script>`)
+        response.write(`<script>alert("권한이 없습니다"); location.href = '/admin_signup'</script>`)
         response.end()
     }
     else {
@@ -206,22 +210,24 @@ app.post("/admin_rentalmanage_resrv_reject", (request, response)=>{ // 회원가
 
 app.post("/admin_signup_manage", (request, response)=>{ // 회원가입 신청 폼 수정(회원으로 등록 전 DB에서 사용자 정보 확인&수정)
     if (request.session.user_auth=='2') { // read&write(관리자)
-        conn.query(`select * from rental_user where uid='${request.body.signup_user_id}'`, function(err, rows, fields){
+        conn.query(`select * from rental_user where user_id='${request.body.signup_user_id}'`, function(err, rows, fields){
             if (err) throw err
-            response.render('../views/admin_signup_rewrite.ejs', {rows_list : rows})
+            response.render('../views/admin_signup_rewirte.ejs', {rows_list : rows})
         })
     }
     else if (request.session.user_auth=='1') { // read
         response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-        response.write(`<script>alert("권한이 없습니다"); history.back()</script>`)
+        response.write(`<script>alert("권한이 없습니다"); location.href = '/admin_signup'</script>`)
         response.end()
     }
     else response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
 })
 
 app.post("/admin_signup_rewrite", (request, response)=>{ // 회원가입 수정 완료
-    conn.query(`update rental_user set user_school="${request.body.user_school}" , user_num="${request.body.user_num}",user_name="${request.body.user_name}",user_department="${request.body.user_department}",user_grade=${request.body.user_grade},user_id="${request.body.user_id}",user_attend_status=${request.body.user_attend_status},user_phone="${request.body.user_phone}", where user_id="${request.body.user_id}"`, function(err, rows, fields){
-        response.send(`<script>alert('수정되었습니다'); history.back()</script>`)
+    conn.query(`update rental_user set user_school="${request.body.user_school}" , user_num="${request.body.user_num}",user_name="${request.body.user_name}",user_department="${request.body.user_department}",user_grade=${request.body.user_grade},user_id="${request.body.user_id}",user_attend_status=${request.body.user_attend_status},user_phone="${request.body.user_phone}" where user_id="${request.body.user_id}"`, function(err, rows, fields){
+        if (err) throw err
+        response.send(`<script>alert('수정되었습니다'); location.href = '/admin_signup'</script>`)
+        console.log(request.body)
     })
 })
 
@@ -335,7 +341,7 @@ app.post("/admin_rentalmanage_return_cancel", (req, res)=>{ // 비품 반납 취
 // -- 유저 관리 관련 라우터
 app.get("/admin_userstatus", (request, response)=>{ // 전체 유저 현황
     if (request.session.user_auth == '2') {
-        conn.query(`select * from rental_user`, function(err, rows, fields){
+        conn.query(`select * from rental_user where user_auth=0 or user_auth=1 or user_auth=2`, function(err, rows, fields){
             if (err) throw err;
             let tmp='<h1>유저 현황</h1>'
             tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>학번</th><th>이름</th><th>ID</th><th>재학여부</th><th>비밀번호 틀린 횟수</th></tr>'

@@ -10,7 +10,7 @@
 
          }
         function reset_chk(myForm){
-            window.close()
+            location.href='/admin_signup'
          }
          function modify(){
             const f = document.getElementById('f1')
@@ -18,7 +18,7 @@
             f.method = 'post'
             f.submit()
         }
-        function accept(){
+        function accepts(){
             const f = document.getElementById('f1')
             f.action = '/admin_signup_recept'
             f.method = 'post'
@@ -26,39 +26,39 @@
         }
         function deny(){
             const f = document.getElementById('f1')
-            f.action = '/admin_signup_reject'
+            f.action = '/admin_rentalmanage_resrv_reject'
             f.method = 'post'
             f.submit()
         }
     </script>
 </head>
 <body onload = "document.f1.user_school.focus();">
-    <form id = "f1" onsubmit = "return submit_chk(this);" onreset = "return reset_chk(this);">
+    <form id = "f1" name = "f1" onsubmit = "return submit_chk(this);" onreset = "return reset_chk(this);">
         <fieldset>
             <legend>회원가입 신청서</legend>
             <p>
-                <label for ="user_id">ID: <%=rows.user_id%></label>
-                <input type="hidden" name = "user_id" id = "user_id" value="<%=rows.user_id%>"/>
+                <label for ="user_id">ID: <%=rows_list[0]['user_id']%></label>
+                <input type="hidden" name = "user_id" id = "user_id" value="<%=rows_list[0]['user_id']%>">
             </p>
             <p>
                 <label for ="user_school">학교명</label>
-                <input type="text" name = "user_school" id = "user_school" value="<%=rows.user_school%>"/>
+                <input type="text" name = "user_school" id = "user_school" value="<%=rows_list[0]['user_school']%>">
             </p>
             <p>
                 <label for ="user_num">학번</label>
-                <input type="text" name = "user_num" id = "user_num" value="<%=rows.user_num%>"/>
+                <input type="text" name = "user_num" id = "user_num" value="<%=rows_list[0]['user_num']%>">
             </p>
             <p>
                 <label for ="user_name">이름</label>
-                <input type="text" name = "user_name" id = "user_name" value="<%=rows.user_name%>"/>
+                <input type="text" name = "user_name" id = "user_name" value="<%=rows_list[0]['user_name']%>">
             </p>
             <p>
                 <label for ="user_department">소속학과</label>
-                <input type="text" name = "user_department" id = "user_department" value="<%=rows.user_department%>"/>
+                <input type="text" name = "user_department" id = "user_department" value="<%=rows_list[0]['user_department']%>"/>
             </p>
             <p>
                 <label for ="user_grade">학년</label>
-                <input type="text" name = "user_grade" id = "user_grade" value="<%=rows.user_grade%>"/>
+                <input type="text" name = "user_grade" id = "user_grade" value="<%=rows_list[0]['user_grade']%>"/>
             </p>
             <p>
                 <label for ="user_attend_status">재학여부</label>
@@ -70,11 +70,11 @@
             </p>
             <p>
                 <label for ="user_phone">휴대폰 번호</label>
-                <input type="text" name = "user_phone" id = "user_phone" value="<%=rows.user_phone%>"/>
+                <input type="text" name = "user_phone" id = "user_phone" value="<%=rows_list[0]['user_phone']%>"/>
             </p>
             <p>
                 <input type = "button" onclick="modify()" value = "수정"/>
-                <input type = "button" onclick="accept()" value = "수락"/>
+                <input type = "button" onclick="accepts()" value = "수락"/>
                 <input type = "button" onclick="deny()" value = "거절"/>
                 <input type = "reset" value = "취소"/>
             </p>
