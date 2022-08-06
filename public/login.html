@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Beharbor : login</title>
     <script>
         function submit(myForm){
 
@@ -13,23 +13,24 @@
 </head>
 <body>
     <body onload = "document.f2.user_id.focus();">
+        <h2 onclick="location.href='/'">Beharbor</h2>
         <form action ="/login" method="POST" name = "f2" onsubmit = "return submit(this);">
             <fieldset>
                 <legend>로그인</legend>
                 <p>
                     <label for ="user_id">ID</label>
-                    <input type="text" name = "user_id" id = "user_id"/>
+                    <input type="text" name = "user_id"/>
                 </p>
                 <p>
                     <label for ="user_pw">PW</label>
-                    <input type="text" name = "user_pw" id = "user_pw"/>
+                    <input type="text" name = "user_pw"/>
                 </p>
                 <p>
                     <input type = "submit" value = "로그인"/>
                 </p>
             </fieldset>
         </form>
-        
+        <button onclick="location.href='/signup'">회원가입</button>
     </body>
 </body>
 </html>

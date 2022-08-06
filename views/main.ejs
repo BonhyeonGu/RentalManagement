@@ -5,19 +5,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" script-src='unsafe-inline';>
-    <title>Main</title>
+    <title>Beharbor : Main</title>
 </head>
 <body>
-    <h1>메인페이지</h1>
+    <h2 onclick="location.href='/'">Beharbor</h2>
 </body>
-<% if(login_user_id == '') { %>
+<% if(login_user_id === undefined) { %>
     <button onclick="location.href='/login'">로그인</button>
     <button onclick="location.href='/signup'">회원가입</button>
 <% } else { %>
     <%= login_user_id %>님, 환영합니다!<br>
-    <button onclick="location.href='/'">기능1</button>
+    <button onclick="location.href='/'">로그아웃</button>
     <button onclick="location.href='/'">기능2</button>
     <button onclick="location.href='/'">기능3</button>
-    <% } %> 
-
+    <% if (login_user_auth == '1' || login_user_auth == '2') { %>
+        <button onclick="location.href='/admin_signup'">회원가입 관리</button>
+        <button onclick="location.href='/admin_rentalmanage'">신청 관리</button>
+        <button onclick="location.href='/admin_userstatus'">유저 관리</button>
+    <% } %>
+<% } %> 
 </html>
