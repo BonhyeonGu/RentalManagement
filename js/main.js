@@ -96,13 +96,21 @@ app.post("/login",(request,response)=>{
                
             }
             else if(rows[0]['user_auth'] == '3') { // 잠금 계정
-                response.send(`<script>alert('${id}님의 계정은 로그인 불가합니다. 관리자에게 문의해주세요'); history.back();</script>`)
+                response.send(`<script>alert('${id}님의 계정은 잠금 계정입니다. 관리자에게 문의해주세요'); history.back();</script>`)
             }
             else if(rows[0]['user_auth'] == '4') { // 승인 대기중인 계정
                 response.send(`<script>alert('${id}님 회원가입 승인 대기중입니다. 관리자에게 문의해주세요'); history.back();</script>`)
             }
         }
     })
+})
+
+app.get("/rental", (request, response)=>{
+    conn.query(`select * from assets_qty`, function(err, rows, fields){
+        if(err) throw err;
+        response.render('../views/user_rental.ejs', {rows_list : rows})
+    })
+
 })
 
 // -- 회원가입(사용자측) 관련 라우터
@@ -192,35 +200,6 @@ app.post("/privacy_pw", (request, response)=>{ // 사용자(관리자) 비밀번
         response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
     }
 })
-// app.get("privacy_modify", (request, response)=>{
-//     if (request.session.user_auth=='2'||request.session.user_auth=='1'||request.session.user_auth=='0') { // default, read, read&write(관리자)
-//         conn.query(`select * from rental_user where user_id='${request.session.user_id}'`, function(err, rows, fields){
-//             if (err) throw err;
-//             response.render('../views/privacy_modify.ejs', {rows_list : rows})
-//         })
-//     }
-//     else response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
-
-// })
-
-//     f.action = '/privacy_pw'
-// app.post("/privacy_rewrite", (request, response)=>{ // 개인정보 변경 신청
-//     if (request.session.user_auth=='2'||request.session.user_auth=='1'||request.session.user_auth=='0') { // read&write(관리자)
-//         conn.query(`update rental_user set user_auth='' where user_id='${request.body.user_id}'`, function(err, rows, fields){
-//             if (err) throw err;
-//             response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-//             response.write(`<script>alert("${request.body.user_id} : 개인정보 변경여부 신청완료."); location.href = '/admin_signup'</script>`)
-//             response.end()
-//         })
-//     }
-//     else {
-//         response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
-//     }
-// })
-
-
-
-
 
 
 
