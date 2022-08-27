@@ -10,6 +10,7 @@ const MemoryStore=require('memorystore')(expressSession); // FileStore -> Memory
 const fs = require('fs')
 const app = express()
 const bodyParser=require('body-parser')
+const crypto = require('crypto');
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/../views')
 const db=require(__dirname+"/database.js")
@@ -54,8 +55,7 @@ app.get("/logout", (request, response)=>{
 })
 app.post("/login",(request,response)=>{
     let id = request.body.user_id
-    let pw = request.body.user_pw
-
+    let pw = crypto.createHash('sha256').update(request.body.user_pw).digest('hex')
     conn.query(`select * from rental_user where user_id='${id}'`, function(err, rows, fields){
         if (err) throw err;
 
@@ -145,7 +145,8 @@ app.post("/signup", (request, response)=>{
             }
             else {
                 if (idReg.test(newID) && pwReg.test(newPW)) { // 회원가입 신청 성공
-                    conn.query(`insert into rental_user values(NULL,"${request.body.user_school}","${request.body.user_num}","${request.body.user_name}","${request.body.user_department}","${request.body.user_grade}","${request.body.user_id}","${request.body.user_pw}","${request.body.user_attend_status}","${request.body.user_phone}",now(),NULL,"0","4")`, function(err){
+                    let sha256_hex_pw=crypto.createHash('sha256').update(newPW).digest('hex')
+                    conn.query(`insert into rental_user values(NULL,"${request.body.user_school}","${request.body.user_num}","${request.body.user_name}","${request.body.user_department}","${request.body.user_grade}","${request.body.user_id}","${sha256_hex_pw}","${request.body.user_attend_status}","${request.body.user_phone}",now(),NULL,"0","4")`, function(err){
                         if (err) throw err;
                         response.send(`<script>alert('회원가입이 신청되었습니다. 방문일은 추후에 알려드리겠습니다.'); location.href='/login'</script>`)
                     })
@@ -156,6 +157,10 @@ app.post("/signup", (request, response)=>{
                 }
                 else if (!pwReg.test(newPW)){ // 비밀번호 조건 실패
                     response.write('<script>alert("비밀번호가 조건에 부합하지 않습니다. 다시 입력해 주세요.")</script>')
+                    response.end('<script>history.back()</script>')
+                }
+                else{
+                    response.write('<script>alert("아이디와 비밀번호가 조건에 부합하지 않습니다. 다시 입력해 주세요.")</script>')
                     response.end('<script>history.back()</script>')
                 }            
             }
