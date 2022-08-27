@@ -1,0 +1,24 @@
+<!D window.location.reload();OCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+    integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+    crossorigin="anonymous"></script>
+    <title>대여 신청</title>
+</head>
+<body>
+    <h1>대여 신청</h1>
+    <form action="/rental_sign_result" method="post">
+        물품명 :&nbsp;<input type="text" name="asset_name" value="<%=rows_list[0]['name']%>">
+        신청 갯수 :&nbsp;<input type="text" name="asset_qty">
+        사용기간 :&nbsp;<input type="text" name="asset_using_period">
+        <input type="hidden" name="asset_id" value="<%= rows_list[0]['id'] %>">
+        <input type="submit" value="신청">
+        <input type="reset" value="취소">
+    </form>
+
+</body>
+</html>

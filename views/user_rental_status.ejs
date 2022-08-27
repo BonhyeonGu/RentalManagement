@@ -7,16 +7,16 @@
     <script src="https://code.jquery.com/jquery-3.6.0.js"
     integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
     crossorigin="anonymous"></script>
-    <title>대여 신청</title>
+    <title>대여 현황</title>
 </head>
 <body>
-    <h1>대여 신청</h1>
-    <form action="/rental_search" method="post">
+    <h1>물품 검색</h1>
+    <form action="/rental_status_search" method="post">
         물품명 :&nbsp;<input type="text" name="asset_name">
         <input type="submit" value="일부 검색">
         <input type="reset" value="취소">
     </form>
-    <button onclick="location.href='/rental'">전체 검색</button>
+    <button onclick="location.href='/rental_status'">전체 검색</button>
 
     <!--
         🐇create table assets_qty (
@@ -54,9 +54,9 @@
                     <!-- <td><%=reserv.ma_id%><td><%=reserv.user_id%><td><%=reserv.user_status%><td><%=reserv.user_auth%><td><%=reserv.user_school%><td><%=reserv.user_num%><td><%=reserv.user_name%>
                     <td><%=reserv.pid%><td><%=resev.name%><td><%=resev.ma_recept_date%><td><%=reserv.ma_start_date%><td><%=reserv.ma_using_period%><td><%=reserv.ma_return_date%><td><%=reserv.ma_qty%> -->
                 <td>
-                    <form action='/rental_sign' method="post">
-                        <input type="hidden" name="asset_id" value="<%= rows.id %>">
-                        <input type="submit" value='신청'>
+                    <form action='/rental_status_delete' method="post">
+                        <input type="hidden" name="ma_id" value="<%= rows.ma_id %>">
+                        <input type="submit" value='취소'>
                     </form>
             <% } %>
         </table>

@@ -88,7 +88,7 @@ app.post("/login",(request,response)=>{
                     if(err) throw err;
                     request.session.user_auth = rows[0]['user_auth'];
                     request.session.user_id = rows[0]['user_id'];
-    
+                    request.session.uid=rows[0]['uid']
                     request.session.save(function(){
                         response.redirect('/')
                     })
@@ -104,14 +104,73 @@ app.post("/login",(request,response)=>{
         }
     })
 })
-
+ 
 app.get("/rental", (request, response)=>{
-    conn.query(`select * from assets_qty`, function(err, rows, fields){
+    conn.query(`select * from assets, assets_qty where assets.id=assets_qty.pid`, function(err, rows, fields){
         if(err) throw err;
         response.render('../views/user_rental.ejs', {rows_list : rows})
     })
 
 })
+
+app.post("/rental_search", (request, response)=>{ // 일부 검색(회원가입 대기 목록 검색)
+    conn.query(`select * from assets, assets_qty where assets.id=assets_qty.pid and assets.name='${asset_name}'`, function(err, rows, fields){
+        if (err) throw err;
+        response.render('../views/user_rental.ejs', {rows_list : rows})
+    })
+})
+
+app.post("/rental_sign", (request, response)=>{ 
+    conn.query(`select * from assets where name='${request.body.asset_id}'`, function(err, rows, fields){
+        if (err) throw err;
+        response.render('../views/user_rental_sign.ejs', {rows_list : rows})
+    })
+})
+
+app.post("/rental_sign_result", (request, response)=>{ 
+    conn.query(`insert into rental_manage values(NULL,${request.session.uid},${request.body.asset_id},now(),NULL,${request.body.asset_using_period},NULL,${request.body.asset_qty},"1","/exprt")`, function(err){
+        if (err) throw err;
+        response.send(`<script>alert('물품 대여가 신청되었습니다. 결과는 추후에 알려드리겠습니다.'); location.href='/rental'</script>`)
+    })
+})
+
+
+
+
+
+app.get("/rental_status", (request, response)=>{
+    conn.query(`select * from assets, rental_manage where assets.id=rental_manage.pid and uid=${request.session.uid}`, function(err, rows, fields){
+        if(err) throw err;
+        response.render('../views/user_rental_status.ejs', {rows_list : rows})
+    })
+
+})
+
+app.post("/rental_status_search", (request, response)=>{
+    conn.query(`select * from assets, rental_manage where assets.id=rental_manage.pid and uid=${request.session.uid} and asset.name='${request.body.asset.name}'`, function(err, rows, fields){
+        if(err) throw err;
+        response.render('../views/user_rental_status.ejs', {rows_list : rows})
+    })
+
+})
+
+app.post("/rental_status_delete", (request, response)=>{
+    conn.query(`delete from rental_manage where ma_id='${request.body.ma_id}'`, function(err, rows, fields){
+        if (err) throw err;
+        response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+        response.write(`<script>alert("${request.body.user_id} : 물품 신청을 취소하였습니다."); location.href = '/admin_signup' </script>`)
+        response.end()
+    })
+
+})
+
+
+
+
+
+
+
+
 
 // -- 회원가입(사용자측) 관련 라우터
 app.get("/signup", (request, response)=>{
