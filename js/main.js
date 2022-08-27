@@ -13,7 +13,7 @@ const bodyParser=require('body-parser')
 const crypto = require('crypto');
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/../views')
-const db=require(__dirname+"/database.js")
+const db=require("/secret/database.js")
 const conn=db.init()
 db.connect(conn)
 
