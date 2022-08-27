@@ -176,12 +176,14 @@ app.get("/privacy_pw", (request, response)=>{
 })
 app.post("/privacy_pw", (request, response)=>{ // 사용자(관리자) 비밀번호 변경
     let tmp2 = /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z\d~!@#$%^&*]{8,16}$/g
+    let pw = crypto.createHash('sha256').update(request.body.user_pw).digest('hex')
     if (request.session.user_auth=='2'||request.session.user_auth=='1'||request.session.user_auth=='0') {
         conn.query(`select * from rental_user where user_id='${request.session.user_id}'`, function(err, rows, fields){
-            if(request.body.user_pw==rows[0]['user_pw']){
+            if(pw==rows[0]['user_pw']){
                 if(request.body.user_change_pw==request.body.user_change_repw){
                     if(tmp2.test(request.body.user_change_pw)==true){
-                        conn.query(`update rental_user set user_pw='${request.body.user_change_pw}' where user_id='${request.session.user_id}'`, function(err, rows, fields){
+                        let change_pw = crypto.createHash('sha256').update(request.body.user_change_pw).digest('hex')
+                        conn.query(`update rental_user set user_pw='${change_pw}' where user_id='${request.session.user_id}'`, function(err, rows, fields){
                             if (err) throw err;
                             response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
                             response.write(`<script>alert("${request.session.user_id} : 비밀번호 변경 완료"); location.href = '/'</script>`)
