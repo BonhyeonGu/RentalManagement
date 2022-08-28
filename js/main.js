@@ -410,16 +410,36 @@ app.post("/admin_rentalmanage_search", (req, res)=>{ // 일부 검색
     }
 })
 
+
+
+
+
+
+
 app.post("/admin_rentalmanage_resrv_recept", (req, res)=>{ // 예약 신청 수락
     let maID = req.body.resrv_recept_ma_id;
-    let qry = `UPDATE rental_manage SET ma_state='1' WHERE ma_id='${maID}'`
-    conn.query(qry, function(err, rows, fields){
+    let qry = `UPDATE rental_manage SET ma_state='2', ma_start_date=now(),ma_return_date=date_add(now(),INTERVAL ${rows1[0]['ma_using_period']} DAY) WHERE ma_id='${maID}'`
+    let qry2= `UPDATE assets_qty SET remaining_qty=remaining_qty-${rows1[0]['ma_qty']}`
+    conn.query(`select * from rental_manage ,assets_qty where rental_manage.pid=assets_qty.pid , assets_qty.pid=${request.body.resrv_recept_pid}`, function(err, rows1, fields){
         if (err) throw err;
-
-        res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-        res.write(`<script>alert("${maID} : 예약 신청을 수락했습니다.")</script>`)
-        res.end('<script></script>')
+        if(rows1[0]['remaining_qty']>=rows1[0]['ma_qty']){
+            conn.query(qry, function(err, row2, fields){
+                if (err) throw err;
+                conn.query(qry2, function(err, rows3, fields){
+                    if (err) throw err;
+                    res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+                    res.write(`<script>alert("${maID} : 예약 신청을 수락했습니다.")</script>`)
+                    res.end('<script></script>')
+                })
+            })
+        }
+        else{
+            res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+            res.write(`<script>alert("${maID} : 개수 초과로 신청이 불가능합니다.")</script>`)
+            res.end('<script></script>')
+        }
     })
+    
 })
 
 app.post("/admin_rentalmanage_resrv_reject", (req, res)=>{ // 예약 신청 거절
@@ -435,26 +455,52 @@ app.post("/admin_rentalmanage_resrv_reject", (req, res)=>{ // 예약 신청 거�
 })
 app.post("/admin_rentalmanage_return", (req, res)=>{ // 비품 반납
     let maID = req.body.return_ma_id;
-    let qry = `UPDATE rental_manage SET ma_state='3' WHERE ma_id='${maID}'`
-    conn.query(qry, function(err, rows, fields){
+    let qry = `UPDATE rental_manage SET ma_state='3',ma_return_date=now() WHERE ma_id='${maID}'`
+    let qry2= `UPDATE assets_qty SET remaining_qty=remaining_qty+${rows1[0]['ma_qty']}`
+    
+    conn.query(`select * from rental_manage ,assets_qty where rental_manage.pid=assets_qty.pid , assets_qty.pid=${request.body.resrv_recept_pid}`, function(err, rows1, fields){
         if (err) throw err;
-
-        res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-        res.write(`<script>alert("${maID} : 반납으로 변경했습니다.")</script>`)
-        res.end('<script>history.back()</script>')
+        conn.query(qry, function(err, rows2, fields){
+            if (err) throw err;
+            conn.query(qry2, function(err, rows3, fields){
+                if (err) throw err;
+                res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+                res.write(`<script>alert("${maID} : 반납으로 변경했습니다.")</script>`)
+                res.end('<script>history.back()</script>')
+            })
+        })
+    
     })
+
 })
+
 app.post("/admin_rentalmanage_return_cancel", (req, res)=>{ // 비품 반납 취소(반납 -> 사용 중)
     let maID = req.body.return_cancel_ma_id;
-    let qry = `UPDATE rental_manage SET ma_state='2' WHERE ma_id='${maID}'`
-    conn.query(qry, function(err, rows, fields){
-        if (err) throw err;
+    let qry = `UPDATE rental_manage SET ma_state='2' ,ma_return_date=date_add(${rows1[0]['ma_start_date']},INTERVAL ${rows1[0]['ma_using_period']} DAY) WHERE ma_id='${maID}'`
+    let qry2= `UPDATE assets_qty SET remaining_qty=remaining_qty-${rows1[0]['ma_qty']}`
 
-        res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-        res.write(`<script>alert("${maID} : 반납에서 사용 중으로 변경했습니다.")</script>`)
-        res.end('<script>history.back()</script>')
+    conn.query(`select * from rental_manage ,assets_qty where rental_manage.pid=assets_qty.pid , assets_qty.pid=${request.body.resrv_recept_pid}`, function(err, rows1, fields){
+        if (err) throw err;
+        conn.query(qry, function(err, rows2, fields){
+            if (err) throw err;
+            conn.query(qry2, function(err, rows3, fields){
+                if (err) throw err;
+                res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+                res.write(`<script>alert("${maID} : 반납에서 사용중으로 변경했습니다.")</script>`)
+                res.end('<script>history.back()</script>')
+            })
+        })
+    
     })
+
 })
+
+
+
+
+
+
+
 
 // -- 유저 관리 관련 라우터
 app.get("/admin_userstatus", (request, response)=>{ // 전체 유저 현황

@@ -54,6 +54,7 @@
                 <td>
                     <form action='/admin_rentalmanage_resrv_recept' method="post">
                         <input type="hidden" name="resrv_recept_ma_id" value="<%= reserv.ma_id %>">
+                        <input type="hidden" name="resrv_recept_pid" value="<%= reserv.pid %>">
                         <input type="submit" value='수락'>
                     </form>
                 <td>
@@ -81,6 +82,7 @@
                     <td>
                         <form action='/admin_rentalmanage_return' method="post">
                             <input type="hidden" name="return_ma_id" value="<%= using.ma_id %>">
+                            <input type="hidden" name="resrv_recept_pid" value="<%= reserv.pid %>">
                             <input type="submit" value='반납'>
                         </form>
             <% } %>
@@ -104,6 +106,7 @@
                         <td>
                             <form action='/admin_rentalmanage_return_cancel' method="post">
                                 <input type="hidden" name="return_cancel_ma_id" value="<%= ret.ma_id %>">
+                                <input type="hidden" name="resrv_recept_pid" value="<%= reserv.pid %>">
                                 <input type="submit" value='반납취소'>
                             </form>
                 <% } %>
