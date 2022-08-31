@@ -13,7 +13,7 @@ const bodyParser=require('body-parser')
 const crypto = require('crypto');
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/../views')
-const db=require("/secret/database.js")
+const db=require("../secret/database.js")
 const conn=db.init()
 db.connect(conn)
 
@@ -191,7 +191,7 @@ app.post("/signup", (request, response)=>{
         if (err) throw err;
 
         if (rows.length != 0) {
-            response.write('<script>alert("이미 존재하는 계정입니다.")</script>')
+            response.send('<script>alert("이미 존재하는 계정입니다.")</script>')
             response.end('<script>history.back()</script>')
         }
         else {

@@ -26,11 +26,11 @@
         <% if (rows_list.length != 0) { %>
         <table border="1">
             <tr>
-            <th>구분<th>학교<th>학번<th>이름<th>학과<th>학년<th>ID<th>PW<th>재학여부<th>휴대폰번호<th>권한<th>기타
+            <th>구분<th>학교<th>학번<th>이름<th>학과<th>학년<th>ID<th>재학여부<th>휴대폰번호<th>권한<th>기타
             <% for (let rows of rows_list) { %>
                 <tr>
                     <td><%=rows.uid%><td><%=rows.user_school%><td><%=rows.user_num%><td><%=rows.user_name%><td><%=rows.user_department%><td><%=rows.user_grade%><td><%=rows.user_id%>
-                    <td><%=rows.user_pw%><td><%=rows.user_attend_status%><td><%=rows.user_phone%><td><%=rows.user_auth%>
+                    <td><%=rows.user_attend_status%><td><%=rows.user_phone%><td><%=rows.user_auth%>
                     <td>
                         <form action='/admin_signup_manage' method="post">
                             <input type="hidden" name="signup_user_id" value="<%= rows.user_id %>">

@@ -63,9 +63,19 @@
             <p>
                 <label for ="user_attend_status">재학여부</label>
                 <select name="user_attend_status">
-                    <option value="0">졸업</option>
-                    <option value="1">휴학</option>
-                    <option value="2">재학</option>
+                    <% if (rows_list[0]['user_attend_status'] == '2') { %>
+                        <option value="2" selected>재학</option>
+                        <option value="0">졸업</option>
+                        <option value="1">휴학</option>
+                    <% } else if (rows_list[0]['user_attend_status'] == '0') { %>
+                        <option value="2">재학</option>
+                        <option value="0" selected>졸업</option>
+                        <option value="1">휴학</option>
+                    <% } else if (rows_list[0]['user_attend_status'] == '1') { %>
+                        <option value="2">재학</option>
+                        <option value="0">졸업</option>
+                        <option value="1"  selected>휴학</option>
+                    <% } %>
                 </select>
             </p>
             <p>
