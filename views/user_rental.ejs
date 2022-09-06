@@ -1,119 +1,113 @@
-<!D window.location.reload();OCTYPE html>
-<html lang="ko">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://code.jquery.com/jquery-3.6.0.js"
-    integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-    crossorigin="anonymous"></script>
-    <title>대여 신청</title>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Beharbor Rental Page | 대여 신청</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="img/favicon.png" rel="icon">
+  <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=https://fonts.googleapis.com/css?family=Inconsolata:400,500,600,700|Raleway:400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="vendor/aos/aos.css" rel="stylesheet">
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">/
+
+  <!-- Template Main CSS File -->
+  <link href="css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: MyPortfolio - v4.8.0
+  * Template URL: https://bootstrapmade.com/myportfolio-bootstrap-portfolio-website-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+
+  <script>
+    window.onload = function() {
+      let dateElement = document.getElementById('ma_start_date');
+          let date = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+          dateElement.value = date;
+          dateElement.setAttribute("min", date)
+    }
+  </script>
+
 </head>
+
 <body>
-    <h1>대여 신청</h1>
-    <form action="/rental_search" method="post">
-        물품명 :&nbsp;<input type="text" name="user_id">
-        <input type="submit" value="일부 검색">
-        <input type="reset" value="취소">
-    </form>
-    <button onclick="location.href='/rental'">전체 검색</button>
 
-    <!--
-        🐇create table assets_qty (
-        qid int AUTO_INCREMENT primary key,
-        pid int(10) unsigned,    //pid
-        total_qty text,               // 총 갯수
-        remaining_qty int,        // 남은 갯수
-        foreign key(pid) references assets(id) on delete cascade on update cascade
-        );
+    <%- include('nav',{login_user_id:id, login_user_auth: auth}) %>
 
-        create table rental_manage(
-        ma_id int NOT NULL AUTO_INCREMENT,
-        uid int,
-        pid int(10) unsigned,
-        ma_recept_date date,
-        ma_start_date datetime,
-        ma_using_period int,
-        ma_return_date datetime,
-        ma_qty int,
-        ma_state char(1),
-        ma_exprt_date date,
-        primary key (ma_id),
-        foreign key (pid) references assets(id) on delete cascade on update cascade,
-        foreign key (uid) references rental_user(uid) on delete cascade on update cascade
-        );
-    -->
-    <fieldset>
-        <legend>예약 목록</legend>
-        <% if (reserv_list.length != 0) { %>
-        <table border="1">
-            <tr>
-            <th>구분<th>아이디<th>계정상태<th>권한<th>학교<th>학번<th>이름<th>물품코드<th>물품명<th>접수일<th>시작일<th>사용기간(시간)<th>반납일<th>수량<th><th>
-            <% for (let reserv of reserv_list) { %>
-                <tr>
-                    <td><%=reserv.ma_id%><td><%=reserv.user_id%><td><%=reserv.user_status%><td><%=reserv.user_auth%><td><%=reserv.user_school%><td><%=reserv.user_num%><td><%=reserv.user_name%>
-                    <td><%=reserv.pid%><td><%=resev.name%><td><%=resev.ma_recept_date%><td><%=reserv.ma_start_date%><td><%=reserv.ma_using_period%><td><%=reserv.ma_return_date%><td><%=reserv.ma_qty%>
-                <td>
-                    <form action='/admin_rentalmanage_resrv_recept' method="post">
-                        <input type="hidden" name="resrv_recept_ma_id" value="<%= reserv.ma_id %>">
-                        <input type="submit" value='수락'>
-                    </form>
-                <td>
-                    <form action='/admin_rentalmanage_resrv_reject' method="post">
-                    <input type="hidden" name="resrv_reject_ma_id" value="<%= reserv.ma_id %>">
-                        <input type="submit" value='거절'>
-                    </form>
-            <% } %>
-        </table>
-        <% } else { %>
-            Oh! There's nothing here🤔
-        <% } %>
-    </fieldset>
+    <main id="main">
 
-    <fieldset>
-        <legend>사용중 목록</legend>
-        <% if (using_list.length != 0) {%>
-        <table border="1">
-            <tr>
-            <th>구분<th>아이디<th>계정상태<th>권한<th>학교<th>학번<th>이름<th>물품코드<th>물품명<th>접수일<th>시작일<th>사용기간(시간)<th>반납일<th>수량<th>
-            <% for (let using of using_list) { %>
-                <tr>
-                    <td><%=using.ma_id%><td><%=using.user_id%><td><%=using.user_status%><td><%=using.user_auth%><td><%=using.user_school%><td><%=using.user_num%><td><%=using.user_name%>
-                    <td><%=using.pid%><td><%=using.name%><td><%=using.ma_recept_date%><td><%=using.ma_start_date%><td><%=using.ma_using_period%><td><%=using.ma_return_date%><td><%=using.ma_qty%>
-                    <td>
-                        <form action='/admin_rentalmanage_return' method="post">
-                            <input type="hidden" name="return_ma_id" value="<%= using.ma_id %>">
-                            <input type="submit" value='반납'>
-                        </form>
-            <% } %>
-        </table>
-        <% } else { %>
-            Oh! There's nothing here🤔
-        <% } %>
-    </fieldset>
+        <section class="section pb-5">
+          <div class="container">
+    
+            <div class="row mb-5 align-items-end">
+              <div class="col-md-6" data-aos="fade-up">
+                <h2>비품 대여 신청서</h2>
+                <p class="mb-0">비품 대여 신청에 필요한 정보를 입력해주세요.
+                </p>
+              </div>
+    
+            </div>
+    
+            <div class="row">
+              <div class="col-md-6 mb-5 mb-md-0" data-aos="fade-up">
+    
+                <form action="forms/contact.php" method="post" role="form" class="php-email-form">
+    
+                  <div class="row gy-3">
+                    <div class="col-md-12 form-group">
+                      <strong class="d-block mb-1">비품명</strong>
+                      <span><%=product_name%>🤭</span>
+                      <input type="hidden" class="form-control" name = "product_id" id = "product_id" value="<%=product_id%>">
+                    </div>
+                    <div class="col-md-6 form-group">
+                      <label for="ma_start_date">대여 예정 날짜</label>
+                      <input type="datetime-local" class="form-control" name="ma_start_date" id="ma_start_date" required>
+                    </div>                
+                    <div class="col-md-6 form-group">
+                      <label for="ma_using_period">사용 기간</label>
+                      <input type="text" class="form-control" name="ma_using_period" id="ma_using_period" required>
+                    </div>
+                    <div class="col-md-12 form-group">
+                      <label for="ma_qty">수량</label>
+                      <input type="number" min="1" max="<%=product_total_qty%>" class="form-control" name="ma_qty" id="ma_qty" required>
+                    </div>
+    
+                    <div class="col-md-12 my-3">
+                      <div class="loading">Loading</div>
+                      <div class="error-message"></div>
+                      <div class="sent-message">Your message has been sent. Thank you!</div>
+                    </div>
+    
+                    <div class="col-md-6 mt-0 form-group">
+                      <input type="submit" class="readmore d-block w-100" value="Send Message">
+                    </div>
+                  </div>
+    
+                </form>
+    
+              </div>
+    
+            </div>
+    
+          </div>
+    
+        </section>
+    
+      </main><!-- End #main -->
 
-    <div class="return">
-        <fieldset>
-            <legend>반납 목록</legend>
-            <% if (return_list.length != 0) { %>
-            <table border="1">
-                <tr>
-                <th>구분<th>아이디<th>계정상태<th>권한<th>학교<th>학번<th>이름<th>물품코드<th>물품명<th>접수일<th>시작일<th>사용기간(시간)<th>반납일<th>수량<th>
-                <% for (let ret of return_list) { %>
-                    <tr>
-                        <td><%=ret.ma_id%><td><%=ret.user_id%><td><%=ret.user_status%><td><%=ret.user_auth%><td><%=ret.user_school%><td><%=ret.user_num%><td><%=ret.user_name%>
-                        <td><%=ret.pid%><td><%=ret.name%><td><%=ret.ma_recept_date%><td><%=ret.ma_start_date%><td><%=ret.ma_using_period%><td><%=ret.ma_return_date%><td><%=ret.ma_qty%>
-                        <td>
-                            <form action='/admin_rentalmanage_return_cancel' method="post">
-                                <input type="hidden" name="return_cancel_ma_id" value="<%= ret.ma_id %>">
-                                <input type="submit" value='반납취소'>
-                            </form>
-                <% } %>
-            </table>
-            <% } else { %>
-                Oh! There's nothing here🤔
-            <% } %>
-        </fieldset>
-    </div>
+    <%- include('footer') %>
+
 </body>
 </html>

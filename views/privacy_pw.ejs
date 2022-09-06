@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Beharbor Rental Page | 비밀번호 변경</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="img/favicon.png" rel="icon">
+    <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=https://fonts.googleapis.com/css?family=Inconsolata:400,500,600,700|Raleway:400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="vendor/aos/aos.css" rel="stylesheet">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">/
+
+    <!-- Template Main CSS File -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- =======================================================
+    * Template Name: MyPortfolio - v4.8.0
+    * Template URL: https://bootstrapmade.com/myportfolio-bootstrap-portfolio-website-template/
+    * Author: BootstrapMade.com
+    * License: https://bootstrapmade.com/license/
+    ======================================================== -->
+    <script>
+      function reset_chk(myForm){
+          location.href='/'
+       }
+    </script>
+</head>
+<body onload = "document.getElementById('user_pw').focus()">
+
+  <%- include('nav',{login_user_id:id, login_user_auth: auth}) %>
+
+  <!-- ======= main ======= -->
+  <main id="main">
+
+    <section class="section pb-5">
+      <div class="container">
+
+        <div class="row mb-5 align-items-end">
+          <div class="col-md-6" data-aos="fade-up">
+            <h2>비밀번호 변경</h2>
+            <p class="mb-0">비밀번호 변경에 필요한 정보를 입력해주세요.
+            </p>
+          </div>
+
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-5 mb-md-0" data-aos="fade-up">
+
+            <form action="/privacy_pw" method="post" role="form" class="php-email-form" id = "f1" name = "f1" onreset = "return reset_chk(this);">
+              <div class="row gy-3">
+                <div class="col-md-12 form-group">
+                    <label for ="user_pw">현재 비밀번호</label>
+                    <input type="text" class="form-control" name = "user_pw" id = "user_pw" required>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for ="user_change_pw">새 비밀번호</label>
+                    <input type="text" class="form-control" name = "user_change_pw" id = "user_change_pw" required>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for ="user_change_repw">새 비밀번호 재입력</label>
+                    <input type="text" class="form-control" name = "user_change_repw" id = "user_change_repw" required>
+                </div>
+                
+
+                <div class="col-md-6 mt-0 form-group">
+                    <input type = "submit" class="readmore d-block w-100" value = "변경"/>
+                    <input type = "reset" class="readmore d-block w-100" value = "취소"/>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main><!-- End #main -->
+
+  <%- include('footer') %>
+    
+</body>
+</html>

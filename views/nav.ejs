@@ -1,0 +1,49 @@
+<!-- ======= Navbar ======= -->
+<div class="collapse navbar-collapse custom-navmenu" id="main-navbar">
+    <div class="container py-2 py-md-5">
+      <div class="row align-items-start">
+        <div class="col-md-2">
+          <ul class="custom-menu">
+            <% if(login_user_id === undefined) { %>
+              <li><a href="/login">로그인</a></li>
+            <% } else { %>
+              <li><a href="/logout">로그아웃</a></li>
+              <li><a href="/privacy_pw">비밀번호 변경</a></li>
+              <li><a href="/rental">대여 신청</a></li>
+                <% if (login_user_auth == '1' || login_user_auth == '2') { %>
+                  <li><a href="/admin_signup">회원가입 관리</a></li>
+                  <li><a href="/admin_rentalmanage">신청 관리</a></li>
+                  <li><a href="/admin_userstatus">유저 관리</a></li>
+            <% }} %>
+            <!-- 추후에 추가할 예정
+            <li><a href="">이용안내</a></li>
+            <li><a href="">공지사항</a></li>
+            <li><a href="">팀 소개</a></li> -->
+          </ul>
+        </div>
+        <div class="col-md-6 d-none d-md-block  mr-auto">
+          <div class="tweet d-flex">
+            <span class="bi bi-twitter text-white mt-2 mr-3"></span>
+            <div>
+              <p><em>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam necessitatibus incidunt ut officiis explicabo inventore. <br> <a href="#">t.co/v82jsk</a></em></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 d-none d-md-block">
+          <h3>Hire Me</h3>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam necessitatibus incidunt ut officiisexplicabo inventore. <br> <a href="#">myemail@gmail.com</a></p>
+        </div>
+      </div>
+
+    </div>
+</div>
+
+<nav class="navbar navbar-light custom-navbar">
+<div class="container">
+    <a class="navbar-brand" href="/">Beharbor</a>
+    <span class="badge text-bg-light"><%=login_user_id%></span>
+    <a href="/" class="burger" data-bs-toggle="collapse" data-bs-target="#main-navbar">
+      <span></span>
+    </a>
+</div>
+</nav>

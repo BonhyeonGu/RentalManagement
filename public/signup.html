@@ -1,72 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beharbor : signup</title>
-    <script>
-        function submit_chk(myForm){
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-         }
-        function reset_chk(myForm){
-            window.close()
-         }
-    </script>
+    <title>Beharbor Rental Page | 회원가입</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="img/favicon.png" rel="icon">
+    <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=https://fonts.googleapis.com/css?family=Inconsolata:400,500,600,700|Raleway:400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="vendor/aos/aos.css" rel="stylesheet">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">/
+
+    <!-- Template Main CSS File -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- =======================================================
+    * Template Name: MyPortfolio - v4.8.0
+    * Template URL: https://bootstrapmade.com/myportfolio-bootstrap-portfolio-website-template/
+    * Author: BootstrapMade.com
+    * License: https://bootstrapmade.com/license/
+    ======================================================== -->
 </head>
-<body onload = "document.f1.user_id.focus();">
-    <form action ="/signup" method="POST" name = "f1" onsubmit = "return submit_chk(this);" onreset = "return reset_chk(this);">
-        <fieldset>
-            <legend>회원가입</legend>
-            <p>
-                <label for ="user_id">ID(ID는 5~20자로 입력해주세요. * 한글 입력금지, 영문자 1개 이상 입력, 특수문자 '-', '_' 가능)</label>
-                <input type="text" name = "user_id" id = "user_id"/>
+<body onload = "document.getElementById('user_id').focus()">
+
+<!-- ======= Navbar ======= -->
+    <nav class="navbar navbar-light custom-navbar">
+    <div class="container">
+      <a class="navbar-brand" href="/">Beharbor</a>
+      <span></span>
+      </a>
+    </div>
+  </nav>
+
+<!-- ======= main ======= -->
+<main id="main">
+
+    <!-- <section class="section pb-5"> -->
+    <section class="section site-portfolio">
+      <div class="container">
+
+        <div class="row mb-5 align-items-end">
+          <div class="col-md-6" data-aos="fade-up">
+            <h2>회원가입</h2>
+            <p class="mb-0">회원가입에 필요한 정보를 입력하고 동아대 S06-605를 방문해주세요.
             </p>
-            <p>
-                <label for ="user_pw">PW(비밀번호는 8~16자로 입력해주세요. * 한글 입력 금지, 특수문자 및 영문자 1회 이상 입력 *)</label>
-                <input type="text" name = "user_pw" id = "user_pw"/>
-            </p>
-            <p>
-                <label for ="user_pw_chk">PW확인</label>
-                <input type="text" name = "user_pw_chk" id = "user_pw_chk"/>
-            </p>
-            <p>
-                <label for ="user_school">학교명</label>
-                <input type="text" name = "user_school" id = "user_school"/>
-            </p>
-            <p>
-                <label for ="user_num">학번</label>
-                <input type="text" name = "user_num" id = "user_num"/>
-            </p>
-            <p>
-                <label for ="user_name">이름</label>
-                <input type="text" name = "user_name" id = "user_name"/>
-            </p>
-            <p>
-                <label for ="user_department">소속학과</label>
-                <input type="text" name = "user_department" id = "user_department"/>
-            </p>
-            <p>
-                <label for ="user_grade">학년</label>
-                <input type="text" name = "user_grade" id = "user_grade"/>
-            </p>
-            <p>
-                <label for ="user_attend_status">재학여부</label>
-                <select name="user_attend_status">
-                    <option value="0">졸업</option>
-                    <option value="1">휴학</option>
-                    <option value="2">재학</option>
-                </select>
-            </p>
-            <p>
-                <label for ="user_phone">휴대폰 번호</label>
-                <input type="text" name = "user_phone" id = "user_phone"/>
-            </p>
-            <p>
-                <input type = "submit" value = "신청"/>
-                <input type="reset" value = "취소"/>
-            </p>
-        </fieldset>
-    </form>  
+          </div>
+
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-5 mb-md-0" data-aos="fade-up">
+
+            <form action="/signup" method="post" role="form" class="php-email-form" id = "f1" name = "f1">
+              <div class="row gy-3">
+                <div class="col-md-12 form-group">
+                    <label for ="user_id">아이디(5~20자로 입력해주세요. * 한글 입력금지, 영문자 1개 이상 입력, 특수문자 '-', '_' 가능)</label>
+                    <input type="text" class="form-control" name = "user_id" id = "user_id" required>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for ="user_pw">비밀번호(8~16자로 입력해주세요. * 한글 입력 금지, 특수문자 및 영문자 1회 이상 입력 *)</label>
+                    <input type="text" class="form-control" name = "user_pw" id = "user_pw" required>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for ="user_pw_chk">비밀번호 재입력</label>
+                    <input type="text" class="form-control" name = "user_pw_chk" id = "user_pw_chk" required>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for ="user_school">학교명</label>
+                    <input type="text" class="form-control" name = "user_school" id = "user_school" required>
+                </div>
+                <div class="col-md-12 form-group">
+                  <label for ="user_num">학번</label>
+                  <input type="text" class="form-control" name = "user_num" id = "user_num" required>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for ="user_name">이름</label>
+                    <input type="text" class="form-control" name = "user_name" id = "user_name" required>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for ="user_department">소속학과</label>
+                    <input type="text" class="form-control" name = "user_department" id = "user_department" required>
+                </div>
+                
+                <div class="col-md-12 form-group">
+                  <label class="visually-hidden" for="user_grade">학년</label>
+                  <select class="form-select" name="user_grade" id="user_grade" required>
+                      <option value="1" id="gradeO1">1학년</option>
+                      <option value="2" id="gradeO2">2학년</option>
+                      <option value="3" id="gradeO3">3학년</option>
+                      <option value="4" id="gradeO4">4학년</option>
+                  </select>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label class="visually-hidden" for="user_attend_status">재학여부</label>
+                    <select class="form-select" name="user_attend_status" id="user_attend_status" required>
+                        <option value="0" id="statusO1">졸업</option>
+                        <option value="1" id="statusO2">휴학</option>
+                        <option value="2" id="statusO3">재학</option>
+                    </select>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for ="user_phone">휴대폰 번호</label>
+                    <input type="text" class="form-control" name = "user_phone" id = "user_phone" required>
+                </div>
+
+                <div class="col-md-12 my-3">
+                  <div class="loading">Loading</div>
+                  <div class="error-message"></div>
+                  <div class="sent-message">Your message has been sent. Thank you!</div>
+                </div>
+
+                <div class="col-md-6 mt-0 form-group">
+                    <input type = "submit" class="readmore d-block w-100" value = "회원가입"/>
+                    <input type = "reset" class="readmore d-block w-100" value = "취소"/>
+                </div>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6">
+          <p class="mb-1">&copy; Copyright MyPortfolio. All Rights Reserved</p>
+          <div class="credits">
+            <!--
+            All the links in the footer should remain intact.
+            You can delete the links only if you purchased the pro version.
+            Licensing information: https://bootstrapmade.com/license/
+            Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/buy/?theme=MyPortfolio
+          -->
+            Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+          </div>
+        </div>
+        <div class="col-sm-6 social text-md-end">
+          <a href="#"><span class="bi bi-twitter"></span></a>
+          <a href="#"><span class="bi bi-facebook"></span></a>
+          <a href="#"><span class="bi bi-instagram"></span></a>
+          <a href="#"><span class="bi bi-linkedin"></span></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="vendor/aos/aos.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="vendor/isotope-layout/isotope.pkgd.min.js"></script>
+  <script src="vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="js/main.js"></script>
+    
 </body>
 </html>

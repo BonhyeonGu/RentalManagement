@@ -1,27 +1,91 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" script-src='unsafe-inline';>
-    <title>Beharbor : Main</title>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Beharbor Rental Page</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="img/favicon.png" rel="icon">
+  <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=https://fonts.googleapis.com/css?family=Inconsolata:400,500,600,700|Raleway:400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="vendor/aos/aos.css" rel="stylesheet">
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">/
+
+  <!-- Template Main CSS File -->
+  <link href="css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: MyPortfolio - v4.8.0
+  * Template URL: https://bootstrapmade.com/myportfolio-bootstrap-portfolio-website-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
 </head>
+
 <body>
-    <h2 onclick="location.href='/'">Beharbor</h2>
+  <%- include('nav',{login_user_id:id, login_user_auth: auth}) %>
+
+  <main id="main">
+
+    <!-- ======= Works Section ======= -->
+    <section class="section site-portfolio">
+      <div class="container">
+        <div class="row mb-5 align-items-center">
+          <div class="col-md-12 col-lg-6 mb-4 mb-lg-0" data-aos="fade-up">
+            <h2>환엽합니다, 비품 대여 페이지 입니다</h2>
+            <p class="mb-0">Welcome, This is equipment landing page</p>
+          </div>
+          <div class="col-md-12 col-lg-6 text-start text-lg-end" data-aos="fade-up" data-aos-delay="100">
+            <!-- <div id="filters" class="filters">
+              <a href="#" data-filter="*" class="active">몰루</a>
+              <a href="#" data-filter=".web">니가</a>
+              <a href="#" data-filter=".design">알아서</a>
+              <a href="#" data-filter=".branding">찾아바</a>
+              <a href="#" data-filter=".photography">훙</a>
+            </div> -->
+          </div>
+        </div>
+        <div id="portfolio-grid" class="row no-gutter" data-aos="fade-up" data-aos-delay="200">
+          <div class="item web col-sm-6 col-md-4 col-lg-4 mb-4">
+            <a href="/work_single" class="item-wrap fancybox">
+              <div class="work-info">
+                <h3>Boxed Water</h3>
+                <span>Web</span>
+              </div>
+              <img class="img-fluid" src="img/img_1.jpg">
+            </a>
+          </div>
+        </div>
+
+        <!-- ======= Pagenation Section ======= -->
+        <div class="section">
+          <div class="center">
+            <div class="pagination" data-aos="fade-up">
+              <a href="#">&laquo;</a>
+              <a class="active" href="#">1</a>
+              <a href="#">2</a>
+              <a href="#">3</a>
+              <a href="#">&raquo;</a>
+            </div>
+          </div>
+        </div>
+        <!-- End Pagenation Section -->
+
+      </section><!-- End  Works Section -->
+    </main><!-- End #main -->
+
+    <%- include('footer') %>
+
 </body>
-<% if(login_user_id === undefined) { %>
-    <button onclick="location.href='/login'">로그인</button>
-    <button onclick="location.href='/signup'">회원가입</button>
-<% } else { %>
-    <%= login_user_id %>님, 환영합니다!<br>
-    <button onclick="location.href='/logout'">로그아웃</button>
-    <button onclick="location.href='/rental'">비품 대여 신청</button>
-    <button onclick="location.href='/privacy_pw'">비밀번호 변경</button>
-    <% if (login_user_auth == '1' || login_user_auth == '2') { %>
-        <button onclick="location.href='/admin_signup'">회원가입 관리</button>
-        <button onclick="location.href='/admin_rentalmanage'">신청 관리</button>
-        <button onclick="location.href='/admin_userstatus'">유저 관리</button>
-    <% } %>
-<% } %> 
+
 </html>

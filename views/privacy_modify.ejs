@@ -1,14 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beharbor : signup </title>
-    <script>
-        function submit_chk(myForm){
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-         }
+    <title>Beharbor Rental Page | 개인정보 변경</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="img/favicon.png" rel="icon">
+    <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=https://fonts.googleapis.com/css?family=Inconsolata:400,500,600,700|Raleway:400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="vendor/aos/aos.css" rel="stylesheet">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">/
+
+    <!-- Template Main CSS File -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- =======================================================
+    * Template Name: MyPortfolio - v4.8.0
+    * Template URL: https://bootstrapmade.com/myportfolio-bootstrap-portfolio-website-template/
+    * Author: BootstrapMade.com
+    * License: https://bootstrapmade.com/license/
+    ======================================================== -->
+    <script>
         function reset_chk(myForm){
             location.href='/admin_signup'
          }
@@ -18,61 +40,121 @@
             f.method = 'post'
             f.submit()
         }
-        function pw_change(){
-            const f = document.getElementById('f1')
-            f.action = '/privacy_pw'
-            f.method = 'post'
-            f.submit()
+
+        window.onload = function(){
+          var user_attend_status = rows_list[0]['user_attend_status'];
+          var user_grade = rows_list[0]['user_grade'];
+
+          if (user_attend_status =='0') {
+            document.getElementById('statusO1').setAttribute('select', 'selected');
+          } else if (user_attend_status == '1') {
+            document.getElementById('statusO2').setAttribute('select', 'selected');
+          } else if (user_attend_status == '2') {
+            document.getElementById('statusO3').setAttribute('select', 'selected');
+          }
+
+          if (user_grade=='1') {
+            document.getElementById('gradeO1').setAttribute('select','selected');
+          } else if (user_grade=='2') {
+            document.getElementById('gradeO2').setAttribute('select','selected');
+          } else if (user_grade=='3') {
+            document.getElementById('gradeO3').setAttribute('select','selected');
+          } else if (user_grade=='4') {
+            document.getElementById('gradeO4').setAttribute('select','selected');
+          }
         }
     </script>
 </head>
-<body onload = "document.f1.user_school.focus();">
-    <form id = "f1" name = "f1" onsubmit = "return submit_chk(this);" onreset = "return reset_chk(this);">
-        <fieldset>
-            <legend>개인정보 변경 신청서</legend>
-            <p>
-                <label for ="user_id">ID: <%=rows_list[0]['user_id']%></label>
-                <input type="hidden" name = "user_id" id = "user_id" value="<%=rows_list[0]['user_id']%>">
+<body onload = "document.getElementById('user_school').focus()">
+
+  <%- include('nav',{login_user_id:id, login_user_auth: auth}) %>
+
+  <!-- ======= main ======= -->
+  <main id="main">
+
+    <section class="section pb-5">
+      <div class="container">
+
+        <div class="row mb-5 align-items-end">
+          <div class="col-md-6" data-aos="fade-up">
+            <h2>개인정보 변경 신청서</h2>
+            <p class="mb-0">개인정보 변경 신청서에 필요한 정보를 입력하고 동아대 S06-605를 방문해주세요.
             </p>
-            <p>
-                <label for ="user_school">학교명</label>
-                <input type="text" name = "user_school" id = "user_school" value="<%=rows_list[0]['user_school']%>">
-            </p>
-            <p>
-                <label for ="user_num">학번</label>
-                <input type="text" name = "user_num" id = "user_num" value="<%=rows_list[0]['user_num']%>">
-            </p>
-            <p>
-                <label for ="user_name">이름</label>
-                <input type="text" name = "user_name" id = "user_name" value="<%=rows_list[0]['user_name']%>">
-            </p>
-            <p>
-                <label for ="user_department">소속학과</label>
-                <input type="text" name = "user_department" id = "user_department" value="<%=rows_list[0]['user_department']%>"/>
-            </p>
-            <p>
-                <label for ="user_grade">학년</label>
-                <input type="text" name = "user_grade" id = "user_grade" value="<%=rows_list[0]['user_grade']%>"/>
-            </p>
-            <p>
-                <label for ="user_attend_status">재학여부</label>
-                <select name="user_attend_status">
-                    <option value="0">졸업</option>
-                    <option value="1">휴학</option>
-                    <option value="2">재학</option>
-                </select>
-            </p>
-            <p>
-                <label for ="user_phone">휴대폰 번호</label>
-                <input type="text" name = "user_phone" id = "user_phone" value="<%=rows_list[0]['user_phone']%>"/>
-            </p>
-            <p>
-                <input type = "button" onclick="modify()" value = "변경 신청"/>
-                <input type = "button" onclick="pw_change()" value = "비밀번호 변경"/>
-                <input type = "reset" value = "취소"/>
-            </p>
-        </fieldset>
-        
-    </form>  
+          </div>
+
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-5 mb-md-0" data-aos="fade-up">
+
+            <form role="form" class="php-email-form" id = "f1" name = "f1" onreset = "return reset_chk(this);">
+
+              <div class="row gy-3">
+                <div class="col-md-12 form-group">
+                    <strong class="d-block mb-1">ID</strong>
+                    <span><%=rows_list[0]['user_id']%>🤭</span>
+                    <input type="hidden" class="form-control" name = "user_id" id = "user_id" value="<%=rows_list[0]['user_id']%>" required>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for ="user_school">학교명</label>
+                    <input type="text" class="form-control" name = "user_school" id = "user_school" value="<%=rows_list[0]['user_school']%>" required>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for ="user_num">학번</label>
+                    <input type="text" class="form-control" name = "user_num" id = "user_num" value="<%=rows_list[0]['user_num']%>" required>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for ="user_name">이름</label>
+                    <input type="text" class="form-control" name = "user_name" id = "user_name" value="<%=rows_list[0]['user_name']%>" required>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for ="user_department">소속학과</label>
+                    <input type="text" class="form-control" name = "user_department" id = "user_department" value="<%=rows_list[0]['user_department']%>"required>
+                </div>
+                <div class="col-md-12 form-group">
+                  <label class="visually-hidden" for="user_grade">학년</label>
+                  <select class="form-select" name="user_grade" id="user_grade" required>
+                      <option value="1" id="gradeO1">1학년</option>
+                      <option value="2" id="gradeO2">2학년</option>
+                      <option value="3" id="gradeO3">3학년</option>
+                      <option value="4" id="gradeO4">4학년</option>
+                  </select>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label class="visually-hidden" for="user_attend_status">재학여부</label>
+                    <select class="form-select" name="user_attend_status" id="user_attend_status" required>
+                        <option value="0" id="statusO1">졸업</option>
+                        <option value="1" id="statusO2">휴학</option>
+                        <option value="2" id="statusO3">재학</option>
+                    </select>
+                </div>
+                <div class="col-md-12 form-group">
+                    <label for ="user_phone">휴대폰 번호</label>
+                    <input type="text" class="form-control" name = "user_phone" id = "user_phone" value="<%=rows_list[0]['user_phone']%>" required>
+                </div>
+                <!-- <div class="col-md-12 form-group">
+                  <label for="name">Message</label>
+                  <textarea class="form-control" name="message" cols="30" rows="10" required></textarea>
+                </div> -->
+
+                <div class="col-md-12 my-3">
+                  <div class="loading">Loading</div>
+                  <div class="error-message"></div>
+                  <div class="sent-message">Your message has been sent. Thank you!</div>
+                </div>
+
+                <div class="col-md-6 mt-0 form-group">
+                    <input type = "button" class="readmore d-block w-100" onclick="modify()" value = "변경 신청"/>
+                    <input type = "reset" class="readmore d-block w-100" value = "취소"/>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main><!-- End #main -->
+
+  <%- include('footer') %>
 </body>
 </html>
