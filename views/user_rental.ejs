@@ -43,20 +43,9 @@
 </head>
 
 <body>
-<<<<<<< HEAD
-=======
-    <h1>대여 신청</h1>
-    <form action="/rental_search" method="post">
-        물품명 :&nbsp;<input type="text" name="asset_name">
-        <input type="submit" value="일부 검색">
-        <input type="reset" value="취소">
-    </form>
-    <button onclick="location.href='/rental'">전체 검색</button>
->>>>>>> d7b36149403a002504a101db6ac443812aea90b8
 
     <%- include('nav',{login_user_id:id, login_user_auth: auth}) %>
 
-<<<<<<< HEAD
     <main id="main">
 
         <section class="section pb-5">
@@ -120,44 +109,5 @@
 
     <%- include('footer') %>
 
-=======
-        create table rental_manage(
-        ma_id int NOT NULL AUTO_INCREMENT,
-        uid int,
-        pid int(10) unsigned,
-        ma_recept_date date,
-        ma_start_date datetime,
-        ma_using_period int,
-        ma_return_date datetime,
-        ma_qty int,
-        ma_state char(1),
-        ma_exprt_date date,
-        primary key (ma_id),
-        foreign key (pid) references assets(id) on delete cascade on update cascade,
-        foreign key (uid) references rental_user(uid) on delete cascade on update cascade
-        );
-    -->
-    <fieldset>
-        <legend>물품 목록</legend>
-        <% if (rows_list.length != 0) { %>
-        <table border="1">
-            <tr>
-            <th>물품명<th>남은갯수<th>총갯수
-            <% for (let rows of rows_list) { %>
-                <tr>
-                    <td><%=rows.name%><td><%=rows.remaining_qty%><td><%=rows.total_qty%>
-                <td>
-                    <form action='/rental_sign' method="post">
-                        <input type="hidden" name="asset_id" value="<%= rows.id %>">
-                        <input type="submit" value='신청'>
-                    </form>
-            <% } %>
-        </table>
-        <% } else { %>
-            Oh! There's nothing here🤔
-        <% } %>
-    </fieldset>
-
->>>>>>> d7b36149403a002504a101db6ac443812aea90b8
 </body>
 </html>
