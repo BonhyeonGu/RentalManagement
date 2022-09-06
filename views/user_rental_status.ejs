@@ -1,0 +1,100 @@
+<!D window.location.reload();OCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+    integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+    crossorigin="anonymous"></script>
+    <title>대여 현황</title>
+</head>
+<body>
+    <h1>물품 검색</h1>
+    <form action="/rental_status_search" method="post">
+        물품명 :&nbsp;<input type="text" name="asset_name">
+        <input type="submit" value="일부 검색">
+        <input type="reset" value="취소">
+    </form>
+    <button onclick="location.href='/rental_status'">전체 검색</button>
+
+    <!--
+        🐇create table assets_qty (
+        qid int AUTO_INCREMENT primary key,
+        pid int(10) unsigned,    //pid
+        total_qty text,               // 총 갯수
+        remaining_qty int,        // 남은 갯수
+        foreign key(pid) references assets(id) on delete cascade on update cascade
+        );
+
+        create table rental_manage(
+        ma_id int NOT NULL AUTO_INCREMENT,
+        uid int,
+        pid int(10) unsigned,
+        ma_recept_date date,
+        ma_start_date datetime,
+        ma_using_period int,
+        ma_return_date datetime,
+        ma_qty int,
+        ma_state char(1),
+        ma_exprt_date date,
+        primary key (ma_id),
+        foreign key (pid) references assets(id) on delete cascade on update cascade,
+        foreign key (uid) references rental_user(uid) on delete cascade on update cascade
+        );
+    -->
+    <fieldset>
+        <legend>신청 목록</legend>
+        <% if (rows_list.length != 0) { %>
+        <table border="1">
+            <tr>
+            <th>물품명<th>신청갯수<th>신청일<th>사용기간
+            <% for (let rows of rows_list) { %>
+                <% if (rows.ma_state=='1') { %>
+                <tr>
+                    <td><%=rows.name%><td><%=rows.ma_qty%><td><%=rows.ma_recept_date%><td><%=rows.ma_using_period%>
+                <td>
+                    <form action='/rental_status_delete' method="post">
+                        <input type="hidden" name="ma_id" value="<%= rows.ma_id %>">
+                        <input type="submit" value='취소'>
+                    </form>
+                <% } %>
+            <% } %>
+        </table>
+    </fieldset>
+    <br>
+    <fieldset>
+        <legend>사용 목록</legend>
+        <table border="1">
+            <tr>
+            <th>물품명<th>신청갯수<th>신청일<th>시작일<th>반납예정일<th>사용기간
+            <% for (let rows of rows_list) { %>
+                <% if (rows.ma_state=='2') { %>
+                <tr>
+                    <td><%=rows.name%><td><%=rows.ma_qty%><td><%=rows.ma_recept_date%><td><%=rows.ma_start_date%><td><%=rows.ma_return_date%><td><%=rows.ma_using_period%>
+
+                <% } %>
+            <% } %>
+        </table>
+    </fieldset>
+    <br>
+    <fieldset>
+        <legend>반납 목록</legend>
+        <table border="1">
+            <tr>
+            <th>물품명<th>신청갯수<th>신청일<th>시작일<th>반납일<th>사용기간
+            <% for (let rows of rows_list) { %>
+                <% if (rows.ma_state=='3') { %>
+                <tr>
+                    <td><%=rows.name%><td><%=rows.ma_qty%><td><%=rows.ma_recept_date%><td><%=rows.ma_start_date%><td><%=rows.ma_return_date%><td><%=rows.ma_using_period%>
+
+                <% } %>
+            <% } %>
+        </table>
+        <% } else { %>
+            Oh! There's nothing here🤔
+        <% } %>
+    </fieldset>
+
+</body>
+</html>
