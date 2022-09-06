@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+    integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+    crossorigin="anonymous"></script>
+    <title>Beharbor : Database manage</title>
+</head>
+<body>
+    <h2 onclick="location.href='/'">Beharbor</h2>
+
+    <form action="/database_search" method="post">
+        물품 명:&nbsp;<input type="text" name="id">
+        <input type="submit" value="일부 검색">
+        <input type="reset" value="취소">
+    </form>
+    <button onclick="location.href='/database'">전체 검색</button>
+    <br><br>
+    <form action='/database_add' method="get">
+        <input type="submit" value='데이터베이스 추가'>
+    </form>
+    <fieldset>
+        <legend>데이터베이스 목록</legend>
+        <% if (rows_list.length != 0) { %>
+        <table border="1">
+            <tr>
+            <th>ID<th>물품명<th>물품태그<th>모델명<th>시리얼번호<th>비고<th>Image<th>Created_at<th>Updated_at<th>lendable<th>status<th>회사명<th>총 갯수<th>남은 갯수
+            <% for (let rows of rows_list) { %>
+                <tr>
+                    <td><%=rows.id%><td><%=rows.name%><td><%=rows.tag%><td><%=rows.model_id%><td><%=rows.serial%><td><%=rows.note%><td><%=rows.image%>
+                    <td><%=rows.created_at%><td><%=rows.updated_at%><td><%=rows.lendable%><td><%=rows.status%><td><%=rows.company%><td><%=rows.total_qty%><td><%=rows.remaining_qty%>
+                    <td>
+                        
+                            <form action='/database_manage' method="post">
+                                <input type="hidden" name="id" value="<%= rows.id %>">
+                                <input type="submit" value='수정'>
+                            </form>
+            <% } %>
+        </table>
+        
+        <% } else { %>
+            Oh! There's nothing here🤔
+        <% } %>
+    </fieldset>
+</body>
+</html>
