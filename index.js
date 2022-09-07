@@ -102,7 +102,7 @@ app.post("/database_search", (request, response)=>{
 
 app.get("/database_add", (request, response)=>{ 
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
-        conn.query(`select id from product`, function(err, rows, fields){
+        conn.query(`select * from product`, function(err, rows, fields){
             if (err) throw err;
             response.render('admin_database_add.ejs', {rows_list : rows})
             
