@@ -81,6 +81,7 @@ app.get("/work_single", (request, response)=>{
     })
 })
 
+<<<<<<< HEAD
 // '/search' GET 라우팅
 app.get("/search", (request, response)=>{ 
     conn.query(`select * from product where name='${request.body.asset_name}' and lendable=1`, function(err, rows, fields){
@@ -88,6 +89,15 @@ app.get("/search", (request, response)=>{
         response.render('user_rental.ejs', {rows_list : rows})
     })
 })
+=======
+// // '/search' GET 라우팅
+// app.get("/search", (request, response)=>{ 
+//     conn.query(`select * from product where name='${request.query.product_name}'`, function(err, rows, fields){
+//         if (err) throw err;
+//         response.render('user_rental.ejs', {rows_list : rows})
+//     })
+// })
+>>>>>>> 60dffa285e8def80c79e3dbd9d91034aad7f4138
 
 // ================================= 데이터베이스 관련 라우터 =======================================
 app.get("/database", (request, response)=>{
@@ -243,12 +253,18 @@ app.get("/rental", (request, response)=>{
 // '/rental_sign_result' POST 라우팅
 app.post("/rental_sign_result", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
+<<<<<<< HEAD
         let a=parseInt(request.body.product_id)
         console.log(request.body.product_id)
         console.log(request.body.product_start_date)
         conn.query(`insert into rental_manage values(NULL,${request.session.uid},${request.body.product_id},now(),"${request.body.product_start_date}",${request.body.product_using_period},NULL,${request.body.product_qty},"1",NULL)`, function(err){
             if (err) throw err;
             response.send(`<script>alert('물품 대여가 신청되었습니다. 결과는 추후에 알려드리겠습니다.'); location.href='/rental'</script>`)
+=======
+        conn.query(`insert into rental_manage values(NULL,${request.session.uid},${request.body.product_id},now(),"${request.body.product_start_date}",${request.body.product_using_period},NULL,${request.body.product_qty},"1",NULL)`, function(err){
+            if (err) throw err;
+            response.send(`<script>alert('물품 대여가 신청되었습니다. 결과는 추후에 알려드리겠습니다.'); location.href="/work_single?product_id=${request.body.product_id}"</script>`)
+>>>>>>> 60dffa285e8def80c79e3dbd9d91034aad7f4138
         })
     }
 })
