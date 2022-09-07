@@ -8,8 +8,6 @@ const crypto = require('crypto');
 
 // 2. DB 연동하기
 const { upload } = require("./multer.js");
-app.set('view engine', 'ejs')
-app.set('views', __dirname + '/views')
 const db=require("./secret/database.js")
 const conn=db.init()
 db.connect(conn)
