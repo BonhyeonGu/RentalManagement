@@ -5,6 +5,7 @@ const fs = require('fs')
 const app = express()
 const bodyParser=require('body-parser')
 const crypto = require('crypto');
+const { upload } = require("./multer.js");
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
 const db=require("./secret/database.js")
@@ -71,13 +72,17 @@ app.post("/database_search", (request, response)=>{
 
 app.get("/database_add", (request, response)=>{ 
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
-        response.render('admin_database_add.ejs');
+        conn.query(`select * from product`, function(err, rows, fields){
+            if (err) throw err;
+            response.render('admin_database_add.ejs', {rows_list : rows})
+            
+        })
     }
 })
 
-app.post("/database_adding", (request, response)=>{ 
+app.post("/database_adding",upload.single('image'),(request, response)=>{ 
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
-        conn.query(`insert into product values(NULL,"${request.body.name}","${request.body.tag}","${request.body.model_id}","${request.body.serial}","${request.body.note}","${request.body.image}",now(),now(), ${request.body.lendable},${request.body.status},"${request.body.company}",${request.body.total_qty},${request.body.remaining_qty})`, function(err){
+        conn.query(`insert into product values(NULL,"${request.body.name}","${request.body.tag}","${request.body.model_id}","${request.body.serial}","${request.body.note}","${request.file.filename}",now(),now(), ${request.body.lendable},${request.body.status},"${request.body.company}",${request.body.total_qty},${request.body.remaining_qty})`, function(err){
             if (err) throw err;
             response.send(`<script>alert('데이터베이스에 추가되었습니다.'); location.href='/database'</script>`)
         })

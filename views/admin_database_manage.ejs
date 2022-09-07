@@ -27,7 +27,7 @@
     </script>
 </head>
 <body onload = "document.f1.user_school.focus();">
-    <form id = "f1" name = "f1" onsubmit = "return submit_chk(this);" onreset = "return reset_chk(this);">
+    <form id = "f1" name = "f1" enctype="multipart/form-data" onsubmit = "return submit_chk(this);" onreset = "return reset_chk(this);">
         <fieldset>
             <legend>Database</legend>
             <p>
@@ -56,7 +56,7 @@
             </p>
             <p>
                 <label for ="image">이미지</label>
-                <input type="text" name = "image" id = "image" value="<%=rows_list[0]['image']%>"/>
+                <input type="file" name="image" accept="image/*" value="../uploads/<%=rows_list[0]['image']%>"/>
             </p>
             <p>
                 <label for ="lendable">빌리기 상태</label>
