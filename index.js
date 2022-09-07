@@ -87,7 +87,7 @@ app.get("/database", (request, response)=>{
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
         conn.query(`select * from product`, function(err, rows, fields){
             if(err) throw err;
-            response.render('../views/admin_database.ejs', {rows_list : rows})
+            response.render('../views/admin_database.ejs', { id:request.session.user_id, auth:request.session.user_auth, rows_list:rows})
         })
     }
 })
