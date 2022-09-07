@@ -64,21 +64,28 @@ function user_auth_0_1_2(user_auth,res){
 // ================================= 메인 화면 관련 라우터 =======================================
 // '/' GET 라우팅
 app.get("/", (request, response)=>{
-    conn.query('select id, name, remaining_qty from product', function(err, rows, fields) {
+    conn.query('select id, name, image, remaining_qty from product', function(err, rows, fields) {
         if (err) throw err
-
         response.render('main.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_list:rows});
     })
 })
 
-// // '/work_single' GET 라우팅
+// '/work_single' GET 라우팅
 app.get("/work_single", (request, response)=>{
     var product_id = request.query.product_id
 
-    conn.query(`select id, name, remaining_qty, total_qty from product where id='${product_id}'`, function(err, rows, fields) {
+    conn.query(`select id, name, remaining_qty, total_qty, image from product where id='${product_id}'`, function(err, rows, fields) {
         if (err) throw err
 
         response.render('work_single.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_info:rows})
+    })
+})
+
+// '/search' GET 라우팅
+app.get("/search", (request, response)=>{ 
+    conn.query(`select * from product where name='${request.body.asset_name}' and lendable=1`, function(err, rows, fields){
+        if (err) throw err;
+        response.render('user_rental.ejs', {rows_list : rows})
     })
 })
 
@@ -87,7 +94,7 @@ app.get("/database", (request, response)=>{
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
         conn.query(`select * from product`, function(err, rows, fields){
             if(err) throw err;
-            response.render('../views/admin_database.ejs', { id:request.session.user_id, auth:request.session.user_auth, rows_list:rows})
+            response.render('admin_database.ejs', { id:request.session.user_id, auth:request.session.user_auth, rows_list:rows})
         })
     }
 })
@@ -96,7 +103,7 @@ app.post("/database_search", (request, response)=>{
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
         conn.query(`select * from product where name='${request.body.id}'`, function(err, rows, fields){
             if (err) throw err;
-            response.render('../views/admin_database.ejs', {rows_list : rows})
+            response.render('admin_database.ejs', {rows_list : rows})
         })
     }
 })
@@ -124,7 +131,7 @@ app.post("/database_manage", (request, response)=>{
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`select * from product where id=${request.body.id}`, function(err, rows, fields){
             if(err) throw err;
-            response.render('../views/admin_database_manage.ejs', {rows_list : rows})
+            response.render('admin_database_manage.ejs', {rows_list : rows})
         })
     }
 })
@@ -151,6 +158,7 @@ app.post("/database_deny", (request, response)=>{
 })
 
 // ================================= 로그인 관련 라우터 =======================================
+// '/logout' GET 라우팅
 app.get("/logout", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         request.session.destroy(function(err){
@@ -159,6 +167,7 @@ app.get("/logout", (request, response)=>{
     }
 })
 
+// '/login' GET 라우팅
 app.get("/login", (request, response)=>{
     fs.readFile("public/login.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
@@ -219,7 +228,8 @@ app.post("/login",(request,response)=>{
     })
 })
 
-// ================================= 비품 대여(사용자 측) 관련 라우터 ======================================= 
+// ================================= 비품 대여(사용자 측) 관련 라우터 =======================================
+// '/rental' GET 라우팅
 app.get("/rental", (request, response)=>{ 
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`select id, name, total_qty from product where id='${request.query.product_id}'`, function(err, rows, fields){
@@ -230,20 +240,15 @@ app.get("/rental", (request, response)=>{
     }
 })
 
+// '/rental_sign_result' POST 라우팅
 app.post("/rental_sign_result", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
-        conn.query(`insert into rental_manage values(NULL,${request.session.uid},${Number(request.body.product_id)},now(),${Number(request.body.product_start_date)},NULL,"${request.body.product_start_date}",${Number(request.body.product_using_period)},NULL,${Number(request.body.product_qty)},"1",NULL)`, function(err){
+        let a=parseInt(request.body.product_id)
+        console.log(request.body.product_id)
+        console.log(request.body.product_start_date)
+        conn.query(`insert into rental_manage values(NULL,${request.session.uid},${request.body.product_id},now(),"${request.body.product_start_date}",${request.body.product_using_period},NULL,${request.body.product_qty},"1",NULL)`, function(err){
             if (err) throw err;
             response.send(`<script>alert('물품 대여가 신청되었습니다. 결과는 추후에 알려드리겠습니다.'); location.href='/rental'</script>`)
-        })
-    }
-})
-
-app.post("/rental_search", (request, response)=>{ 
-    if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
-        conn.query(`select * from product where name='${request.body.asset_name}' and lendable=1`, function(err, rows, fields){
-            if (err) throw err;
-            response.render('../views/user_rental.ejs', {rows_list : rows})
         })
     }
 })
@@ -252,7 +257,7 @@ app.get("/rental_status", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`select * from product, rental_manage where product.id=rental_manage.pid and uid=${request.session.uid}`, function(err, rows, fields){
             if(err) throw err;
-            response.render('../views/user_rental_status.ejs', {rows_list : rows})
+            response.render('user_rental_status.ejs', {rows_list : rows})
         })
     }
 })
@@ -261,7 +266,7 @@ app.post("/rental_status_search", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`select * from product, rental_manage where product.id=rental_manage.pid and uid=${request.session.uid} and product.name='${request.body.asset.name}'`, function(err, rows, fields){
             if(err) throw err;
-            response.render('../views/user_rental_status.ejs', {rows_list : rows})
+            response.render('user_rental_status.ejs', {rows_list : rows})
         })
     }
 })
@@ -299,7 +304,7 @@ app.get("/admin_rentalmanage", (request, response)=>{ // 전체 검색
                 conn.query(qry3, function(err, ret, fields){
                     if (err) throw err;
     
-                    response.render('../views/admin_rentalmanage.ejs', {reserv_list : reserv, using_list : using, return_list : ret})
+                    response.render('admin_rentalmanage.ejs', {reserv_list : reserv, using_list : using, return_list : ret})
                 })
             })
         })
@@ -330,7 +335,7 @@ app.post("/admin_rentalmanage_search", (req, res)=>{ // 일부 검색
                     conn.query(qry3, function(err, ret, fields){
                         if (err) throw err;
 
-                        res.render('../views/admin_rentalmanage.ejs', {reserv_list : reserv, using_list : using, return_list : ret})
+                        res.render('admin_rentalmanage.ejs', {reserv_list : reserv, using_list : using, return_list : ret})
                     })
                 })
             })
@@ -437,7 +442,7 @@ app.post("/admin_rentalmanage_return_cancel", (request, response)=>{ // 비품 �
 
 // ================================= 회원가입(사용자 측) 관련 라우터 =======================================
 app.get("/signup", (request, response)=>{
-    fs.readFile("public/signup.html", (error,data)=>{
+    fs.readFile("/signup.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
         response.write(data)
         response.end()
@@ -495,7 +500,7 @@ app.get("/admin_signup", (request, response)=>{ // 전체 검색(회원가입 �
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
         conn.query(`select * from rental_user where user_auth='4'`, function(err, rows, fields){
             if (err) throw err;
-            response.render('../views/admin_signup.ejs', {rows_list : rows})
+            response.render('admin_signup.ejs', {rows_list : rows})
         })
     }
 })
@@ -505,7 +510,7 @@ app.post("/admin_signup_search", (request, response)=>{ // 일부 검색(회원�
         let userID = request.body.user_id;
         conn.query(`select * from rental_user where user_auth='4' and user_id = "${userID}"`, function(err, rows, fields){
             if (err) throw err;
-            response.render('../views/admin_signup.ejs', {rows_list : rows})
+            response.render('admin_signup.ejs', {rows_list : rows})
         })
     }
 })
@@ -536,7 +541,7 @@ app.post("/admin_signup_manage", (request, response)=>{ // 회원가입 신청 �
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`select * from rental_user where user_id='${request.body.signup_user_id}'`, function(err, rows, fields){
             if (err) throw err
-            response.render('../views/admin_signup_rewirte.ejs', {rows_list : rows})
+            response.render('admin_signup_rewirte.ejs', {rows_list : rows})
         })
     }
 })
@@ -554,7 +559,7 @@ app.post("/admin_signup_rewrite", (request, response)=>{ // 회원가입 수정 
 // ================================= 비밀번호 변경 관련 라우터 =======================================
 app.get("/privacy_pw", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
-        fs.readFile("public/privacy_pw.html", (error,data)=>{
+        fs.readFile("/privacy_pw.html", (error,data)=>{
             response.writeHead(200,{'Content-Type' : "text/html"})
             response.write(data)
             response.end()
@@ -603,7 +608,7 @@ app.get("/admin_userstatus", (request, response)=>{ // 전체 유저 현황
                 tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_num}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
             }
             tmp+='</table>'
-            fs.readFile("public/admin/admin_userstatus.html", (error,data)=>{
+            fs.readFile("/admin/admin_userstatus.html", (error,data)=>{
                 response.writeHead(200,{'Content-Type' : "text/html"})
                 response.write(data+tmp)
                 response.end()
@@ -623,7 +628,7 @@ app.post("/admin_userstatus", (request, response)=>{ // 검색된 유저 현황
                 tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_num}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
             }
             tmp+='</table>'
-            fs.readFile("public/admin/admin_backuser.html", (error,data)=>{
+            fs.readFile("/admin/admin_backuser.html", (error,data)=>{
                 response.writeHead(200,{'Content-Type': 'text/html'})
                 response.write(data+tmp)
                 response.end()
