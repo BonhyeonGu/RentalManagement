@@ -1,9 +1,3 @@
-// admin_signup.html 왜 있지?
-// admin_main.html 삭제. main.ejs에 통합
-// admin_main 라우터 삭제
-// 세션 저장장소 FileStore -> MemoryStore
-
-
 const express = require('express')
 const expressSession = require("express-session");
 const MemoryStore=require('memorystore')(expressSession); // FileStore -> MemoryStore로 바꿈.
@@ -12,7 +6,7 @@ const app = express()
 const bodyParser=require('body-parser')
 const crypto = require('crypto');
 app.set('view engine', 'ejs')
-app.set('views', __dirname + '/../views')
+app.set('views', __dirname + '/views')
 const db=require("./secret/database.js")
 const conn=db.init()
 db.connect(conn)
@@ -30,6 +24,7 @@ app.use(expressSession({
 }));
 
 app.use(express.static('public'));
+app.use(express.static('assets'));
 app.use(bodyParser.urlencoded({ extended: true}));
 
 let user_uid;
@@ -37,7 +32,7 @@ let user_uid;
 
 // -- 메인 화면 관련 라우터
 app.get("/", (request, response)=>{
-    response.render('main.ejs', {login_user_id : request.session.user_id, login_user_auth : request.session.user_auth});
+    response.render('main.ejs', {id : request.session.user_id, auth : request.session.user_auth});
 })
 
 app.get("/database", (request, response)=>{
@@ -89,6 +84,11 @@ app.post("/database_deny", (request, response)=>{
 })
 
 // -- 로그인 관련 라우터
+app.get("/logout", (request, response)=>{
+    request.session.destroy(function(err){
+        response.redirect('/');
+    })
+})
 app.get("/login", (request, response)=>{
     fs.readFile("public/login.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
@@ -96,11 +96,6 @@ app.get("/login", (request, response)=>{
         response.end()
     })
 }) 
-app.get("/logout", (request, response)=>{
-    request.session.destroy(function(err){
-        response.redirect('/');
-    })
-})
 app.post("/login",(request,response)=>{
     let id = request.body.user_id
     let pw = crypto.createHash('sha256').update(request.body.user_pw).digest('hex')
