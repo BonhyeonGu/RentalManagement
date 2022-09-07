@@ -86,7 +86,7 @@ app.get("/database", (request, response)=>{
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
         conn.query(`select * from product`, function(err, rows, fields){
             if(err) throw err;
-            response.render('../views/admin_database.ejs', {rows_list : rows})
+            response.render('../views/admin_database.ejs', { id:request.session.user_id, auth:request.session.user_auth, rows_list:rows})
         })
     }
 })
@@ -248,7 +248,7 @@ app.post("/rental_sign", (request, response)=>{
 
 app.post("/rental_sign_result", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
-        conn.query(`insert into rental_manage values(NULL,${request.session.uid},${request.body.asset_id},now(),NULL,${request.body.asset_using_period},NULL,${request.body.asset_qty},"1",NULL)`, function(err){
+        conn.query(`insert into rental_manage values(NULL,${request.session.uid},${parseInt(request.body.product_id)},now(),${Number(request.body.product_start_date)},NULL,"${request.body.product_start_date}",${Number(request.body.product_using_period)},NULL,${Number(request.body.product_qty)},"1",NULL)`, function(err){
             if (err) throw err;
             response.send(`<script>alert('물품 대여가 신청되었습니다. 결과는 추후에 알려드리겠습니다.'); location.href='/rental'</script>`)
         })
