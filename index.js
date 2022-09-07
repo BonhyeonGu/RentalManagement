@@ -1,16 +1,19 @@
+
+// 1. 모듈 불러오기
 const express = require('express')
 const expressSession = require("express-session");
 const MemoryStore=require('memorystore')(expressSession); // FileStore -> MemoryStore로 바꿈.
 const fs = require('fs')
-const app = express()
 const bodyParser=require('body-parser')
 const crypto = require('crypto');
-app.set('view engine', 'ejs')
-app.set('views', __dirname + '/views')
+
+// 2. DB 연동하기
 const db=require("./secret/database.js")
 const conn=db.init()
 db.connect(conn)
 
+// 3. session 저장소 설정하기
+const app = express()
 app.use(expressSession({
     //httpOnly: true, // 자바스크립트로 쿠키 조회 t/f
     //secure: true, // https 환경에서만 session 정보를 주고 받기 t/f
@@ -23,10 +26,18 @@ app.use(expressSession({
     cookie: {maxAge: 86400000}
 }));
 
+// 4. 정적 파일 설정하기
 app.use(express.static('public'));
 app.use(express.static('assets'));
+
+// 5. view 엔진 설정하기
+app.set('view engine', 'ejs')
+app.set('views', __dirname + '/views')
+
+// 6. bodyParser 설정하기
 app.use(bodyParser.urlencoded({ extended: true}));
 
+// 7. 함수, 변수 정의하기
 let user_uid;
 function user_auth_2(user_auth,res){
     if (user_auth=='2') { // read, read&write(관리자)
@@ -46,11 +57,31 @@ function user_auth_0_1_2(user_auth,res){
     }
     else return res.status(404.1).send('<h1>권한이 부족합니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
 }
-// -- 메인 화면 관련 라우터
+
+
+
+// ================================= 메인 화면 관련 라우터 =======================================
+// '/' GET 라우팅
 app.get("/", (request, response)=>{
-    response.render('main.ejs', {id : request.session.user_id, auth : request.session.user_auth});
+    conn.query('select id, name, remaining_qty from product', function(err, rows, fields) {
+        if (err) throw err
+
+        response.render('main.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_list:rows});
+    })
 })
 
+// // '/work_single' GET 라우팅
+app.get("/work_single", (request, response)=>{
+    var product_id = request.query.product_id
+
+    conn.query(`select id, name, remaining_qty, total_qty from product where id='${product_id}'`, function(err, rows, fields) {
+        if (err) throw err
+
+        response.render('work_single.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_info:rows})
+    })
+})
+
+// ================================= 데이터베이스 관련 라우터 =======================================
 app.get("/database", (request, response)=>{
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
         conn.query(`select * from product`, function(err, rows, fields){
@@ -104,6 +135,7 @@ app.post("/database_modify", (request, response)=>{
         })
     }
 })
+
 app.post("/database_deny", (request, response)=>{ 
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`delete from product where id=${request.body.id}`, function(err){
@@ -113,14 +145,7 @@ app.post("/database_deny", (request, response)=>{
     }
 })
 
-// -- 로그인 관련 라우터
-app.get("/login", (request, response)=>{
-    fs.readFile("public/login.html", (error,data)=>{
-        response.writeHead(200,{'Content-Type' : "text/html"})
-        response.write(data)
-        response.end()
-    })
-}) 
+// ================================= 로그인 관련 라우터 =======================================
 app.get("/logout", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         request.session.destroy(function(err){
@@ -128,6 +153,15 @@ app.get("/logout", (request, response)=>{
         })
     }
 })
+
+app.get("/login", (request, response)=>{
+    fs.readFile("public/login.html", (error,data)=>{
+        response.writeHead(200,{'Content-Type' : "text/html"})
+        response.write(data)
+        response.end()
+    })
+})
+
 app.post("/login",(request,response)=>{
     let id = request.body.user_id
     let pw = crypto.createHash('sha256').update(request.body.user_pw).digest('hex')
@@ -179,7 +213,8 @@ app.post("/login",(request,response)=>{
         }
     })
 })
- 
+
+// ================================= 비품 대여(사용자 측) 관련 라우터 ======================================= 
 app.get("/rental", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`select * from product where lendable=1`, function(err, rows, fields){
@@ -216,10 +251,6 @@ app.post("/rental_sign_result", (request, response)=>{
     }
 })
 
-
-
-
-
 app.get("/rental_status", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`select * from product, rental_manage where product.id=rental_manage.pid and uid=${request.session.uid}`, function(err, rows, fields){
@@ -249,167 +280,7 @@ app.post("/rental_status_delete", (request, response)=>{
     }
 })
 
-
-
-// -- 회원가입(사용자측) 관련 라우터
-app.get("/signup", (request, response)=>{
-    fs.readFile("public/signup.html", (error,data)=>{
-        response.writeHead(200,{'Content-Type' : "text/html"})
-        response.write(data)
-        response.end()
-    })
-})
-
-app.post("/signup", (request, response)=>{
-    let newID = request.body.user_id
-    let newPW = request.body.user_pw
-    let chkPW = request.body.user_pw_chk
-
-    let sql = `SELECT * FROM rental_user WHERE user_id='${newID}'`
-    conn.query(sql, function(err, rows, fields){
-        if (err) throw err;
-
-        if (rows.length != 0) {
-            response.send('<script>alert("이미 존재하는 계정입니다.")</script>')
-            response.end('<script>history.back()</script>')
-        }
-        else {
-            let idReg =  /^(?=.*[a-zA-Z])[a-zA-Z\d-_]{5,20}/g // 아이디 정규식 검사
-            let pwReg = /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z\d~!@#$%^&*]{8,16}$/g // 비밀번호 정규식 검사
-
-            if (newPW != chkPW) {
-                response.write('<script>alert("비밀번호가 일치하지 않습니다. 다시 확인해 주세요.")</script>')
-                response.end('<script>history.back()</script>')
-            }
-            else {
-                if (idReg.test(newID) && pwReg.test(newPW)) { // 회원가입 신청 성공
-                    let sha256_hex_pw=crypto.createHash('sha256').update(newPW).digest('hex')
-                    conn.query(`insert into rental_user values(NULL,"${request.body.user_school}","${request.body.user_num}","${request.body.user_name}","${request.body.user_department}","${request.body.user_grade}","${request.body.user_id}","${sha256_hex_pw}","${request.body.user_attend_status}","${request.body.user_phone}",now(),NULL,"0","4")`, function(err){
-                        if (err) throw err;
-                        response.send(`<script>alert('회원가입이 신청되었습니다. 방문일은 추후에 알려드리겠습니다.'); location.href='/login'</script>`)
-                    })
-                }
-                else if (!idReg.test(newID)){ // 아이디 조건 실패
-                    response.write('<script>alert("아이디가 조건에 부합하지 않습니다. 다시 입력해 주세요.")</script>')
-                    response.end('<script>history.back()</script>')
-                }
-                else if (!pwReg.test(newPW)){ // 비밀번호 조건 실패
-                    response.write('<script>alert("비밀번호가 조건에 부합하지 않습니다. 다시 입력해 주세요.")</script>')
-                    response.end('<script>history.back()</script>')
-                }
-                else{
-                    response.write('<script>alert("아이디와 비밀번호가 조건에 부합하지 않습니다. 다시 입력해 주세요.")</script>')
-                    response.end('<script>history.back()</script>')
-                }            
-            }
-        }
-    })
-})
-app.get("/privacy_pw", (request, response)=>{
-    if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
-        fs.readFile("public/privacy_pw.html", (error,data)=>{
-            response.writeHead(200,{'Content-Type' : "text/html"})
-            response.write(data)
-            response.end()
-        })
-    }
-})
-app.post("/privacy_pw", (request, response)=>{ // 사용자(관리자) 비밀번호 변경
-    if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
-        let tmp2 = /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z\d~!@#$%^&*]{8,16}$/g
-        let pw = crypto.createHash('sha256').update(request.body.user_pw).digest('hex')
-        conn.query(`select * from rental_user where user_id='${request.session.user_id}'`, function(err, rows, fields){
-            if(pw==rows[0]['user_pw']){
-                if(request.body.user_change_pw==request.body.user_change_repw){
-                    if(tmp2.test(request.body.user_change_pw)==true){
-                        let change_pw = crypto.createHash('sha256').update(request.body.user_change_pw).digest('hex')
-                        conn.query(`update rental_user set user_pw='${change_pw}' where user_id='${request.session.user_id}'`, function(err, rows, fields){
-                            if (err) throw err;
-                            response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                            response.write(`<script>alert("${request.session.user_id} : 비밀번호 변경 완료"); location.href = '/'</script>`)
-                            response.end()
-                        })
-                    }
-                    else{
-                        response.send(`<script>alert('바꿀 비밀번호가 조건에 부합하지 않습니다.'); location.href='/privacy_pw'</script>`)
-                    }
-                }
-                else{
-                    response.send(`<script>alert('바꿀 비밀번호가 서로 다릅니다.'); location.href='/privacy_pw'</script>`)
-                }
-            }
-            else{
-                response.send(`<script>alert('현재 비밀번호가 틀렸습니다.'); location.href='/privacy_pw'</script>`)
-            }
-        })
-    }
-})
-
-
-
-// -- 회원가입(관리자측) 관리 관련 라우터
-app.get("/admin_signup", (request, response)=>{ // 전체 검색(회원가입 대기 목록 검색)
-    if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
-        conn.query(`select * from rental_user where user_auth='4'`, function(err, rows, fields){
-            if (err) throw err;
-            response.render('../views/admin_signup.ejs', {rows_list : rows})
-        })
-    }
-})
-
-app.post("/admin_signup_search", (request, response)=>{ // 일부 검색(회원가입 대기 목록 검색)
-    if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
-        let userID = request.body.user_id;
-        conn.query(`select * from rental_user where user_auth='4' and user_id = "${userID}"`, function(err, rows, fields){
-            if (err) throw err;
-            response.render('../views/admin_signup.ejs', {rows_list : rows})
-        })
-    }
-})
-
-app.post("/admin_signup_recept", (request, response)=>{ // 회원가입 신청 수락(-> 회원으로 등록)
-    if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
-        conn.query(`update rental_user set user_auth='1' and user_join_date=now() where user_id='${request.body.user_id}'`, function(err, rows, fields){
-            if (err) throw err;
-            response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-            response.write(`<script>alert("${request.body.user_id} : 회원가입 신청을 수락했습니다."); location.href = '/admin_signup'</script>`)
-            response.end()
-        })
-    }
-})
-
-app.post("/admin_signup_resrv_reject", (request, response)=>{ // 회원가입 신청 거절(-> DB에서 삭제)
-    if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
-        conn.query(`delete from rental_user where user_id='${request.body.user_id}'`, function(err, rows, fields){
-            if (err) throw err;
-            response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-            response.write(`<script>alert("${request.body.user_id} : 회원가입 신청을 거절했습니다."); location.href = '/admin_signup' </script>`)
-            response.end()
-        })
-    }
-})
-
-app.post("/admin_signup_manage", (request, response)=>{ // 회원가입 신청 폼 수정(회원으로 등록 전 DB에서 사용자 정보 확인&수정)
-    if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
-        conn.query(`select * from rental_user where user_id='${request.body.signup_user_id}'`, function(err, rows, fields){
-            if (err) throw err
-            response.render('../views/admin_signup_rewirte.ejs', {rows_list : rows})
-        })
-    }
-})
-
-app.post("/admin_signup_rewrite", (request, response)=>{ // 회원가입 수정 완료
-    if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
-        conn.query(`update rental_user set user_school="${request.body.user_school}" , user_num="${request.body.user_num}",user_name="${request.body.user_name}",user_department="${request.body.user_department}",user_grade=${request.body.user_grade},user_id="${request.body.user_id}",user_attend_status=${request.body.user_attend_status},user_phone="${request.body.user_phone}" where user_id="${request.body.user_id}"`, function(err, rows, fields){
-            if (err) throw err
-            response.send(`<script>alert('수정되었습니다'); location.href = '/admin_signup'</script>`)
-            console.log(request.body)
-        })
-    }
-})
-
-
-// // -- 신청 관리 관련 라우터
+// ================================= 비품 대여(관리자 측) 관련 라우터 =======================================
 app.get("/admin_rentalmanage", (request, response)=>{ // 전체 검색
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
         let qry1 = "SELECT m.ma_id, u.user_id, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
@@ -470,12 +341,6 @@ app.post("/admin_rentalmanage_search", (req, res)=>{ // 일부 검색
     }
 })
 
-
-
-
-
-
-
 app.post("/admin_rentalmanage_resrv_recept", (request, response)=>{ // 예약 신청 수락
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         let maID = request.body.resrv_recept_ma_id;
@@ -524,6 +389,7 @@ app.post("/admin_rentalmanage_resrv_reject", (req, res)=>{ // 예약 신청 거�
         })
     }
 })
+
 app.post("/admin_rentalmanage_return", (request, response)=>{ // 비품 반납
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
 
@@ -572,14 +438,164 @@ app.post("/admin_rentalmanage_return_cancel", (request, response)=>{ // 비품 �
 
 })
 
+// ================================= 회원가입(사용자 측) 관련 라우터 =======================================
+app.get("/signup", (request, response)=>{
+    fs.readFile("public/signup.html", (error,data)=>{
+        response.writeHead(200,{'Content-Type' : "text/html"})
+        response.write(data)
+        response.end()
+    })
+})
 
+app.post("/signup", (request, response)=>{
+    let newID = request.body.user_id
+    let newPW = request.body.user_pw
+    let chkPW = request.body.user_pw_chk
 
+    let sql = `SELECT * FROM rental_user WHERE user_id='${newID}'`
+    conn.query(sql, function(err, rows, fields){
+        if (err) throw err;
 
+        if (rows.length != 0) {
+            response.send('<script>alert("이미 존재하는 계정입니다.")</script>')
+            response.end('<script>history.back()</script>')
+        }
+        else {
+            let idReg =  /^(?=.*[a-zA-Z])[a-zA-Z\d-_]{5,20}/g // 아이디 정규식 검사
+            let pwReg = /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z\d~!@#$%^&*]{8,16}$/g // 비밀번호 정규식 검사
 
+            if (newPW != chkPW) {
+                response.write('<script>alert("비밀번호가 일치하지 않습니다. 다시 확인해 주세요.")</script>')
+                response.end('<script>history.back()</script>')
+            }
+            else {
+                if (idReg.test(newID) && pwReg.test(newPW)) { // 회원가입 신청 성공
+                    let sha256_hex_pw=crypto.createHash('sha256').update(newPW).digest('hex')
+                    conn.query(`insert into rental_user values(NULL,"${request.body.user_school}","${request.body.user_num}","${request.body.user_name}","${request.body.user_department}","${request.body.user_grade}","${request.body.user_id}","${sha256_hex_pw}","${request.body.user_attend_status}","${request.body.user_phone}",now(),NULL,"0","4")`, function(err){
+                        if (err) throw err;
+                        response.send(`<script>alert('회원가입이 신청되었습니다. 방문일은 추후에 알려드리겠습니다.'); location.href='/login'</script>`)
+                    })
+                }
+                else if (!idReg.test(newID)){ // 아이디 조건 실패
+                    response.write('<script>alert("아이디가 조건에 부합하지 않습니다. 다시 입력해 주세요.")</script>')
+                    response.end('<script>history.back()</script>')
+                }
+                else if (!pwReg.test(newPW)){ // 비밀번호 조건 실패
+                    response.write('<script>alert("비밀번호가 조건에 부합하지 않습니다. 다시 입력해 주세요.")</script>')
+                    response.end('<script>history.back()</script>')
+                }
+                else{
+                    response.write('<script>alert("아이디와 비밀번호가 조건에 부합하지 않습니다. 다시 입력해 주세요.")</script>')
+                    response.end('<script>history.back()</script>')
+                }            
+            }
+        }
+    })
+})
 
+// ================================= 회원가입(관리자 측) 관련 라우터 =======================================
+app.get("/admin_signup", (request, response)=>{ // 전체 검색(회원가입 대기 목록 검색)
+    if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
+        conn.query(`select * from rental_user where user_auth='4'`, function(err, rows, fields){
+            if (err) throw err;
+            response.render('../views/admin_signup.ejs', {rows_list : rows})
+        })
+    }
+})
 
+app.post("/admin_signup_search", (request, response)=>{ // 일부 검색(회원가입 대기 목록 검색)
+    if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
+        let userID = request.body.user_id;
+        conn.query(`select * from rental_user where user_auth='4' and user_id = "${userID}"`, function(err, rows, fields){
+            if (err) throw err;
+            response.render('../views/admin_signup.ejs', {rows_list : rows})
+        })
+    }
+})
 
-// -- 유저 관리 관련 라우터
+app.post("/admin_signup_recept", (request, response)=>{ // 회원가입 신청 수락(-> 회원으로 등록)
+    if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
+        conn.query(`update rental_user set user_auth='1' and user_join_date=now() where user_id='${request.body.user_id}'`, function(err, rows, fields){
+            if (err) throw err;
+            response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+            response.write(`<script>alert("${request.body.user_id} : 회원가입 신청을 수락했습니다."); location.href = '/admin_signup'</script>`)
+            response.end()
+        })
+    }
+})
+
+app.post("/admin_signup_resrv_reject", (request, response)=>{ // 회원가입 신청 거절(-> DB에서 삭제)
+    if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
+        conn.query(`delete from rental_user where user_id='${request.body.user_id}'`, function(err, rows, fields){
+            if (err) throw err;
+            response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+            response.write(`<script>alert("${request.body.user_id} : 회원가입 신청을 거절했습니다."); location.href = '/admin_signup' </script>`)
+            response.end()
+        })
+    }
+})
+
+app.post("/admin_signup_manage", (request, response)=>{ // 회원가입 신청 폼 수정(회원으로 등록 전 DB에서 사용자 정보 확인&수정)
+    if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
+        conn.query(`select * from rental_user where user_id='${request.body.signup_user_id}'`, function(err, rows, fields){
+            if (err) throw err
+            response.render('../views/admin_signup_rewirte.ejs', {rows_list : rows})
+        })
+    }
+})
+
+app.post("/admin_signup_rewrite", (request, response)=>{ // 회원가입 수정 완료
+    if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
+        conn.query(`update rental_user set user_school="${request.body.user_school}" , user_num="${request.body.user_num}",user_name="${request.body.user_name}",user_department="${request.body.user_department}",user_grade=${request.body.user_grade},user_id="${request.body.user_id}",user_attend_status=${request.body.user_attend_status},user_phone="${request.body.user_phone}" where user_id="${request.body.user_id}"`, function(err, rows, fields){
+            if (err) throw err
+            response.send(`<script>alert('수정되었습니다'); location.href = '/admin_signup'</script>`)
+            console.log(request.body)
+        })
+    }
+})
+
+// ================================= 비밀번호 변경 관련 라우터 =======================================
+app.get("/privacy_pw", (request, response)=>{
+    if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
+        fs.readFile("public/privacy_pw.html", (error,data)=>{
+            response.writeHead(200,{'Content-Type' : "text/html"})
+            response.write(data)
+            response.end()
+        })
+    }
+})
+app.post("/privacy_pw", (request, response)=>{ // 사용자(관리자) 비밀번호 변경
+    if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
+        let tmp2 = /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z\d~!@#$%^&*]{8,16}$/g
+        let pw = crypto.createHash('sha256').update(request.body.user_pw).digest('hex')
+        conn.query(`select * from rental_user where user_id='${request.session.user_id}'`, function(err, rows, fields){
+            if(pw==rows[0]['user_pw']){
+                if(request.body.user_change_pw==request.body.user_change_repw){
+                    if(tmp2.test(request.body.user_change_pw)==true){
+                        let change_pw = crypto.createHash('sha256').update(request.body.user_change_pw).digest('hex')
+                        conn.query(`update rental_user set user_pw='${change_pw}' where user_id='${request.session.user_id}'`, function(err, rows, fields){
+                            if (err) throw err;
+                            response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+                            response.write(`<script>alert("${request.session.user_id} : 비밀번호 변경 완료"); location.href = '/'</script>`)
+                            response.end()
+                        })
+                    }
+                    else{
+                        response.send(`<script>alert('바꿀 비밀번호가 조건에 부합하지 않습니다.'); location.href='/privacy_pw'</script>`)
+                    }
+                }
+                else{
+                    response.send(`<script>alert('바꿀 비밀번호가 서로 다릅니다.'); location.href='/privacy_pw'</script>`)
+                }
+            }
+            else{
+                response.send(`<script>alert('현재 비밀번호가 틀렸습니다.'); location.href='/privacy_pw'</script>`)
+            }
+        })
+    }
+})
+
+// ================================= 유저 관리 관련 라우터 =======================================
 app.get("/admin_userstatus", (request, response)=>{ // 전체 유저 현황
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
         conn.query(`select * from rental_user where user_auth=0 or user_auth=1 or user_auth=2`, function(err, rows, fields){
@@ -643,7 +659,7 @@ app.post("/admin_changepw", (request, response)=>{ // 비밀번호 수정(비밀
     }
 })
 
-// -- 오류 관련 라우터
+// ================================= 오류 관련 라우터 =======================================
 app.use(function (err, req, res, next) {
     console.error(err.stack)
     res.status(500).send('Something broke!')
@@ -653,7 +669,7 @@ app.use(function(req, res, next) {
     res.status(404).send('Sorry cant find that!');
 })
 
-// -- listen
+// ================================= listen =======================================
 app.listen(9999, ()=>{
     console.log('server start')
 })

@@ -30,6 +30,12 @@
   * Author: BootstrapMade.com
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
+  <script>
+    function go(clicked_id) {
+      var form = document.getElementById(clicked_id).parentElement
+      form.submit()
+    }
+  </script>
 </head>
 
 <body>
@@ -56,15 +62,20 @@
           </div>
         </div>
         <div id="portfolio-grid" class="row no-gutter" data-aos="fade-up" data-aos-delay="200">
-          <div class="item web col-sm-6 col-md-4 col-lg-4 mb-4">
-            <a href="/work_single" class="item-wrap fancybox">
-              <div class="work-info">
-                <h3>Boxed Water</h3>
-                <span>Web</span>
-              </div>
-              <img class="img-fluid" src="img/img_1.jpg">
-            </a>
-          </div>
+          <% for (var i = 0; i < product_list.length; i++) { %>
+            <div class="item web col-sm-6 col-md-4 col-lg-4 mb-4">
+              <form action="/work_single" method="get">
+                <div class="item-wrap fancybox" id="<%= product_list[i]['id'] %>" onclick="go(this.id)">
+                  <input type="hidden" name="product_id" value="<%= product_list[i]['id'] %>">
+                  <div class="work-info">
+                    <h3><%= product_list[i]['name'] %></h3>
+                    <span><%= product_list[i]['remaining_qty'] %></span>
+                  </div>
+                  <img class="img-fluid" src="img/img_1.jpg">
+                </div>
+              </form>
+            </div>
+          <% } %>
         </div>
 
         <!-- ======= Pagenation Section ======= -->
