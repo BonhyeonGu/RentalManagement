@@ -29,6 +29,7 @@ app.use(expressSession({
 // 4. 정적 파일 설정하기
 app.use(express.static('public'));
 app.use(express.static('assets'));
+app.use(express.static('uploads'));
 
 // 5. view 엔진 설정하기
 app.set('view engine', 'ejs')
@@ -219,11 +220,21 @@ app.post("/login",(request,response)=>{
 })
 
 // ================================= 비품 대여(사용자 측) 관련 라우터 ======================================= 
-app.get("/rental", (request, response)=>{
+app.get("/rental", (request, response)=>{ 
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
-        conn.query(`select * from product where lendable=1`, function(err, rows, fields){
-            if(err) throw err;
-            response.render('../views/user_rental.ejs', {rows_list : rows})
+        conn.query(`select id, name, total_qty from product where id='${request.query.product_id}'`, function(err, rows, fields){
+            if (err) throw err;
+
+            response.render('user_rental.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_info:rows})
+        })
+    }
+})
+
+app.post("/rental_sign_result", (request, response)=>{
+    if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
+        conn.query(`insert into rental_manage values(NULL,${request.session.uid},${Number(request.body.product_id)},now(),${Number(request.body.product_start_date)},NULL,"${request.body.product_start_date}",${Number(request.body.product_using_period)},NULL,${Number(request.body.product_qty)},"1",NULL)`, function(err){
+            if (err) throw err;
+            response.send(`<script>alert('물품 대여가 신청되었습니다. 결과는 추후에 알려드리겠습니다.'); location.href='/rental'</script>`)
         })
     }
 })
@@ -233,24 +244,6 @@ app.post("/rental_search", (request, response)=>{
         conn.query(`select * from product where name='${request.body.asset_name}' and lendable=1`, function(err, rows, fields){
             if (err) throw err;
             response.render('../views/user_rental.ejs', {rows_list : rows})
-        })
-    }
-})
-
-app.post("/rental_sign", (request, response)=>{ 
-    if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
-        conn.query(`select * from product where id='${request.body.asset_id}'and lendable=1`, function(err, rows, fields){
-            if (err) throw err;
-            response.render('../views/user_rental_sign.ejs', {rows_list : rows})
-        })
-    }
-})
-
-app.post("/rental_sign_result", (request, response)=>{
-    if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
-        conn.query(`insert into rental_manage values(NULL,${request.session.uid},${parseInt(request.body.product_id)},now(),${Number(request.body.product_start_date)},NULL,"${request.body.product_start_date}",${Number(request.body.product_using_period)},NULL,${Number(request.body.product_qty)},"1",NULL)`, function(err){
-            if (err) throw err;
-            response.send(`<script>alert('물품 대여가 신청되었습니다. 결과는 추후에 알려드리겠습니다.'); location.href='/rental'</script>`)
         })
     }
 })

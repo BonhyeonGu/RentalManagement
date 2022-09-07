@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Beharbor Rental Page | 대여 신청</title>
+  <title>Beharbor Randing Page | 대여 신청</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -19,7 +19,7 @@
   <link href="vendor/aos/aos.css" rel="stylesheet">
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">/
+  <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
   <!-- Template Main CSS File -->
   <link href="css/style.css" rel="stylesheet">
@@ -33,7 +33,8 @@
 
   <script>
     window.onload = function() {
-      let dateElement = document.getElementById('ma_start_date');
+      document.getElementById('product_using_period').focus();
+      let dateElement = document.getElementById('product_start_date');
           let date = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
           dateElement.value = date;
           dateElement.setAttribute("min", date)
@@ -63,25 +64,25 @@
             <div class="row">
               <div class="col-md-6 mb-5 mb-md-0" data-aos="fade-up">
     
-                <form action="forms/contact.php" method="post" role="form" class="php-email-form">
+                <form action="/rental_sign_result" method="post" role="form" class="php-email-form">
     
                   <div class="row gy-3">
                     <div class="col-md-12 form-group">
                       <strong class="d-block mb-1">비품명</strong>
-                      <span><%=product_name%>🤭</span>
-                      <input type="hidden" class="form-control" name = "product_id" id = "product_id" value="<%=product_id%>">
+                      <span><%=product_info[0]['name']%>🤭</span>
+                      <input type="hidden" class="form-control" name = "product_id" id = "product_id" value="<%=product_info[0]['id']%>">
                     </div>
                     <div class="col-md-6 form-group">
-                      <label for="ma_start_date">대여 예정 날짜</label>
-                      <input type="datetime-local" class="form-control" name="ma_start_date" id="ma_start_date" required>
+                      <label for="product_start_date">대여 예정 날짜</label>
+                      <input type="datetime-local" class="form-control" name="product_start_date" id="product_start_date" required>
                     </div>                
                     <div class="col-md-6 form-group">
-                      <label for="ma_using_period">사용 기간</label>
-                      <input type="text" class="form-control" name="ma_using_period" id="ma_using_period" required>
+                      <label for="product_using_period">사용 기간</label>
+                      <input type="text" class="form-control" name="product_using_period" id="product_using_period" required>
                     </div>
                     <div class="col-md-12 form-group">
-                      <label for="ma_qty">수량</label>
-                      <input type="number" min="1" max="<%=product_total_qty%>" class="form-control" name="ma_qty" id="ma_qty" required>
+                      <label for="product_qty">수량</label>
+                      <input type="number" min="1" max="<%=product_info[0]['total_qty']%>" class="form-control" name="product_qty" id="product_qty" required>
                     </div>
     
                     <div class="col-md-12 my-3">
@@ -91,7 +92,7 @@
                     </div>
     
                     <div class="col-md-6 mt-0 form-group">
-                      <input type="submit" class="readmore d-block w-100" value="Send Message">
+                      <input type="submit" class="readmore d-block w-100" value="신청하기">
                     </div>
                   </div>
     
