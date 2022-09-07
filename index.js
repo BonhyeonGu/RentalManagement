@@ -132,8 +132,6 @@ app.get("/login", (request, response)=>{
         response.end()
     })
 }) 
-<<<<<<< HEAD
-=======
 app.get("/logout", (request, response)=>{
     if(request.session.user_auth){
         request.session.destroy(function(err){
@@ -142,7 +140,6 @@ app.get("/logout", (request, response)=>{
     }
     else response.status(404.1).send('<h1>잘못된 접근입니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
 })
->>>>>>> a81f394650347f7c91030342afcf044999c05219
 app.post("/login",(request,response)=>{
     let id = request.body.user_id
     let pw = crypto.createHash('sha256').update(request.body.user_pw).digest('hex')
