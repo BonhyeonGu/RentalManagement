@@ -15,12 +15,13 @@
     </script>
 </head>
 <body onload = "document.f1.user_id.focus();">
-    <form action ="/database_adding" method="POST" name = "f1" onsubmit = "return submit_chk(this);" onreset = "return reset_chk(this);">
+    <form action ="/database_adding" method="POST" name = "f1" enctype="multipart/form-data" onsubmit = "return submit_chk(this);" onreset = "return reset_chk(this);">
         <fieldset>
             <legend>추가</legend>
             <p>
                 <label for ="name">물품명</label>
                 <input type="text" name = "name" id = "name">
+                <input type="hidden" name="id" value="<%= rows_list.length+1 %>"> -->
             </p>
             <p>
                 <label for ="tag">태그</label>
@@ -40,7 +41,7 @@
             </p>
             <p>
                 <label for ="image">이미지</label>
-                <input type="text" name = "image" id = "image" />
+                <input type="file" name="image" accept="image/*">
             </p>
             <p>
                 <label for ="lendable">빌리기 상태</label>
