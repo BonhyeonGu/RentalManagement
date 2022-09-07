@@ -1,3 +1,17 @@
+
+<head>
+  <style>
+    @font-face {
+      font-family: 'LeferiPoint-WhiteObliqueA';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/LeferiPoint-WhiteObliqueA.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+    * {
+      font-family: 'LeferiPoint-WhiteObliqueA';
+    }
+  </style>
+</head>
 <!-- ======= Navbar ======= -->
 <div class="collapse navbar-collapse custom-navmenu" id="main-navbar">
     <div class="container py-2 py-md-5">
@@ -41,7 +55,9 @@
 <nav class="navbar navbar-light custom-navbar">
 <div class="container">
     <a class="navbar-brand" href="/">Beharbor</a>
-    <span class="badge text-bg-light"><%=login_user_id%></span>
+    <% if (login_user_id != undefined) { %>
+      <span class="badge text-bg-light"><%=login_user_id%></span>
+    <% } %>
     <a href="/" class="burger" data-bs-toggle="collapse" data-bs-target="#main-navbar">
       <span></span>
     </a>
