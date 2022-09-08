@@ -80,13 +80,14 @@ app.get("/work_single", (request, response)=>{
     })
 })
 
-// // '/search' GET 라우팅
-// app.get("/search", (request, response)=>{ 
-//     conn.query(`select * from product where name='${request.query.product_name}'`, function(err, rows, fields){
-//         if (err) throw err;
-//         response.render('user_rental.ejs', {rows_list : rows})
-//     })
-// })
+// '/search' GET 라우팅
+app.get("/search", (request, response)=>{ 
+    conn.query(`select id, name, image, remaining_qty from product where name='${request.query.q}'`, function(err, rows, fields){
+        if (err) throw err;
+        
+        response.render('main.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_list:rows})
+    })
+})
 
 // ================================= 데이터베이스 관련 라우터 =======================================
 app.get("/database", (request, response)=>{
