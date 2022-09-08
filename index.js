@@ -29,7 +29,6 @@ app.use(expressSession({
 // 4. 정적 파일 설정하기
 app.use(express.static('public'));
 app.use(express.static('assets'));
-app.use(express.static('uploads'));
 
 // 5. view 엔진 설정하기
 app.set('view engine', 'ejs')
@@ -44,19 +43,19 @@ function user_auth_2(user_auth,res){
     if (user_auth=='2') { // read, read&write(관리자)
         return 2
     }
-    else return res.status(404.1).send('<h1>권한이 부족합니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
+    else return res.status(401).send('<h1>이 페이지에 접근할 권한이 없습니다😥</h1><hr><p>현재 페이지는 회원등급 \'0\'만 접근가능합니다</p><button onclick="location.href=`/`">메인으로 돌아가기</button>');
 }
 function user_auth_1_2(user_auth,res){
     if (user_auth=='2'||user_auth=='1') { // read, read&write(관리자)
         return 2
     }
-    else return res.status(404.1).send('<h1>권한이 부족합니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
+    else return res.status(401).send('<h1>이 페이지에 접근할 권한이 없습니다😥</h1><hr><p>현재 페이지는 회원등급 \'0,1\'만 접근가능합니다</p><button onclick="location.href=`/`">메인으로 돌아가기</button>');
 }
 function user_auth_0_1_2(user_auth,res){
-    if (user_auth=='2'||user_auth=='1'||user_auth=='0') { // read, read&write(관리자)
+    if (user_auth=='2'||user_auth=='1'||user_auth=='0') { // read, read&write(관리자)/
         return 2
     }
-    else return res.status(404.1).send('<h1>권한이 부족합니다😥</h1> <button onclick="location.href=`/`">메인으로 돌아가기</button>');
+    else return res.status(401).send('<h1>이 페이지에 접근할 권한이 없습니다😥</h1><hr><p>현재 페이지는 회원등급 \'0,1,2\'만 접근가능합니다</p><button onclick="location.href=`/`">메인으로 돌아가기</button>');
 }
 
 

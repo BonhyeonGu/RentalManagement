@@ -59,11 +59,7 @@
         <div class="container">
           <div class="row align-items-stretch">
             <div class="col-md-8" data-aos="fade-up">
-              <% if (product_info[0]['image']==null) { %>
-                <img class="img-fluid" src="img/defalut.jpg">
-              <% } else { %>
-                <img class="img-fluid" src="img/<%=product_info[0]['image']%>">
-              <% }%>
+              <img class="img-fluid" src="img/uploads/<%=product_info[0]['image']%>" onerror="this.src='img/uploads/default.png'" style="width:800px;height:800px">
             </div>
             <div class="col-md-3 ml-auto" data-aos="fade-up" data-aos-delay="100">
               <form action="/rental" method="get">
