@@ -73,9 +73,9 @@
                   </div>
 
                   <% if (product_list[i]['image']==null) { %>
-                    <img class="img-fluid" src="img/img_1.jpg">
+                    <img class="img-fluid" src="img/defalut.jpg">
                   <% } else { %>
-                    <img class="img-fluid" src="img/img_2.jpg">
+                    <img class="img-fluid" src="img/<%=product_list[i]['image']%>">
                   <% }%>
                 </div>
               </form>

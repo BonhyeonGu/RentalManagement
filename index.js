@@ -74,7 +74,7 @@ app.get("/", (request, response)=>{
 app.get("/work_single", (request, response)=>{
     var product_id = request.query.product_id
 
-    conn.query(`select id, name, remaining_qty, total_qty, image from product where id='${product_id}'`, function(err, rows, fields) {
+    conn.query(`select id, name, image,remaining_qty, total_qty from product where id='${product_id}'`, function(err, rows, fields) {
         if (err) throw err
 
         response.render('work_single.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_info:rows})
@@ -439,7 +439,7 @@ app.post("/admin_rentalmanage_return_cancel", (request, response)=>{ // 비품 �
 
 // ================================= 회원가입(사용자 측) 관련 라우터 =======================================
 app.get("/signup", (request, response)=>{
-    fs.readFile("/signup.html", (error,data)=>{
+    fs.readFile("public/signup.html", (error,data)=>{
         response.writeHead(200,{'Content-Type' : "text/html"})
         response.write(data)
         response.end()

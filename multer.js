@@ -18,7 +18,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
     storage: multer.diskStorage({	// 파일이 저장될 경로
       destination(req, file, cb) {
-        cb(null, "uploads/");
+        cb(null, "assets/img/uploads/");
       },
       filename(req, file, cb) {
         const ext = path.extname(file.originalname);	// 파일 확장자
