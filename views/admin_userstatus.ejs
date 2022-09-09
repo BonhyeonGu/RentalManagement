@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script>
+        function submit_chk(myForm){
+
+         }
+    </script>
+</head>
+<body>
+    <h2 onclick="location.href='/'">Beharbor</h2>
+
+    <form action="/admin_userstatus_search" method="post">
+        User_ID:&nbsp;<input type="text" name="user_id">
+        <input type="submit" value="일부 검색">
+        <input type="reset" value="취소">
+    </form>
+    <button onclick="location.href='/admin_userstatus'">전체 검색</button>
+    <fieldset>
+        <legend>유저 현황</legend>
+        <% if (rows_list.length != 0) { %>
+        <table border="1">
+            <tr>
+            <th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>학번</th><th>이름</th><th>ID</th><th>재학여부</th><th>비밀번호 틀린 횟수</th></tr>
+            <% for (let rows of rows_list) { %>
+                <tr><td><%=rows.uid%></td><td><%=rows.user_auth%></td><td><%=rows.user_school%></td><td><%=rows.user_department%></td><td><%=rows.user_grade%></td><td><%=rows.user_num%></td><td><%=rows.user_name%></td><td><%=rows.user_id%></td><td><%=rows.user_attend_status%></td><td><%=rows.user_status%></td>
+                <td>
+                            <form action='/admin_userstatus_manage' method="post">
+                                <input type="hidden" name="uid" value="<%= rows.uid %>">
+                                <input type="submit" value='수정'>
+                            </form>
+            <% } %>
+        </table>
+        
+        <% } else { %>
+            Oh! There's nothing here🤔
+        <% } %>
+    </fieldset>
+</body>
+</html>

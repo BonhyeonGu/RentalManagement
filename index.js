@@ -592,45 +592,35 @@ app.post("/privacy_pw", (request, response)=>{ // 사용자(관리자) 비밀번
 
 // ================================= 유저 관리 관련 라우터 =======================================
 app.get("/admin_userstatus", (request, response)=>{ // 전체 유저 현황
-    if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
+    if (user_auth_1_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`select * from rental_user where user_auth=0 or user_auth=1 or user_auth=2`, function(err, rows, fields){
-            if (err) throw err;
-            let tmp='<h1>유저 현황</h1>'
-            tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>학번</th><th>이름</th><th>ID</th><th>재학여부</th><th>비밀번호 틀린 횟수</th></tr>'
-            for(let a of rows){
-                tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_num}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
-            }
-            tmp+='</table>'
-            fs.readFile("public/admin/admin_userstatus.html", (error,data)=>{
-                response.writeHead(200,{'Content-type':"text/html;"})
-                response.write(data+tmp)
-                response.end()
-            })
+            if (err) throw err
+            response.render('admin_userstatus.ejs', {rows_list : rows})
         })
     }
 })
 
-app.post("/admin_userstatus", (request, response)=>{ // 검색된 유저 현황
+app.post("/admin_userstatus_search", (request, response)=>{
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
-        conn.query(`select * from rental_user where user_school="${request.body.user_school}" and user_num="${request.body.user_num}" and user_name="${request.body.user_name}"`, function(err, rows, fields){
-            if (err) throw err;
-            let tmp='<h1>유저 현황</h1>'
-            tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>학번</th><th>이름</th><th>ID</th><th>재학여부</th><th>비밀번호 틀린 횟수</th></tr>'
-            for(let a of rows){
-                tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_num}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
-            }
-            tmp+='</table>'
-            fs.readFile("public/admin/admin_backuser.html", (error,data)=>{
-                response.writeHead(200,{'Content-type':"text/html;"})
-                response.write(data+tmp)
-                response.end()
-            })
+        conn.query(`select * from rental_user where user_id='${request.body.user_id}' and user_auth=0 or user_auth=1 or user_auth=2`, function(err, rows, fields){
+            if (err) throw err
+            response.render('admin_userstatus.ejs', {rows_list : rows})
         })
     }
 })
+
+app.post("/admin_userstatus_manage", (request, response)=>{ 
+    if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
+        conn.query(`select * from rental_user where uid=${request.body.uid}`, function(err, rows, fields){
+            if(err) throw err;
+            response.render('admin_userstatus_manage.ejs', {rows_list : rows})
+        })
+    }
+})
+
 app.post("/admin_changeauth", (request, response)=>{ // 권한 수정
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
-        conn.query(`update rental_user set user_auth="${request.body.user_change_auth}" where uid="${user_uid}"`, function(err){
+        conn.query(`update rental_user set user_auth="${request.body.user_change_auth}" where uid="${request.body.uid}"`, function(err){
             if(err) throw err;
             response.send(`<script>alert('권한이 변경되었습니다.'); location.href = '/admin_userstatus'</script>`)
         })
@@ -638,18 +628,11 @@ app.post("/admin_changeauth", (request, response)=>{ // 권한 수정
 })
 app.post("/admin_changepw", (request, response)=>{ // 비밀번호 수정(비밀번호를 잃어버렸을 경우)
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
-        if(request.body.user_change_pw==request.body.user_change_repw){
-            let tmp1 = /^(?=.*[a-zA-Z])[a-zA-Z\d-_]{5,20}/g
-            let tmp2 = /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z\d~!@#$%^&*]{8,16}$/g
-            if(tmp1.test(request.body.user_id)==true){
-                if(tmp2.test(request.body.user_pw)==true){
-                    conn.query(`update rental_user set user_pw="${request.body.user_change_pw}" where uid="${user_uid}"`, function(err){
-                        if(err) throw err;
-                        response.send(`<script>alert('비밀번호가 변경되었습니다.'); location.href = '/admin_userstatus'</script>`)
-                    })
-                }
-            }
-        }
+        let sha256_hex_pw=crypto.createHash('sha256').update("qwer!1234").digest('hex')
+        conn.query(`update rental_user set user_pw="${sha256_hex_pw}" where uid="${request.body.uid}"`, function(err){
+            if(err) throw err;
+            response.send(`<script>alert('비밀번호가 qwer!1234로 초기화되었습니다.'); location.href = '/admin_userstatus'</script>`)
+        })
     }
 })
 

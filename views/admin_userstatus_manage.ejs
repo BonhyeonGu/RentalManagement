@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beharbor : Database </title>
+    <script>
+        function submit_chk(myForm){
+
+         }
+        function reset_chk(myForm){
+            location.href='/user_status'
+         }
+         function changeauth(){
+            const f = document.getElementById('f1')
+            f.action = '/admin_changeauth'
+            f.method = 'post'
+            f.submit()
+        }
+        function changepw(){
+            const f = document.getElementById('f1')
+            f.action = '/admin_changepw'
+            f.method = 'post'
+            f.submit()
+        }
+    </script>
+</head>
+<body onload = "document.f1.user_school.focus();">
+    <form id = "f1" name = "f1" onsubmit = "return submit_chk(this);" onreset = "return reset_chk(this);">
+        <fieldset>
+            <legend>Database</legend>
+            <p>
+                <label for ="id">USER_ID: <%=rows_list[0]['user_id']%></label>
+                <input type="hidden" name = "uid" value="<%=rows_list[0]['uid']%>">
+            </p>
+            <p>
+                <label for ="user_auth">User_auth: <%=rows_list[0]['user_auth']%></label>
+            </p>
+            <p>
+                <label for ="user_change_auth">바꿀 권한 레벨</label>
+                <select name="user_change_auth" id = "user_change_auth">
+                    <option value="0">User</option>
+                    <option value="1">Read</option>
+                    <option value="2">Read&Write</option>
+                </select>
+            </p>
+            <p>
+                <input type = "button" onclick="changeauth()" value = "권한 변경"/>
+                <input type = "button" onclick="changepw()" value = "비밀번호 초기화"/>
+                <input type = "reset" value = "취소"/>
+            </p>
+        </fieldset>
+        
+    </form>  
+</body>
+</html>
