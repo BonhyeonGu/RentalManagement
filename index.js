@@ -421,7 +421,6 @@ app.post("/admin_rentalmanage_return_cancel", (request, response)=>{ // 비품 �
 
         conn.query(`select * from rental_manage ,product where rental_manage.pid=product.id and product.id=${request.body.return_cancel_pid}`, function(err, rows1, fields){
             if (err) throw err;
-            console.log(rows1[0]['ma_start_date'])
             conn.query(`UPDATE rental_manage SET ma_state='2' ,ma_return_date=date_add("${rows1[0]['ma_start_date']}",INTERVAL ${rows1[0]['ma_using_period']} DAY) WHERE ma_id='${maID}'`, function(err, rows2, fields){
                 if (err) throw err;
                 conn.query(`UPDATE product SET remaining_qty=remaining_qty-${rows1[0]['ma_qty']} where id=${request.body.return_cancel_pid} `, function(err, rows3, fields){
@@ -548,7 +547,6 @@ app.post("/admin_signup_rewrite", (request, response)=>{ // 회원가입 수정 
         conn.query(`update rental_user set user_school="${request.body.user_school}" , user_num="${request.body.user_num}",user_name="${request.body.user_name}",user_department="${request.body.user_department}",user_grade=${request.body.user_grade},user_id="${request.body.user_id}",user_attend_status=${request.body.user_attend_status},user_phone="${request.body.user_phone}" where user_id="${request.body.user_id}"`, function(err, rows, fields){
             if (err) throw err
             response.send(`<script>alert('수정되었습니다'); location.href = '/admin_signup'</script>`)
-            console.log(request.body)
         })
     }
 })
