@@ -1,96 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-  <title>Beharbor Randing Page</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-
-  <!-- Favicons -->
-  <link href="img/favicon.png" rel="icon">
-  <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Google Fonts -->
-  <!-- <link href="https://fonts.googleapis.com/css?family=https://fonts.googleapis.com/css?family=Inconsolata:400,500,600,700|Raleway:400,400i,500,500i,600,600i,700,700i" rel="stylesheet"> -->
-
-  <!-- Vendor CSS Files -->
-  <link href="vendor/aos/aos.css" rel="stylesheet">
-  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
-  <link href="css/style.css" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: MyPortfolio - v4.8.0
-  * Template URL: https://bootstrapmade.com/myportfolio-bootstrap-portfolio-website-template/
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
+  <title>Beharbor Rental Page</title>
+  <%- include('head') %>
   <script>
     function go(clicked_id) {
       var form = document.getElementById(clicked_id).parentElement
       form.submit()
     }
   </script>
-  <style>
-    .search-form {
-      position: relative;
-      top: 50%;
-      left: 50%;
-      width: 350px;
-      height: 40px;
-      border-radius: 40px;
-      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-      transform: translate(-50%, -50%);
-      background: #fff;
-      transition: all 0.3s ease;
-    }
-    .search-form.focus {
-      box-shadow: 0 3px 4px rgba(0, 0, 0, 0.15);
-    }
-    .search-input {
-      position: absolute;
-      top: 10px;
-      left: 38px;
-      font-size: 14px;
-      background: none;
-      color: #5a6674;
-      width: 300px;
-      height: 20px;
-      border: none;
-      -webkit-appearance: none;
-         -moz-appearance: none;
-              appearance: none;
-      outline: none;
-    }
-    .search-input::-webkit-search-cancel-button {
-      -webkit-appearance: none;
-              appearance: none;
-    }
-    .search-button {
-      position: absolute;
-      top: 10px;
-      left: 15px;
-      height: 20px;
-      width: 20px;
-      padding: 0;
-      margin: 0;
-      border: none;
-      background: none;
-      outline: none !important;
-      cursor: pointer;
-    }
-    .search-button svg {
-      width: 20px;
-      height: 20px;
-      fill: #5a6674;
-    }
-  </style>
-  
 </head>
 
 <body>
@@ -104,7 +22,7 @@
         <div class="row mb-5 align-items-center">
           <div class="col-md-12 col-lg-6 mb-4 mb-lg-0" data-aos="fade-up">
             <h2>환영합니다, 비품 대여 페이지 입니다</h2>
-            <p class="mb-0">Welcome, This is equipment landing page</p>
+            <p class="mb-0">Welcome, This is equipment rental page</p>
           </div>
 
           <!-- 검색창 start -->
@@ -124,8 +42,8 @@
               </symbol>
             </svg>
           </div>
+          <!-- 검색창 end -->
         </div>
-        <!-- 검색창 end -->
 
         <div id="portfolio-grid" class="row no-gutter" data-aos="fade-up" data-aos-delay="200">
           <% for (var i = 0; i < product_list.length; i++) { %>
@@ -157,8 +75,8 @@
           </div>
         </div>
         <!-- End Pagenation Section -->
-
-      </section><!-- End  Works Section -->
+      </div>
+    </section><!-- End  Works Section -->
     </main><!-- End #main -->
 
     <%- include('footer') %>

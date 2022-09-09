@@ -1,100 +1,156 @@
 <!D window.location.reload();OCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://code.jquery.com/jquery-3.6.0.js"
-    integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
-    crossorigin="anonymous"></script>
-    <title>대여 현황</title>
+    <title>Beharbor Rental Page | 대여 이력</title>
+    <%- include('head') %>
 </head>
 <body>
-    <h1>물품 검색</h1>
-    <form action="/rental_status_search" method="post">
-        물품명 :&nbsp;<input type="text" name="asset_name">
-        <input type="submit" value="일부 검색">
-        <input type="reset" value="취소">
-    </form>
-    <button onclick="location.href='/rental_status'">전체 검색</button>
 
-    <!--
-        🐇create table assets_qty (
-        qid int AUTO_INCREMENT primary key,
-        pid int(10) unsigned,    //pid
-        total_qty text,               // 총 갯수
-        remaining_qty int,        // 남은 갯수
-        foreign key(pid) references assets(id) on delete cascade on update cascade
-        );
+    <%- include('nav',{login_user_id:id, login_user_auth: auth}) %>
 
-        create table rental_manage(
-        ma_id int NOT NULL AUTO_INCREMENT,
-        uid int,
-        pid int(10) unsigned,
-        ma_recept_date date,
-        ma_start_date datetime,
-        ma_using_period int,
-        ma_return_date datetime,
-        ma_qty int,
-        ma_state char(1),
-        ma_exprt_date date,
-        primary key (ma_id),
-        foreign key (pid) references assets(id) on delete cascade on update cascade,
-        foreign key (uid) references rental_user(uid) on delete cascade on update cascade
-        );
-    -->
-    <fieldset>
-        <legend>신청 목록</legend>
-        <% if (rows_list.length != 0) { %>
-        <table border="1">
-            <tr>
-            <th>물품명<th>신청갯수<th>신청일<th>사용기간
-            <% for (let rows of rows_list) { %>
-                <% if (rows.ma_state=='1') { %>
-                <tr>
-                    <td><%=rows.name%><td><%=rows.ma_qty%><td><%=rows.ma_recept_date%><td><%=rows.ma_using_period%>
-                <td>
-                    <form action='/rental_status_delete' method="post">
-                        <input type="hidden" name="ma_id" value="<%= rows.ma_id %>">
-                        <input type="submit" value='취소'>
-                    </form>
+    <main id="main">
+
+        <section class="section site-portfolio">
+          <div class="container">
+            <div class="row mb-5 align-items-center">
+              <div class="col-md-12 col-lg-6 mb-4 mb-lg-0" data-aos="fade-up">
+                <h2>대여 이력</h2>
+                <p class="mb-0">비품 대여 예약, 신청, 반납 이력을 확인하고 관리할 수 있습니다.</p>
+              </div>
+    
+              <!-- 검색창 start -->
+          <div class="col-md-12 col-lg-6 text-start text-lg-end" data-aos="fade-up" data-aos-delay="100">
+            <form class="search-form" action="/rental_status_search" method="get">
+              <input type="search" placeholder="비품 이름으로 검색" class="search-input" name="q" id="q">
+              <button type="submit" class="search-button">
+                <svg class="submit-button">
+                  <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#search"></use>
+                </svg>
+              </button>
+            </form>
+            
+            <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" display="none">
+              <symbol id="search" viewBox="0 0 32 32">
+                <path d="M 19.5 3 C 14.26514 3 10 7.2651394 10 12.5 C 10 14.749977 10.810825 16.807458 12.125 18.4375 L 3.28125 27.28125 L 4.71875 28.71875 L 13.5625 19.875 C 15.192542 21.189175 17.250023 22 19.5 22 C 24.73486 22 29 17.73486 29 12.5 C 29 7.2651394 24.73486 3 19.5 3 z M 19.5 5 C 23.65398 5 27 8.3460198 27 12.5 C 27 16.65398 23.65398 20 19.5 20 C 15.34602 20 12 16.65398 12 12.5 C 12 8.3460198 15.34602 5 19.5 5 z" />
+              </symbol>
+            </svg>
+          </div>
+          <!-- 검색창 end -->
+              <button class="btn" onclick="location.href='/rental_status'" data-aos="fade-up">전체 조회</button>
+            </div>
+
+            <div class="section">
+                <% if (rows_list.length == 0) { %>
+                    <h2 data-aos="fade-up">Oh! There's nothing here🤔</h2>
+                <% } else { %>
+
+                <div class="section pt-0" data-aos="fade-up">
+                    <div class="container mt-3">
+                        <fieldset>
+                            <legend>신청목록</legend>
+                            <table class="table">
+                            <thead>
+                                <tr>
+                                <th>물품명
+                                <th>신청 갯수
+                                <th>신청일
+                                <th>사용 기간
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for (let rows of rows_list) { %>
+                                    <% if (rows.ma_state=='1') { %>
+                                    <tr>
+                                    <td><%=rows.name%>
+                                    <td><%=rows.ma_qty%>
+                                    <td><%=rows.ma_recept_date%>
+                                    <td><%=rows.ma_using_period%>
+                                    <td>
+                                        <form action='/rental_status_delete' method="post">
+                                        <input type="hidden" name="ma_id" value="<%= rows.ma_id %>">
+                                        <input type="submit" value='취소'>
+                                        </form>
+                                    </tr>
+                                    <% } %>
+                                <% } %>
+                            </tbody>
+                            </table>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="section pt-0" data-aos="fade-up">
+                    <div class="container mt-3">
+                        <fieldset>
+                            <legend>사용목록</legend>
+                            <table class="table">
+                            <thead>
+                                <tr>
+                                <th>물품명
+                                <th>신청 갯수
+                                <th>신청일
+                                <th>사용 시작일
+                                <th>반납 예정일
+                                <th>사용 기간
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for (let rows of rows_list) { %>
+                                    <% if (rows.ma_state=='2') { %>
+                                    <tr>
+                                    <td><%=rows.name%>
+                                    <td><%=rows.ma_qty%>
+                                    <td><%=rows.ma_recept_date%>
+                                    <td><%=rows.ma_start_date%>
+                                    <td><%=rows.ma_return_date%>
+                                    <td><%=rows.ma_using_period%>
+                                    </tr>
+                                    <% } %>
+                                <% } %>
+                            </tbody>
+                            </table>
+                        </fieldset>
+                    </div>
+                </div>
+                <div class="section pt-0"  data-aos="fade-up">
+                    <div class="container mt-3">
+                        <fieldset>
+                            <legend>반납목록</legend>
+                            <table class="table">
+                            <thead>
+                                <tr>
+                                <th>물품명
+                                <th>신청 갯수
+                                <th>신청일
+                                <th>사용 시작일
+                                <th>반납일
+                                <th>사용 기간
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for (let rows of rows_list) { %>
+                                    <% if (rows.ma_state=='3') { %>
+                                    <tr>
+                                    <td><%=rows.name%>
+                                    <td><%=rows.ma_qty%>
+                                    <td><%=rows.ma_recept_date%>
+                                    <td><%=rows.ma_start_date%>
+                                    <td><%=rows.ma_return_date%>
+                                    <td><%=rows.ma_using_period%>
+                                    </tr>
+                                    <% } %>
+                                <% } %>
+                            </tbody>
+                            </table>
+                        </fieldset>
+                    </div>
+                </div>
                 <% } %>
-            <% } %>
-        </table>
-    </fieldset>
-    <br>
-    <fieldset>
-        <legend>사용 목록</legend>
-        <table border="1">
-            <tr>
-            <th>물품명<th>신청갯수<th>신청일<th>시작일<th>반납예정일<th>사용기간
-            <% for (let rows of rows_list) { %>
-                <% if (rows.ma_state=='2') { %>
-                <tr>
-                    <td><%=rows.name%><td><%=rows.ma_qty%><td><%=rows.ma_recept_date%><td><%=rows.ma_start_date%><td><%=rows.ma_return_date%><td><%=rows.ma_using_period%>
+            </div>
+          </div>
+        </section>
+    </main><!-- End #main -->
 
-                <% } %>
-            <% } %>
-        </table>
-    </fieldset>
-    <br>
-    <fieldset>
-        <legend>반납 목록</legend>
-        <table border="1">
-            <tr>
-            <th>물품명<th>신청갯수<th>신청일<th>시작일<th>반납일<th>사용기간
-            <% for (let rows of rows_list) { %>
-                <% if (rows.ma_state=='3') { %>
-                <tr>
-                    <td><%=rows.name%><td><%=rows.ma_qty%><td><%=rows.ma_recept_date%><td><%=rows.ma_start_date%><td><%=rows.ma_return_date%><td><%=rows.ma_using_period%>
-
-                <% } %>
-            <% } %>
-        </table>
-        <% } else { %>
-            Oh! There's nothing here🤔
-        <% } %>
-    </fieldset>
+    <%- include('footer') %>
 
 </body>
 </html>

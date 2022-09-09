@@ -87,7 +87,7 @@
         <div class="row">
           <div class="col-md-6 mb-5 mb-md-0" data-aos="fade-up">
 
-            <form role="form" class="php-email-form" id = "f1" name = "f1" onreset = "return reset_chk(this);">
+            <form action="#" method="post" role="form" id = "f1" name = "f1" onreset = "return reset_chk(this);">
 
               <div class="row gy-3">
                 <div class="col-md-12 form-group">
@@ -132,16 +132,8 @@
                     <label for ="user_phone">휴대폰 번호</label>
                     <input type="text" class="form-control" name = "user_phone" id = "user_phone" value="<%=rows_list[0]['user_phone']%>" required>
                 </div>
-                <!-- <div class="col-md-12 form-group">
-                  <label for="name">Message</label>
-                  <textarea class="form-control" name="message" cols="30" rows="10" required></textarea>
-                </div> -->
-
-                <div class="col-md-12 my-3">
-                  <div class="loading">Loading</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
-                </div>
+                
+                <div class="col-md-12 my-3"></div>
 
                 <div class="col-md-6 mt-0 form-group">
                     <input type = "button" class="readmore d-block w-100" onclick="modify()" value = "변경 신청"/>
