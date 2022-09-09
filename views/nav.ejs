@@ -26,11 +26,12 @@
             <% } else { %>
               <li><a href="/logout">로그아웃</a></li>
               <li><a href="/privacy_pw">비밀번호 변경</a></li>
-              <li><a href="/rental">대여 신청</a></li>
+              <li><a href="/rental_status">대여 현황</a></li>
                 <% if (login_user_auth == '1' || login_user_auth == '2') { %>
                   <li><a href="/admin_signup">회원가입 관리</a></li>
                   <li><a href="/admin_rentalmanage">신청 관리</a></li>
                   <li><a href="/admin_userstatus">유저 관리</a></li>
+                  <li><a href="/database">DB 관리</a></li>
             <% }} %>
             <!-- 추후에 추가할 예정
             <li><a href="">이용안내</a></li>

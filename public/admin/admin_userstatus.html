@@ -2,8 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script>
         function submit_chk(myForm){
@@ -12,6 +10,7 @@
     </script>
 </head>
 <body onload = "document.f1.user_id.focus();">
+    <h2 onclick="location.href='/'">Beharbor</h2>
     <form action ="/admin_userstatus" method="POST" name = "f1" onsubmit = "return submit_chk(this);">
         <fieldset>
             <legend>유저검색</legend>

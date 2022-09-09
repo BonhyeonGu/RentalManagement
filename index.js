@@ -82,7 +82,7 @@ app.get("/work_single", (request, response)=>{
 
 // '/search' GET 라우팅
 app.get("/search", (request, response)=>{ 
-    conn.query(`select id, name, image, remaining_qty from product where name='${request.query.q}'`, function(err, rows, fields){
+    conn.query(`select id, name, image, remaining_qty from product where name like '%${request.query.q}%'`, function(err, rows, fields){
         if (err) throw err;
         
         response.render('main.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_list:rows})
@@ -273,7 +273,7 @@ app.post("/rental_status_delete", (request, response)=>{
         conn.query(`delete from rental_manage where ma_id='${request.body.ma_id}'`, function(err, rows, fields){
             if (err) throw err;
             response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-            response.write(`<script>alert("${request.session.user_id} : 물품 신청을 취소하였습니다."); location.href = '/admin_signup' </script>`)
+            response.write(`<script>alert("${request.session.user_id} : 물품 신청을 취소하였습니다."); location.href = '/rental_status' </script>`)
             response.end()
         })
     }
@@ -354,21 +354,21 @@ app.post("/admin_rentalmanage_resrv_recept", (request, response)=>{ // 예약 �
                         conn.query(`UPDATE product SET remaining_qty=remaining_qty-${rows1[0]['ma_qty']} where id=${request.body.resrv_recept_pid}`, function(err, rows3, fields){
                             if (err) throw err;
                             response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                            response.write(`<script>alert("${maID} : 예약 신청을 수락했습니다.")</script>`)
-                            response.end('<script></script>')
+                            response.write(`<script>alert("${maID} : 예약 신청을 수락했습니다."); location.href = '/admin_rentalmanage'</script>`)
+                            response.end()
                         })
                     })
                 }
                 else{
                     res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                    res.write(`<script>alert("${maID} : 빌리기 불가능으로 수락이 불가능합니다.")</script>`)
-                    res.end('<script></script>')
+                    res.write(`<script>alert("${maID} : 빌리기 불가능으로 수락이 불가능합니다."); location.href = '/admin_rentalmanage'</script>`)
+                    res.end()
                 }
             }
             else{
                 res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                res.write(`<script>alert("${maID} : 개수 초과로 수락이 불가능합니다.")</script>`)
-                res.end('<script></script>')
+                res.write(`<script>alert("${maID} : 개수 초과로 수락이 불가능합니다."); location.href = '/admin_rentalmanage'</script>`)
+                res.end()
             }
         })
     }
@@ -383,8 +383,8 @@ app.post("/admin_rentalmanage_resrv_reject", (req, res)=>{ // 예약 신청 거�
             if (err) throw err;
 
             res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-            res.write(`<script>alert("${maID} : 예약 신청을 거절했습니다.")</script>`)
-            res.end('<script></script>')
+            res.write(`<script>alert("${maID} : 예약 신청을 거절했습니다."); location.href = '/admin_rentalmanage'</script>`)
+            res.end()
         })
     }
 })
@@ -403,8 +403,8 @@ app.post("/admin_rentalmanage_return", (request, response)=>{ // 비품 반납
                 conn.query(`UPDATE product SET remaining_qty=remaining_qty+${rows1[0]['ma_qty']} where id=${request.body.return_pid}`, function(err, rows3, fields){
                     if (err) throw err;
                     response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                    response.write(`<script>alert("${maID} : 반납으로 변경했습니다.")</script>`)
-                    response.end('<script>history.back()</script>')
+                    response.write(`<script>alert("${maID} : 반납으로 변경했습니다."); location.href = '/admin_rentalmanage'</script>`)
+                    response.end()
                 })
             })
         
@@ -427,8 +427,8 @@ app.post("/admin_rentalmanage_return_cancel", (request, response)=>{ // 비품 �
                 conn.query(`UPDATE product SET remaining_qty=remaining_qty-${rows1[0]['ma_qty']} where id=${request.body.return_cancel_pid} `, function(err, rows3, fields){
                     if (err) throw err;
                     response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                    response.write(`<script>alert("${maID} : 반납에서 사용중으로 변경했습니다.")</script>`)
-                    response.end('<script>history.back()</script>')
+                    response.write(`<script>alert("${maID} : 반납에서 사용중으로 변경했습니다."); </script>`)
+                    response.end(`<script>location.href = '/admin_rentalmanage'</script>`)
                 })
             })
         
@@ -556,11 +556,7 @@ app.post("/admin_signup_rewrite", (request, response)=>{ // 회원가입 수정 
 // ================================= 비밀번호 변경 관련 라우터 =======================================
 app.get("/privacy_pw", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
-        fs.readFile("/privacy_pw.html", (error,data)=>{
-            response.writeHead(200,{'Content-Type' : "text/html"})
-            response.write(data)
-            response.end()
-        })
+            response.render('privacy_pw.ejs', {id:request.session.user_id, auth:request.session.user_auth});
     }
 })
 app.post("/privacy_pw", (request, response)=>{ // 사용자(관리자) 비밀번호 변경
@@ -605,8 +601,8 @@ app.get("/admin_userstatus", (request, response)=>{ // 전체 유저 현황
                 tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_num}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
             }
             tmp+='</table>'
-            fs.readFile("/admin/admin_userstatus.html", (error,data)=>{
-                response.writeHead(200,{'Content-Type' : "text/html"})
+            fs.readFile("public/admin/admin_userstatus.html", (error,data)=>{
+                response.writeHead(200,{'Content-type':"text/html;"})
                 response.write(data+tmp)
                 response.end()
             })
@@ -618,15 +614,14 @@ app.post("/admin_userstatus", (request, response)=>{ // 검색된 유저 현황
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
         conn.query(`select * from rental_user where user_school="${request.body.user_school}" and user_num="${request.body.user_num}" and user_name="${request.body.user_name}"`, function(err, rows, fields){
             if (err) throw err;
-            user_uid=rows[0]['uid'];
             let tmp='<h1>유저 현황</h1>'
             tmp+='<table border="1"><tr><th>INDEX</th><th>권한등급</th><th>학교</th><th>학과</th><th>학년</th><th>학번</th><th>이름</th><th>ID</th><th>재학여부</th><th>비밀번호 틀린 횟수</th></tr>'
             for(let a of rows){
                 tmp+=`<tr><td>${a.uid}</td><td>${a.user_auth}</td><td>${a.user_school}</td><td>${a.user_department}</td><td>${a.user_grade}</td><td>${a.user_num}</td><td>${a.user_name}</td><td>${a.user_id}</td><td>${a.user_attend_status}</td><td>${a.user_status}</td></tr>`
             }
             tmp+='</table>'
-            fs.readFile("/admin/admin_backuser.html", (error,data)=>{
-                response.writeHead(200,{'Content-Type': 'text/html'})
+            fs.readFile("public/admin/admin_backuser.html", (error,data)=>{
+                response.writeHead(200,{'Content-type':"text/html;"})
                 response.write(data+tmp)
                 response.end()
             })
