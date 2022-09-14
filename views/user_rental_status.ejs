@@ -73,6 +73,7 @@
                                 <th>물품명
                                 <th>신청 갯수
                                 <th>신청일
+                                <th>대여 예정 날짜</th>
                                 <th>사용 기간
                                 </tr>
                             </thead>
@@ -83,6 +84,7 @@
                                     <td><%=rows.name%>
                                     <td><%=rows.ma_qty%>
                                     <td><%=rows.ma_recept_date%>
+                                    <td><%=rows.ma_start_date%>
                                     <td><%=rows.ma_using_period%>
                                     <td>
                                         <form action='/rental_status_delete' method="post">

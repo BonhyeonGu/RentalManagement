@@ -68,11 +68,11 @@ function myQueryErrorHandler(e) {
     else {
         return ['500',`<h1>홈페이지 이용에 불편을 드려 죄송합니다.</h1>예기치 못한 오류가 발생했어요😥<hr>${e.name} : ${e.message}<p><button onclick="history.back()">뒤로가기</button>`]
     }
-}
+} // 쿼리문 예외 처리
 function myFsErrorHandler(e) {
     console.log(e.name + " : " + e.message)
     return ['500',`<h1>홈페이지 이용에 불편을 드려 죄송합니다.</h1>예기치 못한 오류가 발생했어요😥<hr>${e.name} : ${e.message}<p><button onclick="history.back()">뒤로가기</button>`]
-}
+} // 파일 시스템(fs) 예외 처리
 
 
 // ================================= 메인 화면 관련 라우터 =======================================
