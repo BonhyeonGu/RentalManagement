@@ -589,31 +589,15 @@ app.post("/database_adding",upload.single('image'),(request, response)=>{
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         if(request.file==undefined) response.send(`<script>alert('사진을 입력해주세요'); history.back()</script>`)
         else{
-<<<<<<< HEAD
             if(request.body.name&&parseInt(request.body.lendable)&&parseInt(request.body.status)&&parseInt(request.body.total_qty)&&parseInt(request.body.remaining_qty)&&(request.body.total_qty==request.body.remaining_qty)){
                 conn.query(`insert into product values(NULL,"${request.body.name}","${request.body.tag}","${request.body.model_id}","${request.body.serial}","${request.body.note}","${request.file.filename}",now(),now(), ${request.body.lendable},${request.body.status},"${request.body.company}",${request.body.total_qty},${request.body.remaining_qty})`, function(err){
                     if (err) {
                         try {
                             throw err;
+                        } catch(e) {
+                            var data = myQueryErrorHandler(e);
+                            response.status(Number(data[0])).send(data[1]);
                         }
-                        catch(e) {
-                            let errM = e.message.split(':');
-                            if(errM[0] == 'ER_DATA_TOO_LONG') {
-                                response.status(500).send('<script>alert("너무 긴 데이터가 존재합니다.");history.back();</script>')
-                            }
-                            else {
-                                error_call(response)
-                            }
-                        }
-=======
-            conn.query(`insert into product values(NULL,"${request.body.name}","${request.body.tag}","${request.body.model_id}","${request.body.serial}","${request.body.note}","${request.file.filename}",now(),now(), ${request.body.lendable},${request.body.status},"${request.body.company}",${request.body.total_qty},${request.body.remaining_qty})`, function(err){
-                if (err) {
-                    try {
-                        throw err;
-                    } catch(e) {
-                        var data = myQueryErrorHandler(e);
-                        response.status(Number(data[0])).send(data[1]);
->>>>>>> 394ae020bc1bb2053a94e9ebf4353765c2ec0ae2
                     }
                     else response.send(`<script>alert('데이터베이스에 추가되었습니다.'); location.href='/database'</script>`)
                 })
@@ -645,49 +629,11 @@ app.post("/database_manage", (request, response)=>{
 // 확인완료
 app.post("/database_modify", (request, response)=>{
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
-<<<<<<< HEAD
         if(request.file==undefined) response.send(`<script>alert('사진을 입력해주세요'); history.back()</script>`)
         else{
             if(request.body.name&&parseInt(request.body.lendable)&&parseInt(request.body.status)&&parseInt(request.body.total_qty)&&parseInt(request.body.remaining_qty)){
                 conn.query(`select created_at from product where id=${request.body.id}`, function(err, rows1, fields){
-                    let time = rows1[0]['created_at']
-                    conn.query(`update product set id=${request.body.id},name="${request.body.name}",tag="${request.body.tag}",updated_at=now(),model_id="${request.body.model_id}",serial="${request.body.serial}",note="${request.body.note}",image="${request.body.image}",created_at='${time}',lendable=${request.body.lendable},status=${request.body.status},company="${request.body.company}",total_qty=${request.body.total_qty},remaining_qty=${request.body.remaining_qty} where id=${request.body.id}`, function(err){
-                        if (err) {
-                            try {
-                                throw err;
-                            }
-                            catch(e) {
-                                let errM = e.message.split(':');
-                                if(errM[0] == 'ER_DATA_TOO_LONG') {
-                                    response.status(500).send('<script>alert("너무 긴 데이터가 존재합니다.");history.back();</script>')
-                                }
-                                else {
-                                    error_call(response)
-                                }
-                            }
-                        }
-                        else response.send(`<script>alert('데이터베이스에 수정되었습니다.'); location.href='/database'</script>`)
-                    })
-                })
-            }
-            else{
-                response.send(`<script>alert('필수입력\\n물품명 : string \\n빌리기 상태, 물품상태, 총 갯수, 남은 갯수 : int\\n양식 맞춰서 입력해주세요'); history.back()</script>`)
-            }
-        }
-=======
-        conn.query(`select created_at from product where id=${request.body.id}`, function(err, rows1, fields){
-            if (err) {
-                try {
-                    throw err;
-                } catch(e) {
-                    var data = myQueryErrorHandler(e);
-                    response.status(Number(data[0])).send(data[1]);
-                }
-            }
-            else {
-                let time = rows1[0]['created_at']
-                conn.query(`update product set id=${request.body.id},name="${request.body.name}",tag="${request.body.tag}",updated_at=now(),model_id="${request.body.model_id}",serial="${request.body.serial}",note="${request.body.note}",image="${request.body.image}",created_at='${time}',lendable=${request.body.lendable},status=${request.body.status},company="${request.body.company}",total_qty=${request.body.total_qty},remaining_qty=${request.body.remaining_qty} where id=${request.body.id}`, function(err){
-                    if(err) {
+                    if (err) {
                         try {
                             throw err;
                         } catch(e) {
@@ -695,11 +641,26 @@ app.post("/database_modify", (request, response)=>{
                             response.status(Number(data[0])).send(data[1]);
                         }
                     }
-                    else response.send(`<script>alert('데이터베이스에 수정되었습니다.'); location.href='/database'</script>`)
+                    else{
+                        let time = rows1[0]['created_at']
+                        conn.query(`update product set id=${request.body.id},name="${request.body.name}",tag="${request.body.tag}",updated_at=now(),model_id="${request.body.model_id}",serial="${request.body.serial}",note="${request.body.note}",image="${request.body.image}",created_at='${time}',lendable=${request.body.lendable},status=${request.body.status},company="${request.body.company}",total_qty=${request.body.total_qty},remaining_qty=${request.body.remaining_qty} where id=${request.body.id}`, function(err){
+                            if(err) {
+                                try {
+                                    throw err;
+                                } catch(e) {
+                                    var data = myQueryErrorHandler(e);
+                                    response.status(Number(data[0])).send(data[1]);
+                                }
+                            }
+                            else response.send(`<script>alert('데이터베이스에 수정되었습니다.'); location.href='/database'</script>`)
+                        })
+                    }
                 })
             }
-        })
->>>>>>> 394ae020bc1bb2053a94e9ebf4353765c2ec0ae2
+            else{
+                response.send(`<script>alert('필수입력\\n물품명 : string \\n빌리기 상태, 물품상태, 총 갯수, 남은 갯수 : int\\n양식 맞춰서 입력해주세요'); history.back()</script>`)
+            }
+        }
     }
 })
 
