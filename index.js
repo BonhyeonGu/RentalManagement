@@ -142,49 +142,55 @@ app.post("/signup", (request, response)=>{
     if(request.body.user_id&&request.body.user_pw&&request.body.user_pw_chk&&request.body.user_school&&request.body.user_num&&request.body.user_name&&request.body.user_department&&request.body.user_attend_status&&request.body.user_grade&&request.body.user_phone){
         let sql = `SELECT * FROM rental_user WHERE user_id='${newID}'`
         conn.query(sql, function(err, rows, fields){
-            if (err){
-                throw err; 
-            }
-
-            if (rows.length != 0) {
-                response.send(`<script>alert("이미 존재하는 계정입니다."); history.back()</script>`)
-                response.end()
+            if (err) {
+                try {
+                    throw err;
+                } catch(e) {
+                    var data = myQueryErrorHandler(e);
+                    response.status(Number(data[0])).send(data[1]);
+                }
             }
             else {
-                let idReg =  /^(?=.*[a-zA-Z])[a-zA-Z\d-_]{5,20}/g // 아이디 정규식 검사
-                let pwReg = /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z\d~!@#$%^&*]{8,16}$/g // 비밀번호 정규식 검사
-
-                if (newPW != chkPW) {
-                    response.send(`<script>alert("비밀번호가 일치하지 않습니다. 다시 확인해 주세요."); history.back()</script>`)
+                if (rows.length != 0) {
+                    response.send(`<script>alert("이미 존재하는 계정입니다."); history.back()</script>`)
                     response.end()
                 }
                 else {
-                    if (idReg.test(newID) && pwReg.test(newPW)) { // 회원가입 신청 성공
-                        let sha256_hex_pw=crypto.createHash('sha256').update(newPW).digest('hex')
-                        conn.query(`insert into rental_user values(NULL,"${request.body.user_school}","${request.body.user_num}","${request.body.user_name}","${request.body.user_department}","${request.body.user_grade}","${request.body.user_id}","${sha256_hex_pw}","${request.body.user_attend_status}","${request.body.user_phone}",now(),NULL,"0","4")`, function(err){
-                            if (err) {
-                                try {
-                                    throw err;
-                                } catch(e) {
-                                    var data = myQueryErrorHandler(e);
-                                    response.status(Number(data[0])).send(data[1]);
+                    let idReg =  /^(?=.*[a-zA-Z])[a-zA-Z\d-_]{5,20}/g // 아이디 정규식 검사
+                    let pwReg = /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z\d~!@#$%^&*]{8,16}$/g // 비밀번호 정규식 검사
+    
+                    if (newPW != chkPW) {
+                        response.send(`<script>alert("비밀번호가 일치하지 않습니다. 다시 확인해 주세요."); history.back()</script>`)
+                        response.end()
+                    }
+                    else {
+                        if (idReg.test(newID) && pwReg.test(newPW)) { // 회원가입 신청 성공
+                            let sha256_hex_pw=crypto.createHash('sha256').update(newPW).digest('hex')
+                            conn.query(`insert into rental_user values(NULL,"${request.body.user_school}","${request.body.user_num}","${request.body.user_name}","${request.body.user_department}","${request.body.user_grade}","${request.body.user_id}","${sha256_hex_pw}","${request.body.user_attend_status}","${request.body.user_phone}",now(),NULL,"0","4")`, function(err){
+                                if (err) {
+                                    try {
+                                        throw err;
+                                    } catch(e) {
+                                        var data = myQueryErrorHandler(e);
+                                        response.status(Number(data[0])).send(data[1]);
+                                    }
                                 }
-                            }
-                            else response.send(`<script>alert('회원가입이 신청되었습니다. 방문일은 추후에 알려드리겠습니다.'); location.href = '/login'</script>`)
-                        })
+                                else response.send(`<script>alert('회원가입이 신청되었습니다. 방문일은 추후에 알려드리겠습니다.'); location.href = '/login'</script>`)
+                            })
+                        }
+                        else if (!idReg.test(newID)){ // 아이디 조건 실패
+                            response.send(`<script>alert("아이디가 조건에 부합하지 않습니다. 다시 입력해 주세요."); history.back()</script>`)
+                            response.end()
+                        }
+                        else if (!pwReg.test(newPW)){ // 비밀번호 조건 실패
+                            response.send(`<script>alert("비밀번호가 조건에 부합하지 않습니다. 다시 입력해 주세요.");history.back()</script>`)
+                            response.end()
+                        }
+                        else{
+                            response.send(`<script>alert("아이디와 비밀번호가 조건에 부합하지 않습니다. 다시 입력해 주세요."); history.back()</script>`)
+                            response.end()
+                        }            
                     }
-                    else if (!idReg.test(newID)){ // 아이디 조건 실패
-                        response.send(`<script>alert("아이디가 조건에 부합하지 않습니다. 다시 입력해 주세요."); history.back()</script>`)
-                        response.end()
-                    }
-                    else if (!pwReg.test(newPW)){ // 비밀번호 조건 실패
-                        response.send(`<script>alert("비밀번호가 조건에 부합하지 않습니다. 다시 입력해 주세요.");history.back()</script>`)
-                        response.end()
-                    }
-                    else{
-                        response.send(`<script>alert("아이디와 비밀번호가 조건에 부합하지 않습니다. 다시 입력해 주세요."); history.back()</script>`)
-                        response.end()
-                    }            
                 }
             }
         })
