@@ -435,7 +435,7 @@ app.post("/admin_rentalmanage_return_cancel", (request, response)=>{ // 비품 �
     }
 
 })
-
+// 확인완료
 // ================================= 회원가입(사용자 측) 관련 라우터 =======================================
 app.get("/signup", (request, response)=>{
     fs.readFile("public/signup.html", (error,data)=>{
@@ -444,53 +444,58 @@ app.get("/signup", (request, response)=>{
         response.end()
     })
 })
-
+// 확인완료
 app.post("/signup", (request, response)=>{
     let newID = request.body.user_id
     let newPW = request.body.user_pw
     let chkPW = request.body.user_pw_chk
+    if(request.body.user_id&&request.body.user_pw&&request.body.user_pw_chk&&request.body.user_school&&request.body.user_num&&request.body.user_name&&request.body.user_department&&request.body.user_attend_status&&request.body.user_grade&&request.body.user_phone){
+        let sql = `SELECT * FROM rental_user WHERE user_id='${newID}'`
+        conn.query(sql, function(err, rows, fields){
+            if (err) throw err;
 
-    let sql = `SELECT * FROM rental_user WHERE user_id='${newID}'`
-    conn.query(sql, function(err, rows, fields){
-        if (err) throw err;
-
-        if (rows.length != 0) {
-            response.send('<script>alert("이미 존재하는 계정입니다.")</script>')
-            response.end('<script>history.back()</script>')
-        }
-        else {
-            let idReg =  /^(?=.*[a-zA-Z])[a-zA-Z\d-_]{5,20}/g // 아이디 정규식 검사
-            let pwReg = /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z\d~!@#$%^&*]{8,16}$/g // 비밀번호 정규식 검사
-
-            if (newPW != chkPW) {
-                response.write('<script>alert("비밀번호가 일치하지 않습니다. 다시 확인해 주세요.")</script>')
-                response.end('<script>history.back()</script>')
+            if (rows.length != 0) {
+                response.send(`<script>alert("이미 존재하는 계정입니다.");location.href = '/signup'</script>`)
+                response.end()
             }
             else {
-                if (idReg.test(newID) && pwReg.test(newPW)) { // 회원가입 신청 성공
-                    let sha256_hex_pw=crypto.createHash('sha256').update(newPW).digest('hex')
-                    conn.query(`insert into rental_user values(NULL,"${request.body.user_school}","${request.body.user_num}","${request.body.user_name}","${request.body.user_department}","${request.body.user_grade}","${request.body.user_id}","${sha256_hex_pw}","${request.body.user_attend_status}","${request.body.user_phone}",now(),NULL,"0","4")`, function(err){
-                        if (err) throw err;
-                        response.send(`<script>alert('회원가입이 신청되었습니다. 방문일은 추후에 알려드리겠습니다.'); location.href='/login'</script>`)
-                    })
-                }
-                else if (!idReg.test(newID)){ // 아이디 조건 실패
-                    response.write('<script>alert("아이디가 조건에 부합하지 않습니다. 다시 입력해 주세요.")</script>')
-                    response.end('<script>history.back()</script>')
-                }
-                else if (!pwReg.test(newPW)){ // 비밀번호 조건 실패
-                    response.write('<script>alert("비밀번호가 조건에 부합하지 않습니다. 다시 입력해 주세요.")</script>')
-                    response.end('<script>history.back()</script>')
-                }
-                else{
-                    response.write('<script>alert("아이디와 비밀번호가 조건에 부합하지 않습니다. 다시 입력해 주세요.")</script>')
-                    response.end('<script>history.back()</script>')
-                }            
-            }
-        }
-    })
-})
+                let idReg =  /^(?=.*[a-zA-Z])[a-zA-Z\d-_]{5,20}/g // 아이디 정규식 검사
+                let pwReg = /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z\d~!@#$%^&*]{8,16}$/g // 비밀번호 정규식 검사
 
+                if (newPW != chkPW) {
+                    response.send(`<script>alert("비밀번호가 일치하지 않습니다. 다시 확인해 주세요."); location.href = '/signup'</script>`)
+                    response.end()
+                }
+                else {
+                    if (idReg.test(newID) && pwReg.test(newPW)) { // 회원가입 신청 성공
+                        let sha256_hex_pw=crypto.createHash('sha256').update(newPW).digest('hex')
+                        conn.query(`insert into rental_user values(NULL,"${request.body.user_school}","${request.body.user_num}","${request.body.user_name}","${request.body.user_department}","${request.body.user_grade}","${request.body.user_id}","${sha256_hex_pw}","${request.body.user_attend_status}","${request.body.user_phone}",now(),NULL,"0","4")`, function(err){
+                            if (err) throw err;
+                            response.send(`<script>alert('회원가입이 신청되었습니다. 방문일은 추후에 알려드리겠습니다.'); location.href = '/login'</script>`)
+                        })
+                    }
+                    else if (!idReg.test(newID)){ // 아이디 조건 실패
+                        response.send(`<script>alert("아이디가 조건에 부합하지 않습니다. 다시 입력해 주세요."); location.href = '/signup'</script>`)
+                        response.end()
+                    }
+                    else if (!pwReg.test(newPW)){ // 비밀번호 조건 실패
+                        response.send(`<script>alert("비밀번호가 조건에 부합하지 않습니다. 다시 입력해 주세요."); location.href = '/signup'</script>`)
+                        response.end()
+                    }
+                    else{
+                        response.send(`<script>alert("아이디와 비밀번호가 조건에 부합하지 않습니다. 다시 입력해 주세요."); location.href = '/signup'</script>`)
+                        response.end()
+                    }            
+                }
+            }
+        })
+    }
+    else{
+        response.send(`<script>alert("모든 정보가 입력 되지 않았습니다. 다시 입력해 주세요."); location.href = '/signup'</script>`)
+        response.end()
+    }
+})
+// 확인완료
 // ================================= 회원가입(관리자 측) 관련 라우터 =======================================
 app.get("/admin_signup", (request, response)=>{ // 전체 검색(회원가입 대기 목록 검색)
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
@@ -500,7 +505,7 @@ app.get("/admin_signup", (request, response)=>{ // 전체 검색(회원가입 �
         })
     }
 })
-
+// 확인완료
 app.post("/admin_signup_search", (request, response)=>{ // 일부 검색(회원가입 대기 목록 검색)
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
         let userID = request.body.user_id;
@@ -510,10 +515,10 @@ app.post("/admin_signup_search", (request, response)=>{ // 일부 검색(회원�
         })
     }
 })
-
+// 확인완료
 app.post("/admin_signup_recept", (request, response)=>{ // 회원가입 신청 수락(-> 회원으로 등록)
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
-        conn.query(`update rental_user set user_auth='1' and user_join_date=now() where user_id='${request.body.user_id}'`, function(err, rows, fields){
+        conn.query(`update rental_user set user_school="${request.body.user_school}" , user_num="${request.body.user_num}",user_name="${request.body.user_name}",user_department="${request.body.user_department}",user_grade=${request.body.user_grade},user_attend_status=${request.body.user_attend_status},user_phone="${request.body.user_phone}",user_auth='0' , user_join_date=curdate() where uid='${request.body.uid}'`, function(err, rows, fields){
             if (err) throw err;
             response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
             response.write(`<script>alert("${request.body.user_id} : 회원가입 신청을 수락했습니다."); location.href = '/admin_signup'</script>`)
@@ -521,10 +526,10 @@ app.post("/admin_signup_recept", (request, response)=>{ // 회원가입 신청 �
         })
     }
 })
-
+// 확인완료
 app.post("/admin_signup_resrv_reject", (request, response)=>{ // 회원가입 신청 거절(-> DB에서 삭제)
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
-        conn.query(`delete from rental_user where user_id='${request.body.user_id}'`, function(err, rows, fields){
+        conn.query(`delete from rental_user where uid='${request.body.uid}'`, function(err, rows, fields){
             if (err) throw err;
             response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
             response.write(`<script>alert("${request.body.user_id} : 회원가입 신청을 거절했습니다."); location.href = '/admin_signup' </script>`)
@@ -532,7 +537,7 @@ app.post("/admin_signup_resrv_reject", (request, response)=>{ // 회원가입 �
         })
     }
 })
-
+// 확인완료
 app.post("/admin_signup_manage", (request, response)=>{ // 회원가입 신청 폼 수정(회원으로 등록 전 DB에서 사용자 정보 확인&수정)
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`select * from rental_user where user_id='${request.body.signup_user_id}'`, function(err, rows, fields){
@@ -542,21 +547,14 @@ app.post("/admin_signup_manage", (request, response)=>{ // 회원가입 신청 �
     }
 })
 
-app.post("/admin_signup_rewrite", (request, response)=>{ // 회원가입 수정 완료
-    if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
-        conn.query(`update rental_user set user_school="${request.body.user_school}" , user_num="${request.body.user_num}",user_name="${request.body.user_name}",user_department="${request.body.user_department}",user_grade=${request.body.user_grade},user_id="${request.body.user_id}",user_attend_status=${request.body.user_attend_status},user_phone="${request.body.user_phone}" where user_id="${request.body.user_id}"`, function(err, rows, fields){
-            if (err) throw err
-            response.send(`<script>alert('수정되었습니다'); location.href = '/admin_signup'</script>`)
-        })
-    }
-})
-
+// 확인완료
 // ================================= 비밀번호 변경 관련 라우터 =======================================
 app.get("/privacy_pw", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
             response.render('privacy_pw.ejs', {id:request.session.user_id, auth:request.session.user_auth});
     }
 })
+// 확인완료
 app.post("/privacy_pw", (request, response)=>{ // 사용자(관리자) 비밀번호 변경
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         let tmp2 = /^(?=.*[a-zA-Z])(?=.*[!@#$%^&*])[a-zA-Z\d~!@#$%^&*]{8,16}$/g
@@ -633,17 +631,17 @@ app.post("/admin_changepw", (request, response)=>{ // 비밀번호 수정(비밀
         })
     }
 })
-
+// 확인완료
 // ================================= 오류 관련 라우터 =======================================
 app.use(function (err, req, res, next) {
     console.error(err.stack)
     res.status(500).send('Something broke!')
 })
-
+// 확인완료
 app.use(function(req, res, next) {
     res.status(404).send('Sorry cant find that!');
 })
-
+// 확인완료
 // ================================= listen =======================================
 app.listen(9999, ()=>{
     console.log('server start')

@@ -12,12 +12,6 @@
         function reset_chk(myForm){
             location.href='/admin_signup'
          }
-         function modify(){
-            const f = document.getElementById('f1')
-            f.action = '/admin_signup_rewrite'
-            f.method = 'post'
-            f.submit()
-        }
         function accepts(){
             const f = document.getElementById('f1')
             f.action = '/admin_signup_recept'
@@ -39,6 +33,7 @@
             <p>
                 <label for ="user_id">ID: <%=rows_list[0]['user_id']%></label>
                 <input type="hidden" name = "user_id" id = "user_id" value="<%=rows_list[0]['user_id']%>">
+                <input type="hidden" name = "uid" id = "uid" value="<%=rows_list[0]['uid']%>">
             </p>
             <p>
                 <label for ="user_school">학교명</label>
@@ -83,7 +78,6 @@
                 <input type="text" name = "user_phone" id = "user_phone" value="<%=rows_list[0]['user_phone']%>"/>
             </p>
             <p>
-                <input type = "button" onclick="modify()" value = "수정"/>
                 <input type = "button" onclick="accepts()" value = "수락"/>
                 <input type = "button" onclick="deny()" value = "거절"/>
                 <input type = "reset" value = "취소"/>
