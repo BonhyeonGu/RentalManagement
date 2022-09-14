@@ -10,6 +10,7 @@ const crypto = require('crypto');
 const { upload } = require("./multer.js");
 const db=require("./secret/database.js");
 const { parse } = require('path');
+const e = require('express');
 const conn=db.init()
 db.connect(conn)
 
@@ -738,10 +739,10 @@ app.get("/admin_rentalmanage", (request, response)=>{ // 전체 검색
     }
 })
 
-app.post("/admin_rentalmanage_search", (req, res)=>{ // 일부 검색
+app.post("/admin_rentalmanage_search", (request, response)=>{ // 일부 검색
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
-        let userID = req.body.user_id;
-        if (userID == "") res.redirect('/admin_rentalmanage')
+        let userID = request.body.user_id;
+        if (userID == "") response.redirect('/admin_rentalmanage')
         else {
             let qry1 = `SELECT m.ma_id, u.user_id, u.user_status, u.user_auth, u.user_school, u.user_num, u.user_name, m.pid, a.name, m.ma_recept_date, m.ma_start_date, m.ma_using_period, m.ma_return_date,  m.ma_qty \
                 FROM rental_manage m RIGHT JOIN rental_user u ON m.uid = u.uid RIGHT JOIN product a ON m.pid = a.id \
@@ -783,7 +784,7 @@ app.post("/admin_rentalmanage_search", (req, res)=>{ // 일부 검색
                                     }
                                 }
         
-                                else res.render('admin_rentalmanage.ejs', {reserv_list : reserv, using_list : using, return_list : ret})
+                                else response.render('admin_rentalmanage.ejs', {reserv_list : reserv, using_list : using, return_list : ret})
                             })
                         }
                     })
@@ -810,7 +811,7 @@ app.post("/admin_rentalmanage_resrv_recept", (request, response)=>{ // 예약 �
             else {
                 if(rows1[0]['remaining_qty']>=rows1[0]['ma_qty']){
                     if(rows1[0]['lendable']==1){
-                        conn.query(`UPDATE rental_manage SET ma_state='2', ma_start_date=now(),ma_return_date=date_add(now(),INTERVAL ${rows1[0]['ma_using_period']} DAY) WHERE ma_id='${maID}'`, function(err, row2, fields){
+                        conn.query(`select ma_state from rental_manage where ma_id='${maID}'`, function(err, rows4, fields){
                             if (err) {
                                 try {
                                     throw err;
@@ -819,43 +820,61 @@ app.post("/admin_rentalmanage_resrv_recept", (request, response)=>{ // 예약 �
                                     response.status(Number(data[0])).send(data[1]);
                                 }
                             }
-                            else {
-                                conn.query(`UPDATE product SET remaining_qty=remaining_qty-${rows1[0]['ma_qty']} where id=${request.body.resrv_recept_pid}`, function(err, rows3, fields){
-                                    if (err) {
-                                        try {
-                                            throw err;
-                                        } catch(e) {
-                                            var data = myQueryErrorHandler(e);
-                                            response.status(Number(data[0])).send(data[1]);
+                            else{
+                                if(rows1[0]['ma_state']==2){
+                                    response.send(`<script>alert('이미 처리된 요청입니다.'); location.href='/admin_rentalmanage'</script>`)
+                                }
+                                else{
+                                    conn.query(`UPDATE rental_manage SET ma_state='2', ma_start_date=now(),ma_return_date=date_add(now(),INTERVAL ${rows1[0]['ma_using_period']} DAY) WHERE ma_id='${maID}'`, function(err, row2, fields){
+                                        if (err) {
+                                            try {
+                                                throw err;
+                                            } catch(e) {
+                                                var data = myQueryErrorHandler(e);
+                                                response.status(Number(data[0])).send(data[1]);
+                                            }
                                         }
-                                    }
-                                    else {
-                                        response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                                        response.write(`<script>alert("${maID} : 예약 신청을 수락했습니다."); location.href = '/admin_rentalmanage'</script>`)
-                                        response.end()
-                                    }
-                                })
+                                        else {
+                                            conn.query(`UPDATE product SET remaining_qty=remaining_qty-${rows1[0]['ma_qty']} where id=${request.body.resrv_recept_pid}`, function(err, rows3, fields){
+                                                if (err) {
+                                                    try {
+                                                        throw err;
+                                                    } catch(e) {
+                                                        var data = myQueryErrorHandler(e);
+                                                        response.status(Number(data[0])).send(data[1]);
+                                                    }
+                                                }
+                                                else {
+                                                    response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+                                                    response.write(`<script>alert("${maID} : 예약 신청을 수락했습니다."); location.href = '/admin_rentalmanage'</script>`)
+                                                    response.end()
+                                                }
+                                            })
+                                        }
+                                    })
+                                }
                             }
                         })
                     }
                     else{
-                        res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                        res.write(`<script>alert("${maID} : 빌리기 불가능으로 수락이 불가능합니다."); location.href = '/admin_rentalmanage'</script>`)
+                        response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+                        response.write(`<script>alert("${maID} : 빌리기 불가능으로 수락이 불가능합니다."); location.href = '/admin_rentalmanage'</script>`)
                         res.end()
                     }
                 }
                 else{
-                    res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                    res.write(`<script>alert("${maID} : 개수 초과로 수락이 불가능합니다."); location.href = '/admin_rentalmanage'</script>`)
-                    res.end()
+                    response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+                    response.write(`<script>alert("${maID} : 개수 초과로 수락이 불가능합니다."); location.href = '/admin_rentalmanage'</script>`)
+                    response.end()
                 }
             }
         })
     }
 })
 
+// 확인 완료
 app.post("/admin_rentalmanage_resrv_reject", (req, res)=>{ // 예약 신청 거절
-    if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
+    if (user_auth_2(req.session.user_auth,res)==2) { // read&write(관리자)
 
         let maID = req.body.resrv_reject_ma_id;
         let qry = `DELETE FROM rental_manage WHERE ma_id=${maID}`
@@ -865,7 +884,7 @@ app.post("/admin_rentalmanage_resrv_reject", (req, res)=>{ // 예약 신청 거�
                     throw err;
                 } catch(e) {
                     var data = myQueryErrorHandler(e);
-                    response.status(Number(data[0])).send(data[1]);
+                    res.status(Number(data[0])).send(data[1]);
                 }
             }
             else {
@@ -894,7 +913,7 @@ app.post("/admin_rentalmanage_return", (request, response)=>{ // 비품 반납
                 }
             }
             else {
-                conn.query(`UPDATE rental_manage SET ma_state='3',ma_return_date=now() WHERE ma_id='${maID}'`, function(err, rows2, fields){
+                conn.query(`select ma_state from rental_manage where ma_id='${maID}'`, function(err, rows4, fields){
                     if (err) {
                         try {
                             throw err;
@@ -903,22 +922,39 @@ app.post("/admin_rentalmanage_return", (request, response)=>{ // 비품 반납
                             response.status(Number(data[0])).send(data[1]);
                         }
                     }
-                    else {
-                        conn.query(`UPDATE product SET remaining_qty=remaining_qty+${rows1[0]['ma_qty']} where id=${request.body.return_pid}`, function(err, rows3, fields){
-                            if (err) {
-                                try {
-                                    throw err;
-                                } catch(e) {
-                                    var data = myQueryErrorHandler(e);
-                                    response.status(Number(data[0])).send(data[1]);
+                    else{
+                        if(rows1[0]['ma_state']==3){
+                            response.send(`<script>alert('이미 처리된 요청입니다.'); location.href='/admin_rentalmanage'</script>`)
+                        }
+                        else{
+                            conn.query(`UPDATE rental_manage SET ma_state='3',ma_return_date=now() WHERE ma_id='${maID}'`, function(err, rows2, fields){
+                                if (err) {
+                                    try {
+                                        throw err;
+                                    } catch(e) {
+                                        var data = myQueryErrorHandler(e);
+                                        response.status(Number(data[0])).send(data[1]);
+                                    }
                                 }
-                            }
-                            else {
-                                response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                                response.write(`<script>alert("${maID} : 반납으로 변경했습니다."); location.href = '/admin_rentalmanage'</script>`)
-                                response.end()
-                            }
-                        })
+                                else {
+                                    conn.query(`UPDATE product SET remaining_qty=remaining_qty+${rows1[0]['ma_qty']} where id=${request.body.return_pid}`, function(err, rows3, fields){
+                                        if (err) {
+                                            try {
+                                                throw err;
+                                            } catch(e) {
+                                                var data = myQueryErrorHandler(e);
+                                                response.status(Number(data[0])).send(data[1]);
+                                            }
+                                        }
+                                        else {
+                                            response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+                                            response.write(`<script>alert("${maID} : 반납으로 변경했습니다."); location.href = '/admin_rentalmanage'</script>`)
+                                            response.end()
+                                        }
+                                    })
+                                }
+                            })
+                        }
                     }
                 })
             }
@@ -942,7 +978,7 @@ app.post("/admin_rentalmanage_return_cancel", (request, response)=>{ // 비품 �
                 }
             }
             else {
-                conn.query(`UPDATE rental_manage SET ma_state='2' ,ma_return_date=date_add("${rows1[0]['ma_start_date']}",INTERVAL ${rows1[0]['ma_using_period']} DAY) WHERE ma_id='${maID}'`, function(err, rows2, fields){
+                conn.query(`select ma_state from rental_manage where ma_id='${maID}'`, function(err, rows4, fields){
                     if (err) {
                         try {
                             throw err;
@@ -951,22 +987,39 @@ app.post("/admin_rentalmanage_return_cancel", (request, response)=>{ // 비품 �
                             response.status(Number(data[0])).send(data[1]);
                         }
                     }
-                    else {
-                        conn.query(`UPDATE product SET remaining_qty=remaining_qty-${rows1[0]['ma_qty']} where id=${request.body.return_cancel_pid} `, function(err, rows3, fields){
-                            if (err) {
-                                try {
-                                    throw err;
-                                } catch(e) {
-                                    var data = myQueryErrorHandler(e);
-                                    response.status(Number(data[0])).send(data[1]);
+                    else{
+                        if(rows1[0]['ma_state']==2){
+                            response.send(`<script>alert('이미 처리된 요청입니다.'); location.href='/admin_rentalmanage'</script>`)
+                        }
+                        else{
+                            conn.query(`UPDATE rental_manage SET ma_state='2' ,ma_return_date=date_add("${rows1[0]['ma_start_date']}",INTERVAL ${rows1[0]['ma_using_period']} DAY) WHERE ma_id='${maID}'`, function(err, rows2, fields){
+                                if (err) {
+                                    try {
+                                        throw err;
+                                    } catch(e) {
+                                        var data = myQueryErrorHandler(e);
+                                        response.status(Number(data[0])).send(data[1]);
+                                    }
                                 }
-                            }
-                            else {
-                                response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                                response.write(`<script>alert("${maID} : 반납에서 사용중으로 변경했습니다."); </script>`)
-                                response.end(`<script>location.href = '/admin_rentalmanage'</script>`)
-                            }
-                        })
+                                else {
+                                    conn.query(`UPDATE product SET remaining_qty=remaining_qty-${rows1[0]['ma_qty']} where id=${request.body.return_cancel_pid} `, function(err, rows3, fields){
+                                        if (err) {
+                                            try {
+                                                throw err;
+                                            } catch(e) {
+                                                var data = myQueryErrorHandler(e);
+                                                response.status(Number(data[0])).send(data[1]);
+                                            }
+                                        }
+                                        else {
+                                            response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
+                                            response.write(`<script>alert("${maID} : 반납에서 사용중으로 변경했습니다."); </script>`)
+                                            response.end(`<script>location.href = '/admin_rentalmanage'</script>`)
+                                        }
+                                    })
+                                }
+                            })
+                        }
                     }
                 })
             }
