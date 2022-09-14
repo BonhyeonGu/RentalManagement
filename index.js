@@ -620,6 +620,7 @@ app.post("/admin_signup_manage", (request, response)=>{ // 회원가입 신청 �
 })
 
 // ================================= 👀(관리자)회원 관리 관련 라우터👀 =======================================
+//확인완료
 app.get("/admin_userstatus", (request, response)=>{ // 전체 유저 현황
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`select * from rental_user where user_auth=0 or user_auth=1 or user_auth=2`, function(err, rows, fields){
@@ -629,15 +630,17 @@ app.get("/admin_userstatus", (request, response)=>{ // 전체 유저 현황
     }
 })
 
+//확인완료
 app.post("/admin_userstatus_search", (request, response)=>{
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
-        conn.query(`select * from rental_user where user_id='${request.body.user_id}' and user_auth=0 or user_auth=1 or user_auth=2`, function(err, rows, fields){
+        conn.query(`select * from rental_user where user_id='${request.body.user_id}' and (user_auth=0 or user_auth=1 or user_auth=2)`, function(err, rows, fields){
             if (err) throw err
             response.render('admin_userstatus.ejs', {rows_list : rows})
         })
     }
 })
 
+//확인완료
 app.post("/admin_userstatus_manage", (request, response)=>{ 
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`select * from rental_user where uid=${request.body.uid}`, function(err, rows, fields){
@@ -647,6 +650,7 @@ app.post("/admin_userstatus_manage", (request, response)=>{
     }
 })
 
+//확인완료
 app.post("/admin_changeauth", (request, response)=>{ // 권한 수정
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`update rental_user set user_auth="${request.body.user_change_auth}" where uid="${request.body.uid}"`, function(err){
@@ -656,6 +660,7 @@ app.post("/admin_changeauth", (request, response)=>{ // 권한 수정
     }
 })
 
+//확인완료
 app.post("/admin_changepw", (request, response)=>{ // 비밀번호 수정(비밀번호를 잃어버렸을 경우)
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         let sha256_hex_pw=crypto.createHash('sha256').update("qwer!1234").digest('hex')
