@@ -271,7 +271,7 @@ app.get("/rental_status", (request, response)=>{
 // '/rental_status_search' GET 라우팅
 app.get("/rental_status_search", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
-        conn.query(`select * from product, rental_manage where product.id=rental_manage.pid and rental_manage.uid=${Number(request.session.uid)} and product.name='${request.query.q}'`, function(err, rows, fields){
+        conn.query(`select * from product, rental_manage where product.id=rental_manage.pid and rental_manage.uid=${Number(request.session.uid)} and product.name like'%${request.query.q}%'`, function(err, rows, fields){
             if(err) throw err;
 
             conn.query(`select * from product, rental_manage where product.id=rental_manage.pid and uid=${request.session.uid}`, function(err, rows1, fields){
