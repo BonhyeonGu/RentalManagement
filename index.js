@@ -67,13 +67,11 @@ app.get("/", (request, response)=>{
     conn.query('select id, name, image, remaining_qty from product', function(err, rows, fields) {
         if (err) throw err
         
-        let searchSourceArr = [];
-        for (var i = 0; i < rows.length; i++) {
-            searchSourceArr[i] = rows[i]['name'];
-            console.log(searchSourceArr[i]);
-        }
+        let arr = [];
+        for (var i = 0; i < rows.length; i++) arr[i] = rows[i]['name'];
+        let json1 = JSON.stringify(arr);
 
-        response.render('main.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_list:rows, searchSource:searchSourceArr});
+        response.render('main.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_list:rows, searchData:json1});
     });
 })
 
@@ -93,7 +91,15 @@ app.get("/search", (request, response)=>{
     conn.query(`select id, name, image, remaining_qty from product where name like '%${request.query.q}%'`, function(err, rows, fields){
         if (err) throw err;
         
-        response.render('main.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_list:rows})
+        conn.query('select id, name, image, remaining_qty from product', function(err, rows1, fields) {
+            if (err) throw err;
+
+            let arr = [];
+            for (var i = 0; i < rows1.length; i++) arr[i] = rows1[i]['name'];
+            let json1 = JSON.stringify(arr);
+    
+            response.render('main.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_list:rows, searchData:json1});
+        })
     })
 })
 
@@ -252,7 +258,12 @@ app.get("/rental_status", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`select * from product, rental_manage where product.id=rental_manage.pid and uid=${request.session.uid}`, function(err, rows, fields){
             if(err) throw err;
-            response.render('user_rental_status.ejs', {id:request.session.user_id, auth:request.session.user_auth, rows_list : rows})
+
+            let arr = [];
+            for (var i = 0; i < rows.length; i++) arr[i] = rows[i]['name'];
+            let json1 = JSON.stringify(arr);
+
+            response.render('user_rental_status.ejs', {id:request.session.user_id, auth:request.session.user_auth, rows_list : rows, searchData:json1})
         })
     }
 })
@@ -262,7 +273,16 @@ app.get("/rental_status_search", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`select * from product, rental_manage where product.id=rental_manage.pid and rental_manage.uid=${Number(request.session.uid)} and product.name='${request.query.q}'`, function(err, rows, fields){
             if(err) throw err;
-            response.render('user_rental_status.ejs', {id:request.session.user_id, auth:request.session.user_auth, rows_list : rows})
+
+            conn.query(`select * from product, rental_manage where product.id=rental_manage.pid and uid=${request.session.uid}`, function(err, rows1, fields){
+                if(err) throw err;
+    
+                let arr = [];
+                for (var i = 0; i < rows1.length; i++) arr[i] = rows1[i]['name'];
+                let json1 = JSON.stringify(arr);
+    
+                response.render('user_rental_status.ejs', {id:request.session.user_id, auth:request.session.user_auth, rows_list : rows, searchData:json1})
+            })
         })
     }
 })

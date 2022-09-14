@@ -3,6 +3,26 @@
 <head>
     <title>Beharbor Rental Page | 대여 이력</title>
     <%- include('head') %>
+
+    <script>
+        var json1 = "<%=searchData%>";
+        json1 = json1.replaceAll('&#34;', '');
+        json1 = json1.substr(1,  json1.length-2);
+        var searchSource = json1.split(',');
+        
+        $(document).ready(function () {
+            $('#q').autocomplete({
+                source: searchSource,
+                focus: function (event, ui) {
+                return false;
+                },
+                select: function (event, ui) {},
+                minLength: 1,
+                delay: 100,
+                autoFocus: true,
+            });
+        });
+    </script>
 </head>
 <body>
 
