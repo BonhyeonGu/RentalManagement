@@ -5,6 +5,7 @@
   <%- include('head') %>
   <!-- JQuery CDN -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="../index.js"></script>
 
   <script>
     function go(clicked_id) {
@@ -12,6 +13,30 @@
       form.submit()
     }
 
+    $(function() {
+      $('#search-input').autocomplete({ // autocomplete 구현 시작부
+          source : searchSource, //source 는 자동완성의 대상
+          /*
+          select : function(event, ui) { // item 선택 시 이벤트
+              console.log(ui.item);
+          },*/
+          focus : function(event, ui) { // 포커스 시 이벤트
+              return false;
+          },
+          minLength : 1, // 최소 글자 수
+          /*autoFocus : true, // true로 설정 시 메뉴가 표시 될 때, 첫 번째 항목에 자동으로 초점이 맞춰짐
+          classes : { // 위젯 요소에 추가 할 클래스를 지정
+              'ui-autocomplete' : 'highlight'
+          },*/
+          delay : 500, // 입력창에 글자가 써지고 나서 autocomplete 이벤트 발생될 떄 까지 지연 시간(ms)
+          /*disable : false, // 해당 값 true 시, 자동완성 기능 꺼짐
+          position : { my : 'right top', at : 'right bottom'}, // 제안 메뉴의 위치를 식별
+          close : function(event) { // 자동완성 창 닫아질 때의 이벤트
+              console.log(event);
+            }*/
+        });
+    });
+    /*
     $(document).ready(function(){
       $("#q").keyup(function(){
         var k = $(this).val();
@@ -21,6 +46,7 @@
         $(tmp).parents(".item.web.col-sm-6.col-md-4.col-lg-4.mb-4").show();
       })
     })
+    */
   </script>
 </head>
 
@@ -40,14 +66,14 @@
 
           <!-- 검색창 start -->
           <div class="col-md-12 col-lg-6 text-start text-lg-end" data-aos="fade-up" data-aos-delay="100">
-            <!-- <form class="search-form" action="/search" method="get"> -->
+            <form class="search-form" action="/search" method="get">
               <input type="search" placeholder="비품 이름으로 검색" class="search-input" name="q" id="q">
               <button type="submit" class="search-button">
                 <svg class="submit-button">
                   <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#search"></use>
                 </svg>
               </button>
-            <!-- </form> -->
+            </form>
             
             <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" display="none">
               <symbol id="search" viewBox="0 0 32 32">

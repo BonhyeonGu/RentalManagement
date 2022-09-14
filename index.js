@@ -39,6 +39,7 @@ app.use(express.urlencoded({ extended: true}));
 
 // 7. 함수, 변수 정의하기
 let user_uid;
+
 function user_auth_2(user_auth,res){
     if (user_auth=='2') { // read, read&write(관리자)
         return 2
@@ -65,8 +66,15 @@ function user_auth_0_1_2(user_auth,res){
 app.get("/", (request, response)=>{
     conn.query('select id, name, image, remaining_qty from product', function(err, rows, fields) {
         if (err) throw err
-        response.render('main.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_list:rows});
-    })
+        
+        let searchSourceArr = [];
+        for (var i = 0; i < rows.length; i++) {
+            searchSourceArr[i] = rows[i]['name'];
+            console.log(searchSourceArr[i]);
+        }
+
+        response.render('main.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_list:rows, searchSource:searchSourceArr});
+    });
 })
 
 // '/work_single' GET 라우팅
