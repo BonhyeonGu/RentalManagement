@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Beharbor Randing Page | 회원가입</title>
+    <title>Beharbor Rental Page | 회원가입</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 
     <!-- Favicons -->
-    <link href="img/favicon.png" rel="icon">
-    <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-icon-180x180.png">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=https://fonts.googleapis.com/css?family=Inconsolata:400,500,600,700|Raleway:400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
@@ -32,16 +32,22 @@
     ======================================================== -->
     <style>
       @font-face {
-        font-family: 'GmarketSansMedium';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
-        font-weight: 300;
+        font-family: 'Cafe24Ohsquareair';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202@1.0/Cafe24Ohsquareair.woff') format('woff');
+        font-weight: normal;
         font-style: normal;
       }
-      * {
-        font-family: 'GmarketSansMedium';
+      @font-face {
+        font-family: 'NanumSquareRound';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
       }
-      h2, h3{
-        font-family: 'GmarketSansMedium';
+      *, h3 {
+        font-family: 'NanumSquareRound';
+      }
+      h2, .navbar-brand {
+        font-family: 'Cafe24Ohsquareair';
       }
     </style>
 </head>
@@ -107,7 +113,7 @@
                 </div>
                 
                 <div class="col-md-12 form-group">
-                  <label class="visually-hidden" for="user_grade">학년</label>
+                  <label for="user_grade">학년</label>
                   <select class="form-select" name="user_grade" id="user_grade" required>
                       <option value="1" id="gradeO1">1학년</option>
                       <option value="2" id="gradeO2">2학년</option>
@@ -116,7 +122,7 @@
                   </select>
                 </div>
                 <div class="col-md-12 form-group">
-                    <label class="visually-hidden" for="user_attend_status">재학여부</label>
+                    <label for="user_attend_status">재학 상태</label>
                     <select class="form-select" name="user_attend_status" id="user_attend_status" required>
                         <option value="0" id="statusO1">졸업</option>
                         <option value="1" id="statusO2">휴학</option>
@@ -127,13 +133,9 @@
                     <label for ="user_phone">휴대폰 번호</label>
                     <input type="text" class="form-control" name = "user_phone" id = "user_phone" required>
                 </div>
-
-                <div class="col-md-12 my-3">
-                  <div class="loading">Loading</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
-                </div>
-
+                
+                <div class="col-md-12 my-3"></div>
+                
                 <div class="col-md-6 mt-0 form-group">
                     <input type = "submit" class="readmore d-block w-100" value = "회원가입"/>
                     <input type = "reset" class="readmore d-block w-100" value = "취소"/>

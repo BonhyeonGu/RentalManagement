@@ -2,16 +2,22 @@
 <head>
   <style>
     @font-face {
-      font-family: 'GmarketSansMedium';
-      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
-      font-weight: 300;
+      font-family: 'Cafe24Ohsquareair';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202@1.0/Cafe24Ohsquareair.woff') format('woff');
+      font-weight: normal;
       font-style: normal;
     }
-    * {
-      font-family: 'GmarketSansMedium';
+    @font-face {
+      font-family: 'NanumSquareRound';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
     }
-    h2, h3{
-      font-family: 'GmarketSansMedium';
+    *, h3 {
+      font-family: 'NanumSquareRound';
+    }
+    h2, .navbar-brand{
+      font-family: 'Cafe24Ohsquareair';
     }
   </style>
 </head>
@@ -23,15 +29,16 @@
           <ul class="custom-menu">
             <% if(login_user_id === undefined) { %>
               <li><a href="/login">로그인</a></li>
+              <li><a href="/signup">회원가입</a></li>
             <% } else { %>
               <li><a href="/logout">로그아웃</a></li>
               <li><a href="/privacy_pw">비밀번호 변경</a></li>
-              <li><a href="/rental_status">대여 현황</a></li>
+              <li><a href="/rental_status">대여 이력</a></li>
                 <% if (login_user_auth == '1' || login_user_auth == '2') { %>
                   <li><a href="/admin_signup">회원가입 관리</a></li>
-                  <li><a href="/admin_rentalmanage">신청 관리</a></li>
-                  <li><a href="/admin_userstatus">유저 관리</a></li>
-                  <li><a href="/database">DB 관리</a></li>
+                  <li><a href="/admin_rentalmanage">대여 신청 관리</a></li>
+                  <li><a href="/admin_userstatus">회원 관리</a></li>
+                  <li><a href="/database">비품 관리</a></li>
             <% }} %>
             <!-- 추후에 추가할 예정
             <li><a href="">이용안내</a></li>

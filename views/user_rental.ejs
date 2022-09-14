@@ -1,36 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-  <title>Beharbor Randing Page | 대여 신청</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-
-  <!-- Favicons -->
-  <link href="img/favicon.png" rel="icon">
-  <link href="img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=https://fonts.googleapis.com/css?family=Inconsolata:400,500,600,700|Raleway:400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="vendor/aos/aos.css" rel="stylesheet">
-  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
-  <link href="css/style.css" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: MyPortfolio - v4.8.0
-  * Template URL: https://bootstrapmade.com/myportfolio-bootstrap-portfolio-website-template/
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
-
+  <title>Beharbor Rental Page | 대여 신청</title>
+  <%- include('head') %>
   <script>
     window.onload = function() {
       document.getElementById('product_using_period').focus();
@@ -68,8 +40,8 @@
     
                   <div class="row gy-3">
                     <div class="col-md-12 form-group">
-                      <strong class="d-block mb-1">비품명</strong>
-                      <span><%=product_info[0]['name']%>🤭</span>
+                      <label>🤭비품명 : </label>
+                      <span><%=product_info[0]['name']%></span>
                       <input type="hidden" class="form-control" name = "product_id" id = "product_id" value="<%=product_info[0]['id']%>">
                     </div>
                     <div class="col-md-6 form-group">
@@ -85,12 +57,8 @@
                       <input type="number" min="1" max="<%=product_info[0]['total_qty']%>" class="form-control" name="product_qty" id="product_qty" required>
                     </div>
     
-                    <div class="col-md-12 my-3">
-                      <div class="loading">Loading</div>
-                      <div class="error-message"></div>
-                      <div class="sent-message">Your message has been sent. Thank you!</div>
-                    </div>
-    
+                    <div class="col-md-12 my-3"></div>
+                    
                     <div class="col-md-6 mt-0 form-group">
                       <input type="submit" class="readmore d-block w-100" value="신청하기">
                     </div>
