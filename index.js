@@ -45,19 +45,19 @@ function user_auth_2(user_auth,res){
     if (user_auth=='2') { // read, read&write(관리자)
         return 2
     }
-    else return res.status(401).send('<h1>이 페이지에 접근할 권한이 없습니다😥</h1><hr><p>현재 페이지는 회원등급 \'0\'만 접근가능합니다</p><button onclick="location.href=`/`">메인으로 돌아가기</button>');
+    else return res.status(401).send('<h1>이 페이지에 접근할 권한이 없습니다😥</h1><hr><p>현재 페이지는 최종 관리자만 접근가능합니다</p><button onclick="location.href=`/`">메인으로 돌아가기</button>');
 }
 function user_auth_1_2(user_auth,res){
     if (user_auth=='2'||user_auth=='1') { // read, read&write(관리자)
         return 2
     }
-    else return res.status(401).send('<h1>이 페이지에 접근할 권한이 없습니다😥</h1><hr><p>현재 페이지는 회원등급 \'0,1\'만 접근가능합니다</p><button onclick="location.href=`/`">메인으로 돌아가기</button>');
+    else return res.status(401).send('<h1>이 페이지에 접근할 권한이 없습니다😥</h1><hr><p>현재 페이지는 관리자만 접근가능합니다</p><button onclick="location.href=`/`">메인으로 돌아가기</button>');
 }
 function user_auth_0_1_2(user_auth,res){
     if (user_auth=='2'||user_auth=='1'||user_auth=='0') { // read, read&write(관리자)/
         return 2
     }
-    else return res.status(401).send('<h1>이 페이지에 접근할 권한이 없습니다😥</h1><hr><p>현재 페이지는 회원등급 \'0,1,2\'만 접근가능합니다</p><button onclick="location.href=`/`">메인으로 돌아가기</button>');
+    else return res.status(401).send('<h1>이 페이지에 접근할 권한이 없습니다😥</h1><hr><p>현재 페이지는 회원만 접근가능합니다</p><button onclick="location.href=`/`">메인으로 돌아가기</button>');
 }
 function myQueryErrorHandler(e) {
     console.log(e.name + " : " + e.message)
@@ -148,7 +148,6 @@ app.get("/search", (request, response)=>{
 })
 
 // ================================= 회원가입 관련 라우터 =======================================
-// 확인완료
 app.get("/signup", (request, response)=>{
     fs.readFile("public/signup.html", (error,data)=>{
         if (error) {
@@ -166,7 +165,7 @@ app.get("/signup", (request, response)=>{
         }
     })
 })
-// 확인완료
+
 app.post("/signup", (request, response)=>{
     let newID = request.body.user_id
     let newPW = request.body.user_pw
@@ -235,7 +234,6 @@ app.post("/signup", (request, response)=>{
 
 // ================================= 로그인 관련 라우터 =======================================
 // '/logout' GET 라우팅
-// 확인완료
 app.get("/logout", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         request.session.destroy(function(err){
@@ -245,7 +243,6 @@ app.get("/logout", (request, response)=>{
 })
 
 // '/login' GET 라우팅
-// 확인완료
 app.get("/login", (request, response)=>{
     fs.readFile("public/login.html", (error,data)=>{
         if (error) {
@@ -264,7 +261,6 @@ app.get("/login", (request, response)=>{
     })
 })
 
-// 확인완료
 app.post("/login",(request,response)=>{
     if(request.body.user_pw&&request.body.user_id){
         let id = request.body.user_id
@@ -284,7 +280,7 @@ app.post("/login",(request,response)=>{
                 else flag = 2;
                         
                 if(flag==0){ // 아이디 없음
-                    response.send(`<script>alert('ID를 잘못 입력했습니다'); history.back();</script>`)
+                    response.send(`<script>alert('아이디를 잘못 입력했습니다'); history.back();</script>`)
                 }
                 else if(flag==1){ // 비밀번호 틀림
                     let user_status = Number(rows[0].user_status) + 1 // 비밀번호 오류 횟수
@@ -298,7 +294,7 @@ app.post("/login",(request,response)=>{
                                     response.status(Number(data[0])).send(data[1]);
                                 }
                             }
-                            else response.send(`<script>alert('${id}님 PW가 ${user_status}회 틀렸습니다'); history.back();</script>`)
+                            else response.send(`<script>alert('${id}님 비밀번호가 ${user_status}회 틀렸습니다. 비밀번호가 5회 틀릴 시 계정이 잠깁니다. )'); history.back();</script>`)
                         })
                     }
                     else { 
@@ -349,13 +345,12 @@ app.post("/login",(request,response)=>{
         })
     }
     else{
-        response.send(`<script>alert('정보를 입력해주세요'); history.back();</script>`)
+        response.send(`<script>alert('모든 정보가 입력 되지 않았습니다. 다시 입력해 주세요.'); history.back();</script>`)
     }
 })
 
 // ================================= 비품 대여 신청 관련 라우터 =======================================
 // '/rental' GET 라우팅
-// 확인완료
 app.get("/rental", (request, response)=>{ 
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`select id, name, total_qty from product where id='${request.query.product_id}'`, function(err, rows, fields){
@@ -374,7 +369,6 @@ app.get("/rental", (request, response)=>{
 })
 
 // '/rental_sign_result' POST 라우팅
-// 확인완료
 app.post("/rental_sign_result", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`insert into rental_manage values(NULL,${request.session.uid},${request.body.product_id},now(),"${request.body.product_start_date}",${request.body.product_using_period},NULL,${request.body.product_qty},"1",NULL)`, function(err){
@@ -386,14 +380,13 @@ app.post("/rental_sign_result", (request, response)=>{
                     response.status(Number(data[0])).send(data[1]);
                 }
             }
-            else response.send(`<script>alert('물품 대여가 신청되었습니다. 결과는 추후에 알려드리겠습니다.'); location.href="/work_single?product_id=${request.body.product_id}"</script>`)
+            else response.send(`<script>alert('물품 대여가 신청되었습니다. 결과는 추후에 확인해주세요.'); location.href="/work_single?product_id=${request.body.product_id}"</script>`)
         })
     }
 })
 
 // ================================= 비품 대여 이력 관련 라우터 =======================================
 // '/rental_status' GET 라우팅
-// 확인완료
 app.get("/rental_status", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`select * from product, rental_manage where product.id=rental_manage.pid and uid=${request.session.uid}`, function(err, rows, fields){
@@ -417,7 +410,6 @@ app.get("/rental_status", (request, response)=>{
 })
 
 // '/rental_status_search' GET 라우팅
-// 확인완료
 app.get("/rental_status_search", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`select * from product, rental_manage where product.id=rental_manage.pid and rental_manage.uid=${Number(request.session.uid)} and product.name like'%${request.query.q}%'`, function(err, rows, fields){
@@ -452,7 +444,6 @@ app.get("/rental_status_search", (request, response)=>{
     }
 })
 
-// 확인완료
 app.post("/rental_status_delete", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`delete from rental_manage where ma_id='${request.body.ma_id}'`, function(err, rows, fields){
@@ -466,7 +457,7 @@ app.post("/rental_status_delete", (request, response)=>{
             }
             else {
                 response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                response.write(`<script>alert("${request.session.user_id} : 물품 신청을 취소하였습니다."); location.href = '/rental_status' </script>`)
+                response.write(`<script>alert("${request.session.user_id}님 물품 신청이 취소되었습니다."); location.href = '/rental_status' </script>`)
                 response.end()
             }
         })
@@ -474,14 +465,12 @@ app.post("/rental_status_delete", (request, response)=>{
 })
 
 // ================================= 비밀번호 변경 관련 라우터 =======================================
-// 확인완료
 app.get("/privacy_pw", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         response.render('privacy_pw.ejs', {id:request.session.user_id, auth:request.session.user_auth});
     }
 })
 
-// 확인완료
 app.post("/privacy_pw", (request, response)=>{ // 사용자(관리자) 비밀번호 변경
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         if(request.body.user_pw&&request.body.user_change_pw&&request.body.user_change_repw){
@@ -512,7 +501,7 @@ app.post("/privacy_pw", (request, response)=>{ // 사용자(관리자) 비밀번
                                     }
                                     else {
                                         response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                                        response.write(`<script>alert("${request.session.user_id} : 비밀번호 변경 완료"); location.href = '/'</script>`)
+                                        response.write(`<script>alert("${request.session.user_id}님 비밀번호가 변경 되었습니다."); location.href = '/'</script>`)
                                         response.end()
                                     }
                                 })
@@ -532,13 +521,12 @@ app.post("/privacy_pw", (request, response)=>{ // 사용자(관리자) 비밀번
             })
         }
         else{
-            response.send(`<script>alert('정보를 입력해주세요.'); history.back()'</script>`)
+            response.send(`<script>alert('모든 정보가 입력 되지 않았습니다. 다시 입력해 주세요.'); history.back()'</script>`)
         }
     }
 })
 
 // ================================= 👀(관리자)비품 관리 관련 라우터👀 =======================================
-// 확인완료
 app.get("/database", (request, response)=>{
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
         conn.query(`select * from product`, function(err, rows, fields){
@@ -555,7 +543,6 @@ app.get("/database", (request, response)=>{
     }
 })
 
-// 확인완료
 app.post("/database_search", (request, response)=>{
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
         conn.query(`select * from product where name like '%${request.body.id}%'`, function(err, rows, fields){
@@ -572,7 +559,6 @@ app.post("/database_search", (request, response)=>{
     }
 })
 
-// 확인완료
 app.get("/database_add", (request, response)=>{ 
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`select * from product`, function(err, rows, fields){
@@ -590,7 +576,6 @@ app.get("/database_add", (request, response)=>{
     }
 })
 
-// 확인완료
 app.post("/database_adding",upload.single('image'),(request, response)=>{ 
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         if(request.file==undefined) response.send(`<script>alert('사진을 입력해주세요'); history.back()</script>`)
@@ -605,17 +590,16 @@ app.post("/database_adding",upload.single('image'),(request, response)=>{
                             response.status(Number(data[0])).send(data[1]);
                         }
                     }
-                    else response.send(`<script>alert('데이터베이스에 추가되었습니다.'); location.href='/database'</script>`)
+                    else response.send(`<script>alert('비품이 추가되었습니다.'); location.href='/database'</script>`)
                 })
             }
             else{
-                response.send(`<script>alert('필수입력\\n물품명 : string \\n빌리기 상태, 물품상태, 총 갯수, 남은 갯수 : int\\n총 갯수==남은갯수 \\n양식 맞춰서 입력해주세요'); history.back()</script>`)
+                response.send(`<script>alert('필수입력\\n비품명 : string \\n대여 상태, 비품 상태, 전체 수량, 남은 수량 : int\\n전체 수량 == 남은 수량 \\n양식 맞춰서 입력해주세요'); history.back()</script>`)
             }
         }
     }
 })
 
-// 확인완료
 app.post("/database_manage", (request, response)=>{ 
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`select * from product where id=${request.body.id}`, function(err, rows, fields){
@@ -632,7 +616,6 @@ app.post("/database_manage", (request, response)=>{
     }
 })
 
-// 확인완료
 app.post("/database_modify", (request, response)=>{
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         if(request.file==undefined) response.send(`<script>alert('사진을 입력해주세요'); history.back()</script>`)
@@ -658,19 +641,18 @@ app.post("/database_modify", (request, response)=>{
                                     response.status(Number(data[0])).send(data[1]);
                                 }
                             }
-                            else response.send(`<script>alert('데이터베이스에 수정되었습니다.'); location.href='/database'</script>`)
+                            else response.send(`<script>alert('비품이 수정되었습니다.'); location.href='/database'</script>`)
                         })
                     }
                 })
             }
             else{
-                response.send(`<script>alert('필수입력\\n물품명 : string \\n빌리기 상태, 물품상태, 총 갯수, 남은 갯수 : int\\n양식 맞춰서 입력해주세요'); history.back()</script>`)
+                response.send(`<script>alert('필수입력\\n물품명 : string \\n대여 상태, 비품 상태, 전체 수량, 남은 수량 : int\\n양식 맞춰서 입력해주세요'); history.back()</script>`)
             }
         }
     }
 })
 
-// 확인완료
 app.post("/database_deny", (request, response)=>{ 
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`delete from product where id=${request.body.id}`, function(err){
@@ -682,7 +664,7 @@ app.post("/database_deny", (request, response)=>{
                     response.status(Number(data[0])).send(data[1]);
                 }
             }
-            else response.send(`<script>alert('데이터베이스에서 삭제되었습니다.'); location.href='/database'</script>`)
+            else response.send(`<script>alert('비품이 삭제되었습니다.'); location.href='/database'</script>`)
         })
     }
 })
@@ -846,7 +828,7 @@ app.post("/admin_rentalmanage_resrv_recept", (request, response)=>{ // 예약 �
                                                 }
                                                 else {
                                                     response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                                                    response.write(`<script>alert("${maID} : 예약 신청을 수락했습니다."); location.href = '/admin_rentalmanage'</script>`)
+                                                    response.write(`<script>alert("${maID}의 예약 신청을 수락했습니다."); location.href = '/admin_rentalmanage'</script>`)
                                                     response.end()
                                                 }
                                             })
@@ -858,13 +840,13 @@ app.post("/admin_rentalmanage_resrv_recept", (request, response)=>{ // 예약 �
                     }
                     else{
                         response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                        response.write(`<script>alert("${maID} : 빌리기 불가능으로 수락이 불가능합니다."); location.href = '/admin_rentalmanage'</script>`)
+                        response.write(`<script>alert("${maID}는 비품의 대여 상태로 인해 수락이 불가능합니다."); location.href = '/admin_rentalmanage'</script>`)
                         res.end()
                     }
                 }
                 else{
                     response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                    response.write(`<script>alert("${maID} : 개수 초과로 수락이 불가능합니다."); location.href = '/admin_rentalmanage'</script>`)
+                    response.write(`<script>alert("${maID}는 비품의 남은 수량 초과로 수락이 불가능합니다."); location.href = '/admin_rentalmanage'</script>`)
                     response.end()
                 }
             }
@@ -872,7 +854,6 @@ app.post("/admin_rentalmanage_resrv_recept", (request, response)=>{ // 예약 �
     }
 })
 
-// 확인 완료
 app.post("/admin_rentalmanage_resrv_reject", (req, res)=>{ // 예약 신청 거절
     if (user_auth_2(req.session.user_auth,res)==2) { // read&write(관리자)
 
@@ -889,7 +870,7 @@ app.post("/admin_rentalmanage_resrv_reject", (req, res)=>{ // 예약 신청 거�
             }
             else {
                 res.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                res.write(`<script>alert("${maID} : 예약 신청을 거절했습니다."); location.href = '/admin_rentalmanage'</script>`)
+                res.write(`<script>alert("${maID}의 예약 신청을 거절했습니다."); location.href = '/admin_rentalmanage'</script>`)
                 res.end()
             }
         })
@@ -948,7 +929,7 @@ app.post("/admin_rentalmanage_return", (request, response)=>{ // 비품 반납
                                         }
                                         else {
                                             response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                                            response.write(`<script>alert("${maID} : 반납으로 변경했습니다."); location.href = '/admin_rentalmanage'</script>`)
+                                            response.write(`<script>alert("${maID}가 반납 되었습니다."); location.href = '/admin_rentalmanage'</script>`)
                                             response.end()
                                         }
                                     })
@@ -1013,7 +994,7 @@ app.post("/admin_rentalmanage_return_cancel", (request, response)=>{ // 비품 �
                                         }
                                         else {
                                             response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                                            response.write(`<script>alert("${maID} : 반납에서 사용중으로 변경했습니다."); </script>`)
+                                            response.write(`<script>alert("${maID}가 반납 취소되었습니다."); </script>`)
                                             response.end(`<script>location.href = '/admin_rentalmanage'</script>`)
                                         }
                                     })
@@ -1027,7 +1008,6 @@ app.post("/admin_rentalmanage_return_cancel", (request, response)=>{ // 비품 �
     }
 })
 
-// 확인완료
 // ================================= 👀(관리자)회원가입 관련 라우터👀 =======================================
 app.get("/admin_signup", (request, response)=>{ // 전체 검색(회원가입 대기 목록 검색)
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
@@ -1044,7 +1024,7 @@ app.get("/admin_signup", (request, response)=>{ // 전체 검색(회원가입 �
         })
     }
 })
-// 확인완료
+
 app.post("/admin_signup_search", (request, response)=>{ // 일부 검색(회원가입 대기 목록 검색)
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
         let userID = request.body.user_id;
@@ -1061,7 +1041,7 @@ app.post("/admin_signup_search", (request, response)=>{ // 일부 검색(회원�
         })
     }
 })
-// 확인완료
+
 app.post("/admin_signup_recept", (request, response)=>{ // 회원가입 신청 수락(-> 회원으로 등록)
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`update rental_user set user_school="${request.body.user_school}" , user_num="${request.body.user_num}",user_name="${request.body.user_name}",user_department="${request.body.user_department}",user_grade=${request.body.user_grade},user_attend_status=${request.body.user_attend_status},user_phone="${request.body.user_phone}",user_auth='0' , user_join_date=curdate() where uid='${request.body.uid}'`, function(err, rows, fields){
@@ -1075,13 +1055,13 @@ app.post("/admin_signup_recept", (request, response)=>{ // 회원가입 신청 �
             }
             else {
                 response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                response.write(`<script>alert("${request.body.user_id} : 회원가입 신청을 수락했습니다."); location.href = '/admin_signup'</script>`)
+                response.write(`<script>alert("${request.body.user_id}님의 회원가입 신청을 수락했습니다."); location.href = '/admin_signup'</script>`)
                 response.end()
             }
         })
     }
 })
-// 확인완료
+
 app.post("/admin_signup_resrv_reject", (request, response)=>{ // 회원가입 신청 거절(-> DB에서 삭제)
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`delete from rental_user where uid='${request.body.uid}'`, function(err, rows, fields){
@@ -1095,13 +1075,13 @@ app.post("/admin_signup_resrv_reject", (request, response)=>{ // 회원가입 �
             }
             else {
                 response.writeHead(200, {'Content-type':"text/html; charset=utf-8"})
-                response.write(`<script>alert("${request.body.user_id} : 회원가입 신청을 거절했습니다."); location.href = '/admin_signup' </script>`)
+                response.write(`<script>alert("${request.body.user_id}님의 회원가입 신청을 거절했습니다."); location.href = '/admin_signup' </script>`)
                 response.end()
             }
         })
     }
 })
-// 확인완료
+
 app.post("/admin_signup_manage", (request, response)=>{ // 회원가입 신청 폼 수정(회원으로 등록 전 DB에서 사용자 정보 확인&수정)
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`select * from rental_user where user_id='${request.body.signup_user_id}'`, function(err, rows, fields){
@@ -1119,7 +1099,6 @@ app.post("/admin_signup_manage", (request, response)=>{ // 회원가입 신청 �
 })
 
 // ================================= 👀(관리자)회원 관리 관련 라우터👀 =======================================
-//확인완료
 app.get("/admin_userstatus", (request, response)=>{ // 전체 유저 현황
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`select * from rental_user where user_auth=0 or user_auth=1 or user_auth=2`, function(err, rows, fields){
@@ -1136,7 +1115,6 @@ app.get("/admin_userstatus", (request, response)=>{ // 전체 유저 현황
     }
 })
 
-//확인완료
 app.post("/admin_userstatus_search", (request, response)=>{
     if (user_auth_1_2(request.session.user_auth,response)==2) { // read, read&write(관리자)
         conn.query(`select * from rental_user where user_id='${request.body.user_id}' and (user_auth=0 or user_auth=1 or user_auth=2)`, function(err, rows, fields){
@@ -1153,7 +1131,6 @@ app.post("/admin_userstatus_search", (request, response)=>{
     }
 })
 
-//확인완료
 app.post("/admin_userstatus_manage", (request, response)=>{ 
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`select * from rental_user where uid=${request.body.uid}`, function(err, rows, fields){
@@ -1170,7 +1147,6 @@ app.post("/admin_userstatus_manage", (request, response)=>{
     }
 })
 
-//확인완료
 app.post("/admin_changeauth", (request, response)=>{ // 권한 수정
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         conn.query(`update rental_user set user_auth="${request.body.user_change_auth}" where uid="${request.body.uid}"`, function(err){
@@ -1187,7 +1163,6 @@ app.post("/admin_changeauth", (request, response)=>{ // 권한 수정
     }
 })
 
-//확인완료
 app.post("/admin_changepw", (request, response)=>{ // 비밀번호 수정(비밀번호를 잃어버렸을 경우)
     if (user_auth_2(request.session.user_auth,response)==2) { // read&write(관리자)
         let sha256_hex_pw=crypto.createHash('sha256').update("qwer!1234").digest('hex')
@@ -1200,24 +1175,22 @@ app.post("/admin_changepw", (request, response)=>{ // 비밀번호 수정(비밀
                     response.status(Number(data[0])).send(data[1]);
                 }
             }
-            else response.send(`<script>alert('비밀번호가 qwer!1234로 초기화되었습니다.'); location.href = '/admin_userstatus'</script>`)
+            else response.send(`<script>alert('비밀번호가 "qwer!1234"로 초기화되었습니다.'); location.href = '/admin_userstatus'</script>`)
         })
     }
 })
 
 // ================================= 오류 관련 라우터 =======================================
-// 확인완료
 app.use(function (err, req, res, next) {
     console.error(err.stack);
     res.status(500).send('Something broke!')
 })
-// 확인완료
+
 app.use(function(req, res, next) {
     res.status(404).send('Sorry cant find that!');
 })
 
 // ================================= listen =======================================
-// 확인완료
 app.listen(9999, ()=>{
     console.log('server start')
 })
