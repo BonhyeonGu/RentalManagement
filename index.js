@@ -355,6 +355,7 @@ app.post("/login",(request,response)=>{
 
 // ================================= 비품 대여 신청 관련 라우터 =======================================
 // '/rental' GET 라우팅
+// 확인완료
 app.get("/rental", (request, response)=>{ 
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`select id, name, total_qty from product where id='${request.query.product_id}'`, function(err, rows, fields){
@@ -373,6 +374,7 @@ app.get("/rental", (request, response)=>{
 })
 
 // '/rental_sign_result' POST 라우팅
+// 확인완료
 app.post("/rental_sign_result", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`insert into rental_manage values(NULL,${request.session.uid},${request.body.product_id},now(),"${request.body.product_start_date}",${request.body.product_using_period},NULL,${request.body.product_qty},"1",NULL)`, function(err){
@@ -391,6 +393,7 @@ app.post("/rental_sign_result", (request, response)=>{
 
 // ================================= 비품 대여 이력 관련 라우터 =======================================
 // '/rental_status' GET 라우팅
+// 확인완료
 app.get("/rental_status", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`select * from product, rental_manage where product.id=rental_manage.pid and uid=${request.session.uid}`, function(err, rows, fields){
@@ -414,6 +417,7 @@ app.get("/rental_status", (request, response)=>{
 })
 
 // '/rental_status_search' GET 라우팅
+// 확인완료
 app.get("/rental_status_search", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`select * from product, rental_manage where product.id=rental_manage.pid and rental_manage.uid=${Number(request.session.uid)} and product.name like'%${request.query.q}%'`, function(err, rows, fields){
@@ -448,6 +452,7 @@ app.get("/rental_status_search", (request, response)=>{
     }
 })
 
+// 확인완료
 app.post("/rental_status_delete", (request, response)=>{
     if (user_auth_0_1_2(request.session.user_auth,response)==2) { // user, read, read&write(관리자)
         conn.query(`delete from rental_manage where ma_id='${request.body.ma_id}'`, function(err, rows, fields){
