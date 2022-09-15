@@ -11,7 +11,7 @@ const fileFilter = (req, file, cb) => {
     cb(null, true); // 해당 mimetype만 받겠다는 의미
   } else {
     // 다른 mimetype은 저장되지 않음
-    req.fileValidationError = "jpg,jpeg,png,gif,webp 파일만 업로드 가능합니다.";
+    req.fileValidationError = "jpg,jpeg,png 파일만 업로드 가능합니다.";
     cb(null, false);
   }
 };
