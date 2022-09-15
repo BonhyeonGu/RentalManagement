@@ -7,27 +7,27 @@
     <script src="https://code.jquery.com/jquery-3.6.0.js"
     integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
     crossorigin="anonymous"></script>
-    <title>Beharbor : Database manage</title>
+    <title>Beharbor Rental Page | 비품 목록</title>
 </head>
 <body>
     <h2 onclick="location.href='/'">Beharbor</h2>
 
     <form action="/database_search" method="post">
-        물품 명:&nbsp;<input type="text" name="id">
+        비품명:&nbsp;<input type="text" name="id">
         <input type="submit" value="일부 검색">
         <input type="reset" value="취소">
     </form>
     <button onclick="location.href='/database'">전체 검색</button>
     <br><br>
     <form action='/database_add' method="get">
-        <input type="submit" value='데이터베이스 추가'>
+        <input type="submit" value='비품 추가'>
     </form>
     <fieldset>
-        <legend>데이터베이스 목록</legend>
+        <legend>비품 목록</legend>
         <% if (rows_list.length != 0) { %>
         <table border="1">
             <tr>
-            <th>ID<th>물품명<th>물품태그<th>모델명<th>시리얼번호<th>비고<th>Image<th>Created_at<th>Updated_at<th>lendable<th>status<th>회사명<th>총 갯수<th>남은 갯수
+            <th>ID<th>비품명<th>태그<th>모델명<th>시리얼 번호<th>비고<th>사진<th>추가 날짜<th>수정 날짜<th>대여 상태<th>비품 상태<th>제조사<th>전체 수량<th>남은 수량
             <% for (let rows of rows_list) { %>
                 <tr>
                     <td><%=rows.id%><td><%=rows.name%><td><%=rows.tag%><td><%=rows.model_id%><td><%=rows.serial%><td><%=rows.note%><td><%=rows.image%>

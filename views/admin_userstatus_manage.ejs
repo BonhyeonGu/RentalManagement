@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beharbor : Database </title>
+    <title>Beharbor Rental Page | 회원 정보 수정</title>
     <script>
         function submit_chk(myForm){
 
@@ -29,16 +29,16 @@
 <body onload = "document.f1.user_school.focus();">
     <form id = "f1" name = "f1" onsubmit = "return submit_chk(this);" onreset = "return reset_chk(this);">
         <fieldset>
-            <legend>Database</legend>
+            <legend>회원 정보</legend>
             <p>
-                <label for ="id">USER_ID: <%=rows_list[0]['user_id']%></label>
+                <label for ="id">아이디: <%=rows_list[0]['user_id']%></label>
                 <input type="hidden" name = "uid" value="<%=rows_list[0]['uid']%>">
             </p>
             <p>
-                <label for ="user_auth">User_auth: <%=rows_list[0]['user_auth']%></label>
+                <label for ="user_auth">권한: <%=rows_list[0]['user_auth']%></label>
             </p>
             <p>
-                <label for ="user_change_auth">바꿀 권한 레벨</label>
+                <label for ="user_change_auth">바꿀 권한</label>
                 <select name="user_change_auth" id = "user_change_auth">
                     <option value="0">User</option>
                     <option value="1">Read</option>

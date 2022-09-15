@@ -7,11 +7,11 @@
     <script src="https://code.jquery.com/jquery-3.6.0.js"
     integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
     crossorigin="anonymous"></script>
-    <title>Beharbor : signup manage</title>
+    <title>Beharbor Rental Page | 회원가입 신청 목록</title>
 </head>
 <body>
     <h2 onclick="location.href='/'">Beharbor</h2>
-    <h3 onclick="location.href='/admin_signup'">회원가입 관리</h3>
+    <h3 onclick="location.href='/admin_signup'">회원가입 신청 목록</h3>
 
     <form action="/admin_signup_search" method="post">
         사용자 ID:&nbsp;<input type="text" name="user_id">
@@ -26,7 +26,7 @@
         <% if (rows_list.length != 0) { %>
         <table border="1">
             <tr>
-            <th>구분<th>학교<th>학번<th>이름<th>학과<th>학년<th>ID<th>재학여부<th>휴대폰번호<th>권한<th>기타
+            <th>UID<th>학교<th>학번<th>이름<th>학과<th>학년<th>아이디<th>재학 상태<th>휴대폰 번호<th>권한<th>관리
             <% for (let rows of rows_list) { %>
                 <tr>
                     <td><%=rows.uid%><td><%=rows.user_school%><td><%=rows.user_num%><td><%=rows.user_name%><td><%=rows.user_department%><td><%=rows.user_grade%><td><%=rows.user_id%>

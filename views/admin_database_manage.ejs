@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beharbor : Database </title>
+    <title>Beharbor Rental Page | 비품 수정</title>
     <script>
         function submit_chk(myForm){
 
@@ -29,13 +29,13 @@
 <body onload = "document.f1.user_school.focus();">
     <form id = "f1" name = "f1" enctype="multipart/form-data" onsubmit = "return submit_chk(this);" onreset = "return reset_chk(this);">
         <fieldset>
-            <legend>Database</legend>
+            <legend>비품 수정</legend>
             <p>
                 <label for ="id">ID: <%=rows_list[0]['id']%></label>
                 <input type="hidden" name = "id" id = "id" value="<%=rows_list[0]['id']%>">
             </p>
             <p>
-                <label for ="name">물품명</label>
+                <label for ="name">비품명</label>
                 <input type="text" name = "name" id = "name" value="<%=rows_list[0]['name']%>">
             </p>
             <p>
@@ -47,7 +47,7 @@
                 <input type="text" name = "model_id" id = "model_id" value="<%=rows_list[0]['model_id']%>">
             </p>
             <p>
-                <label for ="serial">시리얼번호</label>
+                <label for ="serial">시리얼 번호</label>
                 <input type="text" name = "serial" id = "serial" value="<%=rows_list[0]['serial']%>"/>
             </p>
             <p>
@@ -55,27 +55,27 @@
                 <input type="text" name = "note" id = "note" value="<%=rows_list[0]['note']%>"/>
             </p>
             <p>
-                <label for ="image">이미지</label>
+                <label for ="image">사진</label>
                 <input type="file" name="image" accept="image/*" value="../uploads/<%=rows_list[0]['image']%>"/>
             </p>
             <p>
-                <label for ="lendable">빌리기 상태</label>
+                <label for ="lendable">대여 상태</label>
                 <input type="text" name = "lendable" id = "lendable" value="<%=rows_list[0]['lendable']%>"/>
             </p>
             <p>
-                <label for ="status">물품 상태</label>
+                <label for ="status">비품 상태</label>
                 <input type="text" name = "status" id = "status" value="<%=rows_list[0]['status']%>"/>
             </p>
             <p>
-                <label for ="company">회사명</label>
+                <label for ="company">제조사</label>
                 <input type="text" name = "company" id = "company" value="<%=rows_list[0]['company']%>"/>
             </p>
             <p>
-                <label for ="total_qty">총 갯수</label>
+                <label for ="total_qty">전체 수량</label>
                 <input type="text" name = "total_qty" id = "total_qty" value="<%=rows_list[0]['total_qty']%>"/>
             </p>
             <p>
-                <label for ="remaining">남은 갯수</label>
+                <label for ="remaining">남은 수량</label>
                 <input type="text" name = "remaining_qty" id = "remaining_qty" value="<%=rows_list[0]['remaining_qty']%>"/>
             </p>
             <p>

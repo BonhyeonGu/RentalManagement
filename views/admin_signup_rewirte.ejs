@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beharbor : signup </title>
+    <title>Beharbor Rental Page | 회원가입 신청서 수정 </title>
     <script>
         function submit_chk(myForm){
 
@@ -31,12 +31,12 @@
         <fieldset>
             <legend>회원가입 신청서</legend>
             <p>
-                <label for ="user_id">ID: <%=rows_list[0]['user_id']%></label>
+                <label for ="user_id">아이디: <%=rows_list[0]['user_id']%></label>
                 <input type="hidden" name = "user_id" id = "user_id" value="<%=rows_list[0]['user_id']%>">
                 <input type="hidden" name = "uid" id = "uid" value="<%=rows_list[0]['uid']%>">
             </p>
             <p>
-                <label for ="user_school">학교명</label>
+                <label for ="user_school">학교</label>
                 <input type="text" name = "user_school" id = "user_school" value="<%=rows_list[0]['user_school']%>">
             </p>
             <p>
@@ -48,7 +48,7 @@
                 <input type="text" name = "user_name" id = "user_name" value="<%=rows_list[0]['user_name']%>">
             </p>
             <p>
-                <label for ="user_department">소속학과</label>
+                <label for ="user_department">학과</label>
                 <input type="text" name = "user_department" id = "user_department" value="<%=rows_list[0]['user_department']%>"/>
             </p>
             <p>
