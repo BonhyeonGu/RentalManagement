@@ -16,10 +16,11 @@ db.connect(conn)
 
 // 3. session 저장소 설정하기
 const app = express()
+const secretSession = require('./secret/session.js');
 app.use(expressSession({
     //httpOnly: true, // 자바스크립트로 쿠키 조회 t/f
     //secure: true, // https 환경에서만 session 정보를 주고 받기 t/f
-    secret: "W#@598c&r*952#3988W", // 쿠기 임의 변조 방지. 이 값을 토대로 세션 암호화
+    secret: secretSession.sessionKey(), // 쿠기 임의 변조 방지. 이 값을 토대로 세션 암호화
     resave: false, // 세션에 변경 사항이 없을 시 항상 저장 t/f
     saveUninitialized: true, // 세션이 최초 만들어지고 수정이 안된다면, 저장되기 전에 uninitialized 상태로 미리 만들어서 저장 t/f
     store: new MemoryStore({
