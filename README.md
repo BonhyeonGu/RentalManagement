@@ -7,6 +7,13 @@
 </div>
 
 ## Overview
+
+<div align="center">
+
+![Rental](https://user-images.githubusercontent.com/24387014/191737013-b8f7e11e-7c61-4b1f-be47-16755408ebb0.gif)
+
+</div>
+
 학교의 대여 가능 물건들을 확인, 분류, 신청받을 수 있는 웹 서비스 입니다.
 
 
