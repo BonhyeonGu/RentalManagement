@@ -17,7 +17,4 @@
 [![d](https://img.shields.io/badge/-서지헌-181717?style=for-the-badge&logo=github&logoColor=FFFFFF)](https://github.com/MyCoooi
 )
 
-학생 박성민 https://github.com/ParkSeungMin1  
-학생 서지헌 https://github.com/MyCoooi
-
 추가로 DB에 박지원, 박현우, 조영훈 학생이 도움을 주었습니다.
