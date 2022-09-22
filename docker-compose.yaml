@@ -1,0 +1,6 @@
+version: '3'
+services:
+  rental:
+    build: .
+    ports:
+      - "8001:9999"
