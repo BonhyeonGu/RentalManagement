@@ -13,7 +13,20 @@ const { parse } = require('path');
 const e = require('express');
 const conn=db.init()
 db.connect(conn)
-
+// 2-1. DB와 서버의 접속 유지를 위한 의미 없는 콜백함수 설정.(간단한 쿼리문)
+setInterval(() => conn.query('select id from product where id=1', function(err, rows, fields) {
+    if (err) {
+        try {
+            throw err;
+        } catch(e) {
+            var data = myQueryErrorHandler(e);
+            response.status(Number(data[0])).send(data[1]);
+        }
+    }
+    else {
+        console.log("setInterval run")
+    }
+}), 3600000);
 // 3. session 저장소 설정하기
 const app = express()
 const secretSession = require('./secret/session.js');
