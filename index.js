@@ -5,6 +5,7 @@ const expressSession = require("express-session");
 const MemoryStore=require('memorystore')(expressSession); // FileStore -> MemoryStore로 바꿈.
 const fs = require('fs')
 const crypto = require('crypto');
+const url = require('url');
 
 // 2. DB 연동하기
 const { upload } = require("./multer.js");
@@ -30,6 +31,9 @@ setInterval(() => conn.query('select id from product where id=1', function(err, 
 // 3. session 저장소 설정하기
 const app = express()
 const secretSession = require('./secret/session.js');
+const { request } = require('http');
+const path = require('path');
+const { count } = require('console');
 app.use(expressSession({
     //httpOnly: true, // 자바스크립트로 쿠키 조회 t/f
     //secure: true, // https 환경에서만 session 정보를 주고 받기 t/f
@@ -92,7 +96,7 @@ function myFsErrorHandler(e) {
 // ================================= 메인 화면 관련 라우터 =======================================
 // '/' GET 라우팅
 app.get("/", (request, response)=>{
-    conn.query('select id, name, image, remaining_qty from product', function(err, rows, fields) {
+    conn.query(`SELECT COUNT(*) FROM product`, function(err, rows, fields){
         if (err) {
             try {
                 throw err;
@@ -101,16 +105,73 @@ app.get("/", (request, response)=>{
                 response.status(Number(data[0])).send(data[1]);
             }
         }
-        else {
+        let currentPage=1;
+        if(request.query.currentPage != undefined){
+            currentPage = request.query.currentPage;
+        }
+        let totalRecord=rows[0]['COUNT(*)'];
+        let pageSize= 12; //한 페이지당 보여질 레코드 수
+        let totalPage= Math.ceil(totalRecord/pageSize); //총 페이지 수 
+        let blockSize= 10; //블럭당 보여질 페이지 수 
+        let firstPage= currentPage-(currentPage-1)%blockSize; //블럭당 시작 페이지 
+        let lastPage= firstPage + (blockSize-1); //블럭당 끝 페이지 
+        let num= totalRecord - (currentPage-1)*pageSize; //페이지당 시작 번호
+        conn.query(`select id, name, image, remaining_qty from product limit ${(currentPage-1)*12},12 `, function(err, rows, fields) {
+            if (err) {
+                try {
+                    throw err;
+                } catch(e) {
+                    var data = myQueryErrorHandler(e);
+                    response.status(Number(data[0])).send(data[1]);
+                }
+            }
             let arr = [];
             for (var i = 0; i < rows.length; i++) arr[i] = rows[i]['name'];
             let json1 = JSON.stringify(arr);
-    
-            response.render('main.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_list:rows, searchData:json1});
+            let main="true"
+            response.render('main.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_list:rows, firstPage:firstPage,lastPage:lastPage,totalPage:totalPage,currentPage:currentPage,main:main});
+        
+        });
+    })
+})
+app.get("/filter",(request,response)=>{
+  var _url = request.url;
+  let url_parsed = _url.split('=');
+  json1 = url_parsed[1].replaceAll('%20', ' ');
+  if (url_parsed[0] === '/filter?q') {
+    var result = '';
+    conn.query(`SELECT name FROM product WHERE name like '%${json1}%'` , function(err, rows){
+        if (err) {
+            try {
+                throw err;
+            } catch(e) {
+                var data = myQueryErrorHandler(e);
+            }
+        }
+        else{
+            if(rows.length==0){
+                
+            }
+            else{
+                let data=[];
+                
+                for(let tmp of rows){
+                    let abc={
+                        "name" : tmp.name,
+                    }
+                    data.push(JSON.stringify(abc))
+                }
+                response.setHeader('Content-Type', 'application/json');
+                response.end(JSON.stringify(data));
+            }
         }
     });
-})
-
+  } else {
+	    response.writeHead(200,{'Content-Type' : "text/html"})
+        response.write(myFsErrorHandler(e))
+        response.end()
+  }
+});
 // '/work_single' GET 라우팅
 app.get("/work_single", (request, response)=>{
     var product_id = request.query.product_id
@@ -130,7 +191,7 @@ app.get("/work_single", (request, response)=>{
 
 // '/search' GET 라우팅
 app.get("/search", (request, response)=>{ 
-    conn.query(`select id, name, image, remaining_qty from product where name like '%${request.query.q}%'`, function(err, rows, fields){
+    conn.query(`select count(*) from product where name like '%${request.query.q}%'`,function(err, rows2, fields){
         if (err) {
             try {
                 throw err;
@@ -139,26 +200,33 @@ app.get("/search", (request, response)=>{
                 response.status(Number(data[0])).send(data[1]);
             }
         }
-        else {
-            conn.query('select id, name, image, remaining_qty from product', function(err, rows1, fields) {
-                if (err) {
-                    try {
-                        throw err;
-                    } catch(e) {
-                        var data = myQueryErrorHandler(e);
-                        response.status(Number(data[0])).send(data[1]);
-                    }
-                }
-                else {
-                    let arr = [];
-                    for (var i = 0; i < rows1.length; i++) arr[i] = rows1[i]['name'];
-                    let json1 = JSON.stringify(arr);
-            
-                    response.render('main.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_list:rows, searchData:json1});
-                }
-            })
+        let currentPage=1;
+        if(request.query.currentPage != undefined){
+            currentPage = request.query.currentPage;
         }
-    })
+        let totalRecord=rows2[0]['count(*)'];
+        let pageSize= 12; //한 페이지당 보여질 레코드 수
+        let totalPage= Math.ceil(totalRecord/pageSize); //총 페이지 수 
+        let blockSize= 10; //블럭당 보여질 페이지 수 
+        let firstPage= currentPage-(currentPage-1)%blockSize; //블럭당 시작 페이지 
+        let lastPage= firstPage + (blockSize-1); //블럭당 끝 페이지 
+        let num= totalRecord - (currentPage-1)*pageSize; //페이지당 시작 번호
+        conn.query(`select id, name, image, remaining_qty from product where name like '%${request.query.q}%' limit  ${(currentPage-1)*12},12 `, function(err, rows, fields){
+            if (err) {
+                try {
+                    throw err;
+                } catch(e) {
+                    var data = myQueryErrorHandler(e);
+                    response.status(Number(data[0])).send(data[1]);
+                }
+            }
+            let arr = [];
+            for (var i = 0; i < rows.length; i++) arr[i] = rows[i]['name'];
+            let json1 = JSON.stringify(arr);
+            let main=request.query.q;
+            response.render('main.ejs', {id:request.session.user_id, auth:request.session.user_auth, product_list:rows, firstPage:firstPage,lastPage:lastPage,totalPage:totalPage,currentPage:currentPage,main:main});
+        })
+    });
 })
 
 // ================================= 회원가입 관련 라우터 =======================================
